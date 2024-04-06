@@ -13,7 +13,7 @@ require('dotenv').config();
         user: process.env.PG_USER,
         password: process.env.PG_PASSWORD,
         database: process.env.PG_DATABASE,
-        ssl: true,
+        ssl: false,
     });
     await client.connect();
     const res = await client.query('SELECT $1::text as connected', ['Conexion con DB correcta']);
