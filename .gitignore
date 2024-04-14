@@ -1,0 +1,22 @@
+#Claves de la API y confidenciales
+.env
+
+#Directorio de dependencias
+node_modules
+
+#built files
+dist/**/*
+
+#vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+#historial local
+.history/
+
+#built vscode extensions
+*.vsix
