@@ -1,0 +1,11 @@
+{
+  "name": "dmcoffers-server-main",
+  "version": "1.0.0",
+  "description": "DSW 2024 3K5",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
