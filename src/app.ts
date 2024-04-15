@@ -1,5 +1,5 @@
 import express from 'express';
-import { JuegoRouter } from './routes/juegos/juego.routes.ts';
+import { JuegoRouter } from './routes/juegos/juego.routes.js';
 
 var app = express();
 
