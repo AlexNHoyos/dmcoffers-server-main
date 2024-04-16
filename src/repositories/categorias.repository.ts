@@ -6,7 +6,7 @@ const categorias = [
         1,
         'prueba',
         new Date(),
-        'Esta es una prueba de foros',
+        'Esta es una prueba de categorias',
         new Date(),
         new Date()
     ),
