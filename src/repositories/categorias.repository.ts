@@ -18,7 +18,7 @@ export class CategoriasRepository implements Repository<Categorias> {
     }
 
     public findOne(categoria: { id: number; }): Categorias | undefined {
-        return categorias.find((categoriasEnt) => categorias.id === categoriasEnt.id)
+        return categorias.find((categoriasEnt) => categoria.id === categoriasEnt.id)
     }
 
     public add(categoria: Categorias): Categorias | undefined {
@@ -26,8 +26,8 @@ export class CategoriasRepository implements Repository<Categorias> {
         return categoria
     }
 
-    public update(item: Categorias): Categorias | undefined {
-        const categoriaIdx = categorias.findIndex((categoriaEnt) => categorias.id === categoriaEnt.id)
+    public update(categoria: Categorias): Categorias | undefined {
+        const categoriaIdx = categorias.findIndex((categoriaEnt) => categoria.id === categoriaEnt.id)
 
         if (categoriaIdx > -1) {
             categorias[categoriaIdx] = {...categorias[categoriaIdx], ...categoria}
@@ -35,7 +35,7 @@ export class CategoriasRepository implements Repository<Categorias> {
         return categorias[categoriaIdx]
     }
 
-    public delete(item: { id: number; }): Categorias | undefined {
+    public delete(categoria: { id: number; }): Categorias | undefined {
         const categoriaIdx = categorias.findIndex((categoriaEnt) => categoria.id === categoriaEnt.id)
 
         if (categoriaIdx > -1) {
