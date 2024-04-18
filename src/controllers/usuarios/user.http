@@ -1,0 +1,50 @@
+### obtener todos los user(get all)
+GET http://localhost:3000/api/users
+### obtener un user(get one)
+GET http://localhost:3000/api/users/1
+
+### crear un nuevo user
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+
+ {
+  "id": "2",
+  "realname": "Mauro",
+  "surname": "Marcosano",
+  "username": "Pabluna",
+  "birthdate": "2024-04-16T00:04:12.275Z",
+  "creationuser": "Rama",
+  "creationtimestamp": "2024-04-16T00:04:12.275Z",
+  "modificationuser": "Mauro"
+  "modificationtimestamp": "2024-04-16T00:04:12.275Z",
+  "status": true
+}
+
+
+### modificar un user (PUT  - recurso completo e idempotente)
+PUT http://localhost:3000/api/users/1
+Content-Type: application/json
+
+ {
+  "realname": "Mauro Agustin",
+  "surname": "Marcosano",
+  "username": "Capitan America",
+  "birthdate": "2024-04-16T00:04:12.275Z",
+  "creationuser": "Rama",
+  "creationtimestamp": "2024-04-16T00:04:12.275Z",
+  "modificationuser": "Rama"
+  "modificationtimestamp": "2024-04-16T00:04:12.275Z",
+}
+
+
+### modificar un user (PATCH  - recurso parcial)
+PATCH http://localhost:3000/api/users/2
+
+{
+  "status": false,
+  "creationuser": "Alexxxxxxxxxxxxxxxxxxxxxx",
+} 
+
+### borrar un user
+DELETE http://localhost:3000/api/users/2
