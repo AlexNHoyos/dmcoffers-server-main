@@ -1,6 +1,7 @@
 {
   "name": "dmcoffers-server-main",
   "version": "1.0.0",
+  "type": "module",
   "description": "Proyecto para DSW-UTN",
   "main": "index.js",
   "scripts": {

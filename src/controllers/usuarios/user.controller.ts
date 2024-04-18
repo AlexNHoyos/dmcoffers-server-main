@@ -4,7 +4,7 @@ import { User } from '../../models/usuarios/user.entity';
 
 const repository = new UserRepository();
 
-function sanitizePublisherInput(
+function sanitizeUserInput(
     req: Request,
     res: Response,
     next: NextFunction
@@ -89,4 +89,4 @@ function remove(req: Request, res: Response) {
     }
 }
 
-export { sanitizePublisherInput, findAll, findOne, add, update, remove };
+export { sanitizeUserInput, findAll, findOne, add, update, remove };
