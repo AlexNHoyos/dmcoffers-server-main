@@ -1,6 +1,7 @@
 {
   "name": "dmcoffers-server-main",
   "version": "1.0.0",
+<<<<<<< HEAD
   "description": "DSW 2024 3K5",
   "main": "index.js",
   "scripts": {
@@ -9,3 +10,29 @@
   "author": "",
   "license": "ISC"
 }
+=======
+  "description": "Proyecto para DSW-UTN",
+  "main": "index.js",
+  "scripts": {
+    "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./dist/app.js\""
+  },
+  "author": "Hoyos, A. ; Marcosano, M. ; Ceballos, R.",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.5",
+    "body-parser": "^1.20.2",
+    "connect-multiparty": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "typescript": "^5.4.4"
+  },
+  "devDependencies": {
+    "@types/express": "4.17.21",
+    "@types/node": "20.11.30",
+    "tsc-watch": "6.1.0",
+    "typescript": "5.4.3"
+  }
+}
+>>>>>>> b1689f16bc7deb674cb9dbc5b769b2aa987b8899
