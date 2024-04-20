@@ -36,6 +36,7 @@ Content-Type: application/json
   "modificationuser": "Mauro"
 }
 
+//NO ANDA
 
 ### modificar un publisher (PATCH  - recurso parcial)
 PATCH http://localhost:3000/api/publishers/2
