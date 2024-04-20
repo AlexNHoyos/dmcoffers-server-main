@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { sanitizeCategoriaInput, findAll, findOne, add, update, remove } from '../../controllers/categorias.controller';
 
-export const foroRouter = Router();
+export const categoriaRouter = Router();
 
-foroRouter.get('/', findAll);
-foroRouter.get('/:id', findOne);
-foroRouter.post('/', sanitizeCategoriaInput, add);
-foroRouter.put('/:id', sanitizeCategoriaInput, update);
-foroRouter.patch('/:id', sanitizeCategoriaInput, update);
-foroRouter.delete('/:id', remove);
+categoriaRouter.get('/', findAll);
+categoriaRouter.get('/:id', findOne);
+categoriaRouter.post('/', sanitizeCategoriaInput, add);
+categoriaRouter.put('/:id', sanitizeCategoriaInput, update);
+categoriaRouter.patch('/:id', sanitizeCategoriaInput, update);
+categoriaRouter.delete('/:id', remove);
