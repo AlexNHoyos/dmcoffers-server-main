@@ -16,7 +16,7 @@ Content-Type: application/json
   "birthdate": "2024-04-16T00:04:12.275Z",
   "creationuser": "Rama",
   "creationtimestamp": "2024-04-16T00:04:12.275Z",
-  "modificationuser": "Mauro"
+  "modificationuser": "Mauro",
   "modificationtimestamp": "2024-04-16T00:04:12.275Z",
   "status": true
 }
@@ -27,16 +27,16 @@ PUT http://localhost:3000/api/users/1
 Content-Type: application/json
 
  {
-  "realname": "Mauro Agustin",
+  "realname": "Mauro",
   "surname": "Marcosano",
-  "username": "Capitan America",
+  "username": "Patroclo",
   "birthdate": "2024-04-16T00:04:12.275Z",
-  "creationuser": "Rama",
+  "creationuser": "Mauro",
   "creationtimestamp": "2024-04-16T00:04:12.275Z",
-  "modificationuser": "Rama"
+  "modificationuser": "Rama",
   "modificationtimestamp": "2024-04-16T00:04:12.275Z",
+  "status": true
 }
-
 
 ### modificar un user (PATCH  - recurso parcial)
 PATCH http://localhost:3000/api/users/2
