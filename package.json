@@ -1,18 +1,8 @@
 {
   "name": "dmcoffers-server-main",
   "version": "1.0.0",
-<<<<<<< HEAD
-  "description": "DSW 2024 3K5",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC"
-}
-=======
   "description": "Proyecto para DSW-UTN",
-  "main": "index.js",
+  "main": "app.ts",
   "scripts": {
     "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./dist/app.js\""
   },
@@ -35,4 +25,4 @@
     "typescript": "5.4.3"
   }
 }
->>>>>>> b1689f16bc7deb674cb9dbc5b769b2aa987b8899
+ 
