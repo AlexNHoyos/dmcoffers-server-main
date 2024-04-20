@@ -1,5 +1,8 @@
+// Definimos la clase Publisher para representar la entidad de un publicador
 export class Publisher {
+  // Constructor de la clase Publisher
   constructor(
+    // Propiedades de la entidad Publisher
     public id: string,
     public publishername: string,
     public foundation_date: Date,
@@ -10,6 +13,7 @@ export class Publisher {
     public modificationtimestamp: Date,
     public modificationuser: string
   ) {
+    // Inicializamos las propiedades de la clase con los valores proporcionados en el constructor
     this.id = id;
     this.publishername = publishername;
     this.foundation_date = foundation_date;
