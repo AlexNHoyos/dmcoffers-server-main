@@ -1,10 +1,9 @@
 import express from 'express';
-import { publisherRouter } from './routes/publisher.routes.js';
-
+import { categoriaRouter } from './routes/categorias/categorias.routes';
 const app = express();
 app.use(express.json());
 
-app.use('/api/publishers', publisherRouter);
+app.use('/api/categorias', categoriaRouter);
 
 app.use((_, res) => {
   return res.status(404).send({ message: 'Resource not found' });
