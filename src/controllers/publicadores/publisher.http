@@ -1,9 +1,9 @@
-### obtener todos los publishers(get all)
+### Obtener todos los publishers(GET ALL)
 GET http://localhost:3000/api/publishers
-### obtener un publisher(get one)
+### Obtener un publisher(GET ONE)
 GET http://localhost:3000/api/publishers/1
 
-### crear un nuevo publisher
+### Crear un nuevo publisher
 POST http://localhost:3000/api/publishers
 Content-Type: application/json
 
@@ -21,7 +21,7 @@ Content-Type: application/json
 }
 
 
-### modificar un publisher (PUT  - recurso completo e idempotente)
+### Modificar un publisher (PUT  - recurso completo e idempotente)
 PUT http://localhost:3000/api/publishers/1
 Content-Type: application/json
 
@@ -38,7 +38,7 @@ Content-Type: application/json
 
 //NO ANDA
 
-### modificar un publisher (PATCH  - recurso parcial)
+### Modificar un publisher (PATCH  - recurso parcial)
 PATCH http://localhost:3000/api/publishers/2
 
 {
@@ -46,5 +46,5 @@ PATCH http://localhost:3000/api/publishers/2
   "creationuser": "Alexxxxxxxxxxxxxxxxxxxxxx",
 } 
 
-### borrar un publisher
+### Borrar un publisher
 DELETE http://localhost:3000/api/publishers/2
