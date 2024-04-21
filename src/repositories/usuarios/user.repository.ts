@@ -1,4 +1,4 @@
-import { User } from "../../../src/models/usuarios/user.entity";
+import { User } from "../../models/usuarios/user.entity.js";
 import { Repository } from "../../shared/repository";
 const users = [
     new User('1', 'Ramiro', 'Ceballos', 'DoomedCrow', new Date('02-03-2000'), 'admin', new Date(), 'admin', new Date(), true),
