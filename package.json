@@ -1,8 +1,9 @@
 {
   "name": "dmcoffers-server-main",
   "version": "1.0.0",
+  "type": "module",
   "description": "Proyecto para DSW-UTN",
-  "main": "index.js",
+  "main": "app.ts",
   "scripts": {
     "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./dist/app.js\""
   },
