@@ -1,9 +1,8 @@
 // Importamos la interfaz Repository desde nuestro módulo compartido
-import { Repository } from '../shared/repository.js';
+import { Repository } from '../../shared/repository.js';
 
 // Importamos la entidad Publisher que representa a nuestros publicadores
-import { Publisher } from '../models/publisher.entity.js';
-
+import { Publisher } from '../../models/publicadores/publisher.entity.js';
 // Creamos una lista de publicadores de ejemplo para simular una base de datos (SIN PERSISTENCIA)
 const publishers = [
   new Publisher(

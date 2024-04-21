@@ -1,7 +1,7 @@
 // Importamos los tipos Request, Response y NextFunction desde Express
 import { Request, Response, NextFunction } from 'express';
-import { PublisherRepository } from '../repositories/publisher.repository.js';
-import { Publisher } from '../models/publisher.entity.js';
+import { PublisherRepository } from '../../repositories/publicadores/publisher.repository.js';
+import { Publisher } from '../../models/publicadores/publisher.entity.js';
 
 // Creamos una instancia del repositorio de publicadores
 const repository = new PublisherRepository();

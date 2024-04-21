@@ -9,7 +9,7 @@ import {
   add,
   update,
   remove,
-} from '../controllers/publishers.controller.js';
+} from '../../controllers/publicadores/publishers.controller.js';
 
 // Creamos una instancia del enrutador de Express
 export const publisherRouter = Router();
