@@ -1,14 +1,14 @@
 ### Obtener todos los categorias
 
-GET http://localhost:3000/api/categorias
+GET http://localhost:3000/api/categories
 
 ### Obtener un categorias
 
-GET http://localhost:3000/api/categorias/1
+GET http://localhost:3000/api/categories/1
 
 ### Crear un categorias
 
-POST http://localhost:3000/api/categorias
+POST http://localhost:3000/api/categories
 
 Content-TypeL application/json
 
@@ -20,7 +20,7 @@ Content-TypeL application/json
 }
 
 ### Modificar un categorias / cambio total
-PUT http://localhost:3000/api/categorias/1
+PUT http://localhost:3000/api/categories/1
 Content-Type: application/json
 
 {
@@ -31,7 +31,7 @@ Content-Type: application/json
 }
 
 ### Modificar un categorias / cambio parcial
-PATCH http://localhost:3000/api/categorias/1
+PATCH http://localhost:3000/api/categories/1
 Content-Type: application/json
 
 {
@@ -43,4 +43,4 @@ Content-Type: application/json
 
 ### Borrar un categorias
 
-DELETE http://localhost:3000/api/categorias/1
+DELETE http://localhost:3000/api/categories/1

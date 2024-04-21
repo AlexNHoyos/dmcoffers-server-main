@@ -1,9 +1,9 @@
-import { Categorias } from '../models/categorias.entity.js'
-import { Repository } from '../shared/repository.js';
+import { Categorias } from '../../models/categorias/categorias.entity.js'
+import { Repository } from '../../shared/repository.js';
 
 const categorias = [
     new Categorias(
-        1,
+        '1',
         'prueba',
         new Date(),
         'Esta es una prueba de categorias',
@@ -17,7 +17,7 @@ export class CategoriasRepository implements Repository<Categorias> {
         return categorias
     }
 
-    public findOne(categoria: { id: number; }): Categorias | undefined {
+    public findOne(categoria: { id: string; }): Categorias | undefined {
         return categorias.find((categoriasEnt) => categoria.id === categoriasEnt.id)
     }
 
@@ -30,17 +30,17 @@ export class CategoriasRepository implements Repository<Categorias> {
         const categoriaIdx = categorias.findIndex((categoriaEnt) => categoria.id === categoriaEnt.id)
 
         if (categoriaIdx > -1) {
-            categorias[categoriaIdx] = {...categorias[categoriaIdx], ...categoria}
+            categorias[categoriaIdx] = { ...categorias[categoriaIdx], ...categoria }
         }
         return categorias[categoriaIdx]
     }
 
-    public delete(categoria: { id: number; }): Categorias | undefined {
+    public delete(categoria: { id: string; }): Categorias | undefined {
         const categoriaIdx = categorias.findIndex((categoriaEnt) => categoria.id === categoriaEnt.id)
 
         if (categoriaIdx > -1) {
             const deletedCategoria = categorias[categoriaIdx]
-            categorias.splice (categoriaIdx, 1)
+            categorias.splice(categoriaIdx, 1)
             return deletedCategoria
         }
     }

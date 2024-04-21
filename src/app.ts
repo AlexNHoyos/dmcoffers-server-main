@@ -1,26 +1,21 @@
-<<<<<<< HEAD
 // Importamos el módulo 'express' para crear un servidor web
 // Importamos el enrutador para las rutas relacionadas con los editores
-
 import express from 'express';
 import { userRouter } from './routes/usuarios/user.routes.js';
 import { publisherRouter } from './routes/publicadores/publisher.routes.js';
+import { categoriaRouter } from './routes/categorias/categorias.routes.js';
 
 // Creamos una instancia de la aplicación Express
-=======
-import express from 'express';
-import { categoriaRouter } from './routes/categorias/categorias.routes';
->>>>>>> crudCategorias
+
 const app = express();
 // Configuramos Express para que pueda analizar solicitudes con formato JSON
 app.use(express.json());
 
-<<<<<<< HEAD
+
 app.use('/api/users', userRouter);
 app.use('/api/publishers', publisherRouter);
-=======
-app.use('/api/categorias', categoriaRouter);
->>>>>>> crudCategorias
+app.use('/api/categories', categoriaRouter);
+
 
 // Middleware para manejar solicitudes a rutas no encontradas
 app.use((_, res) => {
