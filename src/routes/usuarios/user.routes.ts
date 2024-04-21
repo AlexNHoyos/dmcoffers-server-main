@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { sanitizeUserInput, findAll, findOne, add, update, remove } from '../../controllers/usuarios/user.controller';
+import { sanitizeUserInput, findAll, findOne, add, update, remove } from '../../controllers/usuarios/user.controller.js';
 export const userRouter = Router();
 userRouter.get('/', findAll);
 userRouter.get('/:id', findOne);
