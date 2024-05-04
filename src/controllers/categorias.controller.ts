@@ -68,9 +68,9 @@ function remove(req: Request, res: Response){
     const categoria = repository.delete({id});
 
     if (!categoria) {
-        res.status(400).send({message: 'Foro Not Found'});
+        res.status(400).send({message: 'Categoria Not Found'});
     } else {
-        res.status(200).send({message: 'Foto Deleted Successfully'});
+        res.status(200).send({message: 'Categoria Deleted Successfully'});
     }
 }
 
