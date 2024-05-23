@@ -37,13 +37,5 @@ Content-Type: application/json
   "status": true
 }
 
-### modificar un user (PATCH  - recurso parcial)
-PATCH http://localhost:3000/api/users/1
-
-{
-  "status": false,
-  "creationuser": "Alexxxxxxxxxxxxxxxxxxxxxx",
-} 
-
 ### borrar un user
 DELETE http://localhost:3000/api/users/2

@@ -30,17 +30,6 @@ Content-Type: application/json
     "modificationuser": "2024-04-14 15:30:00.000"
 }
 
-### Modificar un categorias / cambio parcial
-PATCH http://localhost:3000/api/categories/1
-Content-Type: application/json
-
-{
-    "id": 1,
-    "descripcion": "Modificacion parcial de categorias de prueba",
-    "modificationtimestamp": "2024-04-14 15:30:00.000",
-    "modificationuser": "2024-04-14 15:30:00.000"
-}
-
 ### Borrar un categorias
 
 DELETE http://localhost:3000/api/categories/1

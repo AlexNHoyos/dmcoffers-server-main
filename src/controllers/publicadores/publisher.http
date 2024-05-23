@@ -36,15 +36,5 @@ Content-Type: application/json
   "modificationuser": "Mauro"
 }
 
-//NO ANDA
-
-### Modificar un publisher (PATCH  - recurso parcial)
-PATCH http://localhost:3000/api/publishers/2
-
-{
-  "status": false,
-  "creationuser": "Alexxxxxxxxxxxxxxxxxxxxxx",
-} 
-
 ### Borrar un publisher
 DELETE http://localhost:3000/api/publishers/2
