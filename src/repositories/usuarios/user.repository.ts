@@ -1,5 +1,5 @@
 import { User } from "../../models/usuarios/user.entity.js";
-import { Repository } from "../../shared/repository";
+import { Repository } from "../../shared/testRepository";
 const pool = require('./db');
 
 export class UserRepository implements Repository<User> {
@@ -14,7 +14,7 @@ export class UserRepository implements Repository<User> {
         }
     }
 
-    async findOne(id: number) {
+    async findOne(id: string) {
         try {
             const result = await pool.query('SELECT * FROM swe_usrapl su WHERE su.id = $1');
             return result;
@@ -38,7 +38,7 @@ export class UserRepository implements Repository<User> {
         }
     }
 
-    async update(id: number, user: User) {
+    async update(id: string, user: User) {
         const { realname, surname, username, birth_date, delete_date, status } = user;
         const query = 'UPDATE swe_usrapl su SET realname = $1, surname = $2, username = $3, birth_date = $4, delete_date = $5, creationuser = current_user, creationtimestamp = current_timestamp, modificationuser = current_user, modificationtimestamp = current_timestamp, status = status RETURNING *;';
         const values = [realname, surname, username, birth_date, delete_date, status]
@@ -52,7 +52,7 @@ export class UserRepository implements Repository<User> {
         }
     }
 
-    async delete(id: number): Promise<User | undefined> {
+    async delete(id: string): Promise<User | undefined> {
         try {
             const result = await pool.query("DELETE FROM swe_usrapl su WHERE si.id = $1 RETURNING *", [id]);
             return result.rows[0];

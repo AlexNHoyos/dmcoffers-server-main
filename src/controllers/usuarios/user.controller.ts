@@ -1,92 +1,83 @@
-import { Request, Response, NextFunction } from 'express';
-import { UserRepository } from '../../repositories/usuarios/user.repository.js';
-import { User } from '../../models/usuarios/user.entity.js';
+import express from 'express';
+import bodyParser from 'body-parser';
+import { UserRepository } from '../../repositories/usuarios/user.repository.js'; // Ajusta la ruta según tu estructura de proyecto
 
-const repository = new UserRepository();
+const app = express();
+const userRepository = new UserRepository();
 
-function sanitizeUserInput(
-    req: Request,
-    res: Response,
-    next: NextFunction
-) {
-    req.body.sanitizedInput = {
-        id: req.body.id,
-        realname: req.body.realname,
-        surname: req.body.surname,
-        username: req.body.username,
-        birth_date: req.body.birth_date,
-        creationuser: req.body.creationuser,
-        creationtimestamp: req.body.creationtimestamp,
-        modificationuser: req.body.modificationuser,
-        modificationtimestamp: req.body.modificationtimestamp,
-        state: req.body.state,
-    };
+app.use(bodyParser.json());
 
-    Object.keys(req.body.sanitizedInput).forEach((key) => {
-        if (req.body.sanitizedInput[key] === undefined) {
-            delete req.body.sanitizedInput[key];
+// Obtener todos los usuarios
+app.get('/users', async (req, res) => {
+    try {
+        const users = await userRepository.findAll();
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener los usuarios', error });
+    }
+});
+
+// Obtener un usuario por ID
+app.get('/users/:id', async (req, res) => {
+    const id = req.params.id;
+    try {
+        const user = await userRepository.findOne(id);
+        if (user) {
+            res.status(200).json(user);
+        } else {
+            res.status(404).json({ message: 'Usuario no encontrado' });
         }
-    });
-    next();
-}
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener el usuario', error });
+    }
+});
 
-function findAll(req: Request, res: Response) {
-    res.json({ data: repository.findAll() })
-}
+// Crear un nuevo usuario
+app.post('/users', async (req, res) => {
+    const newUser = req.body;
+    try {
+        const createdUser = await userRepository.create(newUser);
+        res.status(201).json(createdUser);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al crear el usuario', error });
+    }
+});
 
-function findOne(req: Request, res: Response) {
+// Actualizar un usuario existente
+app.put('/users/:id', async (req, res) => {
     const id = req.params.id;
-    const user = repository.findOne({ id });
-    if (!user) {
-        return res.status(404).send({ message: 'Usuario no encontrado' });
+    const userUpdates = req.body;
+    try {
+        const updatedUser = await userRepository.update(id, userUpdates);
+        if (updatedUser) {
+            res.status(200).json(updatedUser);
+        } else {
+            res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error al actualizar el usuario', error });
     }
-    res.json({ data: user });
-}
+});
 
-function add(req: Request, res: Response) {
-    const input = req.body.sanitizedInput;
-
-    const userInput = new User(
-        input.id,
-        input.realname,
-        input.surname,
-        input.username,
-        input.birth_date,
-        input.creationuser,
-        input.creationtimestamp,
-        input.modificationuser,
-        input.modificationtimestamp,
-        input.state
-    );
-
-    const user = repository.add(userInput);
-    return res
-        .status(201)
-        .send({ message: 'Usuario creado', data: user });
-}
-
-function update(req: Request, res: Response) {
-    req.body.sanitizedInput.id = req.params.id;
-    const user = repository.update(req.body.sanitizedInput);
-
-    if (!user) {
-        return res.status(404).send({ message: 'Usuario no encontrado' });
-    }
-
-    return res
-        .status(200)
-        .send({ message: 'Usuario actualizado exitosamente', data: user });
-}
-
-function remove(req: Request, res: Response) {
+// Eliminar un usuario
+app.delete('/users/:id', async (req, res) => {
     const id = req.params.id;
-    const user = repository.delete({ id });
-
-    if (!user) {
-        res.status(404).send({ message: 'Usuario no encontrado' });
-    } else {
-        res.status(200).send({ message: 'Usuario eliminado exitosamente' });
+    try {
+        const deletedUser = await userRepository.delete(id);
+        if (deletedUser) {
+            res.status(200).json(deletedUser);
+        } else {
+            res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error al eliminar el usuario', error });
     }
-}
+});
 
-export { sanitizeUserInput, findAll, findOne, add, update, remove };
+// Iniciar el servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
+});
+
+export default app;
