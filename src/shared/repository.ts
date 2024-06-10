@@ -1,8 +1,9 @@
-export interface Repository<T> {
-  findAll(): T[] | undefined;
-  findOne(obj: { id: string }): T | undefined;
-  add(obj: T): T | undefined;
-  update(obj: T): T | undefined;
-  delete(obj: { id: string }): T | undefined;
-}
 
+
+export interface Repository<T> {
+  findAll(): Promise<T[]>;
+  findOne(id: number): Promise<T | undefined>;
+  create(entity: T): Promise<T>;
+  update(id: number, entity: T): Promise<T | undefined>;
+  delete(id: number): Promise<T | undefined>;
+}
