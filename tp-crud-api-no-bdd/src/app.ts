@@ -1,7 +1,7 @@
 // Importamos el módulo 'express' para crear un servidor web
 // Importamos el enrutador para las rutas relacionadas con los editores
 import express from 'express';
-import { userRouter } from './routes/usuarios/user.routes.js';
+import userRouter from './routes/usuarios/user.routes.js';
 import { publisherRouter } from './routes/publicadores/publisher.routes.js';
 import { categoriaRouter } from './routes/categorias/categorias.routes.js';
 
