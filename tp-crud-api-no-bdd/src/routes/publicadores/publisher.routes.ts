@@ -1,34 +1,79 @@
-// Importamos el enrutador desde Express
-import { Router } from 'express';
+import express from 'express';
+import { PublisherRepository } from '../../repositories/publicadores/publisher.repository.js'; // Ajusta la ruta según tu estructura de proyecto
 
-// Importamos los controladores de las operaciones CRUD para los editores
-import {
-  sanitizePublisherInput,
-  findAll,
-  findOne,
-  add,
-  update,
-  remove,
-} from '../../controllers/publicadores/publishers.controller.js';
+const publisherRouter = express.Router();
+const publisherRepository = new PublisherRepository();
 
-// Creamos una instancia del enrutador de Express
-export const publisherRouter = Router();
+// Obtener todos los publishers
+publisherRouter.get('/', async (req, res) => {
+  try {
+    const publishers = await publisherRepository.findAll();
+    res.status(200).json(publishers);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener los publishers', error });
+  }
+});
 
-// Definimos las rutas y los controladores asociados
+// Obtener un publisher por ID
+publisherRouter.get('/:id', async (req, res) => {
+  const id = req.params.id;
+  try {
+    const publisher = await publisherRepository.findOne(id);
+    if (publisher) {
+      res.status(200).json(publisher);
+    } else {
+      res.status(404).json({ message: 'Publisher no encontrado' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener el publisher', error });
+  }
+});
 
-publisherRouter.get('/', findAll);
-publisherRouter.get('/:id', findOne);
+// Crear un nuevo publisher
+publisherRouter.post('/', async (req, res) => {
+  const newPublisher = req.body;
+  try {
+    const createdPublisher = await publisherRepository.create(newPublisher);
+    res.status(201).json(createdPublisher);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al crear el publisher', error });
+  }
+});
 
-// Ruta para agregar un nuevo editor
-// Utilizamos el middleware 'sanitizePublisherInput' para limpiar y validar la entrada del usuario
-publisherRouter.post('/', sanitizePublisherInput, add);
+// Actualizar un publisher existente
+publisherRouter.put('/:id', async (req, res) => {
+  const id = req.params.id;
+  const publisherUpdates = req.body;
+  try {
+    const updatedPublisher = await publisherRepository.update(
+      id,
+      publisherUpdates
+    );
+    if (updatedPublisher) {
+      res.status(200).json(updatedPublisher);
+    } else {
+      res.status(404).json({ message: 'Publisher no encontrado' });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: 'Error al actualizar el publisher', error });
+  }
+});
 
-// Ruta para actualizar un editor existente por su ID
-// También utilizamos 'sanitizePublisherInput' para validar la entrada del usuario
-publisherRouter.put('/:id', sanitizePublisherInput, update);
+// Eliminar un publisher
+publisherRouter.delete('/:id', async (req, res) => {
+  const id = req.params.id;
+  try {
+    const deletedPublisher = await publisherRepository.delete(id);
+    if (deletedPublisher) {
+      res.status(200).json(deletedPublisher);
+    } else {
+      res.status(404).json({ message: 'Publisher no encontrado' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error al eliminar el publisher', error });
+  }
+});
 
-// Ruta para actualizar parcialmente un editor existente por su ID
-// También utilizamos 'sanitizePublisherInput' para validar la entrada del usuario
-publisherRouter.patch('/:id', sanitizePublisherInput, update);
-
-publisherRouter.delete('/:id', remove);
+export default publisherRouter;
