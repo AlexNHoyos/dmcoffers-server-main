@@ -1,4 +1,4 @@
-// Importamos el módulo 'express' para crear un servidor web
+/* // Importamos el módulo 'express' para crear un servidor web
 // Importamos el enrutador para las rutas relacionadas con los editores
 import express from 'express';
 import userRouter from './routes/usuarios/user.routes.js';
@@ -33,3 +33,22 @@ app.listen(3000, () => {
 });
 
 // Para correr esto hay que hacer npm run start:dev en terminal
+ */
+
+// src/app.ts
+import express from 'express';
+import bodyParser from 'body-parser';
+import userRoutes from './routes/usuarios/user.routes.js';
+
+const app = express();
+
+app.use(bodyParser.json());
+app.use('/api/users', userRoutes);
+
+// Iniciar el servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log('Servidor corriendo en el puerto ${PORT}');
+});
+
+export default app;

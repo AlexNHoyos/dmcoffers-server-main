@@ -1,6 +1,6 @@
 import { User } from "../../models/usuarios/user.entity.js";
 import { Repository } from "../../shared/testRepository";
-const pool = require('./db');
+const pool = require('../../shared/pg-database/db.js');
 
 export class UserRepository implements Repository<User> {
 
