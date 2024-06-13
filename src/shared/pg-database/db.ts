@@ -4,7 +4,9 @@ import dotenv from 'dotenv';
 import path from 'path';
 
 // Cargar las variables de entorno desde el archivo .env
-dotenv.config({ path: path.resolve('src/shared/pg-database/.env') });
+if (process.env.NODE_ENV != 'production') { //corresponde para que se utilice la DB de ambiente
+    dotenv.config({ path: path.resolve('src/shared/pg-database/.env') });
+}
 const { Pool } = pkg;
 
 
@@ -23,7 +25,7 @@ pool.query('SELECT 1', (err, res) => {
     } else {
       console.log('Conexión a la base de datos exitosa:', res);
     }
-    pool.end();
+    // pool.end();
   });
 
 export default pool;
