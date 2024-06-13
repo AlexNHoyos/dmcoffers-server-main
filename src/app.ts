@@ -49,6 +49,11 @@ app.use('/api/users', userRoutes);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`); // necesita comillas invertidas para que tome el valor de port como variable y no convierta el texto completo en string
+  console.log('DB_USER:', process.env.POSTGRES_USER,typeof process.env.POSTGRES_USER);  // Para verificar que se están cargando las variables de entorno
+  console.log('DB_HOST:', process.env.POSTGRES_HOST,typeof process.env.POSTGRES_HOST);
+  console.log('DB_DATABASE:', process.env.POSTGRES_DB,  typeof process.env.POSTGRES_DB);
+  console.log('DB_PASSWORD:', process.env.POSTGRES_PASSWORD, typeof process.env.POSTGRES_PASSWORD); // Este debería mostrar la contraseña
+  console.log('DB_PORT:', process.env.POSTGRES_PORT, typeof process.env.POSTGRES_PORT);
 });
 
 export default app;

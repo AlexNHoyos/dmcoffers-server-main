@@ -1,6 +1,6 @@
 import { User } from "../../models/usuarios/user.entity.js";
 import { Repository } from "../../shared/testRepository";
-const pool = require('../../shared/pg-database/db.js');
+import pool from '../../shared/pg-database/db.js';
 
 export class UserRepository implements Repository<User> {
 
@@ -14,10 +14,15 @@ export class UserRepository implements Repository<User> {
         }
     }
 
-    async findOne(id: string) {
+    async findOne(id: string): Promise<User | undefined> {
         try {
-            const result = await pool.query('SELECT * FROM swe_usrapl su WHERE su.id = $1');
-            return result;
+            const result = await pool.query('SELECT * FROM swe_usrapl su WHERE su.id = $1', [id]);
+            if (result.rows.length > 0) {
+                const user = result.rows[0] as User;
+                return user;
+            } else {
+                return undefined;
+            }
         } catch (error) {
             console.error("Error al obtener el usuario indicado", error);
             throw error;

@@ -1,9 +1,13 @@
 // src/db.ts
-import { Pool } from 'pg';
+import  pkg  from 'pg';
 import dotenv from 'dotenv';
+import path from 'path';
 
 // Cargar las variables de entorno desde el archivo .env
-dotenv.config();
+dotenv.config({ path: path.resolve('src/shared/pg-database/.env') });
+const { Pool } = pkg;
+
+
 
 const pool = new Pool({
     user: process.env.POSTGRES_USER,
@@ -12,5 +16,14 @@ const pool = new Pool({
     password: process.env.POSTGRES_PASSWORD,
     port: Number(process.env.POSTGRES_PORT),
 });
+
+pool.query('SELECT 1', (err, res) => {
+    if (err) {
+      console.error('Error al conectar a la base de datos:', err);
+    } else {
+      console.log('Conexión a la base de datos exitosa:', res);
+    }
+    pool.end();
+  });
 
 export default pool;
