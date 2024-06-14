@@ -37,12 +37,11 @@ app.listen(3000, () => {
 
 // src/app.ts
 import express from 'express';
-import bodyParser from 'body-parser';
 import userRoutes from './routes/usuarios/user.routes.js';
 
 const app = express();
 
-app.use(bodyParser.json());
+app.use(express.json());
 app.use('/api/users', userRoutes);
 
 // Iniciar el servidor
