@@ -31,7 +31,11 @@ export class UserRepository implements Repository<User> {
 
     async create(user: User) {
         const { realname, surname, username, birth_date, delete_date, creationuser, creationtimestamp, status } = user;
-        const query = 'INSERT INTO swe_usrapl (realname, surname, username, birth_date, delete_date, creationuser, creationtimestamp, status) VALUE(user.realname, user.surname, user.username, user.birth_date, user.delete_date, creationuser, creationtimestamp, status);';
+        const query = 
+                `INSERT INTO swe_usrapl 
+                (realname, surname, username, birth_date, delete_date, creationuser, creationtimestamp, status) 
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+                RETURNING *;`;
         const values = [realname, surname, username, birth_date, delete_date, creationuser, creationtimestamp, status];
 
         try {
