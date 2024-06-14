@@ -37,13 +37,27 @@ export class UserRepository implements Repository<User> {
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
                 RETURNING *;`;
         const values = [realname, surname, username, birth_date, delete_date, creationuser, creationtimestamp, status];
+        
+        const client = await pool.connect();
 
         try {
-            const result = await pool.query(query, values);
+            // Iniciar una transacción
+            await client.query('BEGIN');
+
+            const result = await client.query(query, values);
+
+            // Hacer commit de la transacción
+            await client.query('COMMIT');
+
             return result.rows[0];
         } catch (error) {
+            // Hacer rollback de la transacción en caso de error
+            await client.query('ROLLBACK');
             console.error("Error al crear el usuario", error);
             throw error;
+        } finally {
+            // Liberar el cliente de nuevo al pool
+            client.release();
         }
     }
 
