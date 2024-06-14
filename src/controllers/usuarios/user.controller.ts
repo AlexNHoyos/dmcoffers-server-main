@@ -1,11 +1,10 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import { UserRepository } from '../../repositories/usuarios/user.repository.js'; // Ajusta la ruta según tu estructura de proyecto
 
 const app = express();
 const userRepository = new UserRepository();
 
-app.use(bodyParser.json());
+app.use(express.json());
 
 // Obtener todos los usuarios
 app.get('/users', async (req, res) => {
