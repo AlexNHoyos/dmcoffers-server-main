@@ -19,13 +19,4 @@ const pool = new Pool({
     port: Number(process.env.POSTGRES_PORT),
 });
 
-pool.query('SELECT 1', (err, res) => {
-    if (err) {
-      console.error('Error al conectar a la base de datos:', err);
-    } else {
-      console.log('Conexión a la base de datos exitosa:', res);
-    }
-    // pool.end();
-  });
-
 export default pool;
