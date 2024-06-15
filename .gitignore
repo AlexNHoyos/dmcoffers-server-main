@@ -2,7 +2,9 @@
 coverage
 
 # API keys and secrets
-.env
+
+#env variables file 
+**/.env
 
 # dependency directory
 node_modules
