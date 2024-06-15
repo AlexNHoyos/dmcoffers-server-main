@@ -8,11 +8,12 @@ POST http://localhost:3000/api/users
 Content-Type: application/json
 
  {
-  "id": "2",
   "realname": "Mauro",
   "surname": "Marcosano",
   "username": "Pabluna",
   "birth_date": "2024-04-16T00:04:12.275Z",
+  "creationuser": "Mauro",
+  "creationtimestamp": "2024-04-16T00:04:12.275Z",
   "status": true
 }
 
