@@ -1,23 +1,22 @@
-import express from 'express';
-import { UserRepository } from '../../repositories/usuarios/user.repository.js'; // Ajusta la ruta según tu estructura de proyecto
+import { Request, Response, NextFunction } from 'express';
+import { UserRepository } from '../../repositories/usuarios/user.repository.js'; 
 
-const app = express();
 const userRepository = new UserRepository();
 
-app.use(express.json());
-
-// Obtener todos los usuarios
-app.get('/users', async (req, res) => {
+export const findAll = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const users = await userRepository.findAll();
-        res.status(200).json(users);
+        if (users.length > 0) {
+            res.status(200).json(users);
+        } else {
+            res.status(404).json({ message: 'No se han encontrado usuarios' });
+        }
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener los usuarios', error });
+        next(error);
     }
-});
+};
 
-// Obtener un usuario por ID
-app.get('/users/:id', async (req, res) => {
+export const findOne = async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id;
     try {
         const user = await userRepository.findOne(id);
@@ -27,23 +26,21 @@ app.get('/users/:id', async (req, res) => {
             res.status(404).json({ message: 'Usuario no encontrado' });
         }
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener el usuario', error });
+        next(error);
     }
-});
+};
 
-// Crear un nuevo usuario
-app.post('/users', async (req, res) => {
+export const create = async (req: Request, res: Response, next: NextFunction) => {
     const newUser = req.body;
     try {
         const createdUser = await userRepository.create(newUser);
         res.status(201).json(createdUser);
     } catch (error) {
-        res.status(500).json({ message: 'Error al crear el usuario', error });
+        next(error);
     }
-});
+};
 
-// Actualizar un usuario existente
-app.put('/users/:id', async (req, res) => {
+export const update = async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id;
     const userUpdates = req.body;
     try {
@@ -54,12 +51,11 @@ app.put('/users/:id', async (req, res) => {
             res.status(404).json({ message: 'Usuario no encontrado' });
         }
     } catch (error) {
-        res.status(500).json({ message: 'Error al actualizar el usuario', error });
+        next(error);
     }
-});
+};
 
-// Eliminar un usuario
-app.delete('/users/:id', async (req, res) => {
+export const remove = async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id;
     try {
         const deletedUser = await userRepository.delete(id);
@@ -69,9 +65,6 @@ app.delete('/users/:id', async (req, res) => {
             res.status(404).json({ message: 'Usuario no encontrado' });
         }
     } catch (error) {
-        res.status(500).json({ message: 'Error al eliminar el usuario', error });
+        next(error);
     }
-});
-
-
-export default app;
+};
