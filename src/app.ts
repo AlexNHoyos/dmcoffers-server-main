@@ -38,11 +38,13 @@ app.listen(3000, () => {
 // src/app.ts
 import express from 'express';
 import userRoutes from './routes/usuarios/user.routes.js';
+import hostingRoutes from './routes/hosting/hosting.routes.js';
 
 const app = express();
 
 app.use(express.json());
 app.use('/api/users', userRoutes);
+app.use('/api/hostings', hostingRoutes);
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 3000;
