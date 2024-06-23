@@ -1,6 +1,9 @@
 import { User } from "../../models/usuarios/user.entity.js";
 import { Repository } from "../../shared/testRepository";
 import pool from '../../shared/pg-database/db.js';
+import {DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
+import {errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants.js';
+
 
 export class UserRepository implements Repository<User> {
 
@@ -9,8 +12,8 @@ export class UserRepository implements Repository<User> {
             const result = await pool.query('SELECT * FROM swe_usrapl su ORDER BY id ASC')
             return result.rows;
         } catch (error) {
-            console.error("Error al obtener los usuarios", error);
-            throw error;
+            console.error(errorEnumUser.usersNotFounded, error);
+            throw  new DatabaseErrorCustom(errorEnumUser.usersNotFounded, 500);
         }
     }
 
@@ -24,8 +27,8 @@ export class UserRepository implements Repository<User> {
                 return undefined;
             }
         } catch (error) {
-            console.error("Error al obtener el usuario indicado", error);
-            throw error;
+            console.error(errorEnumUser.userIndicatedNotFound, error);
+            throw new DatabaseErrorCustom(errorEnumUser.userIndicatedNotFound, 500);
         }
     }
 
@@ -53,8 +56,8 @@ export class UserRepository implements Repository<User> {
         } catch (error) {
             // Hacer rollback de la transacción en caso de error
             await client.query('ROLLBACK');
-            console.error("Error al crear el usuario", error);
-            throw error;
+            console.error(errorEnumUser.userNotCreated, error);
+            throw new DatabaseErrorCustom(errorEnumUser.userNotCreated, 500);
         } finally {
             // Liberar el cliente de nuevo al pool
             client.release();
@@ -89,8 +92,8 @@ export class UserRepository implements Repository<User> {
                 return result.rows[0];
             } catch (error) {
                 await client.query('ROLLBACK');
-                console.error("Error al actualizar el usuario", error);
-                throw error;
+                console.error(errorEnumUser.userNotUpdated, error);
+                throw new DatabaseErrorCustom(errorEnumUser.userNotUpdated, 500);
             } finally {
                 client.release();
             }
@@ -108,8 +111,8 @@ export class UserRepository implements Repository<User> {
             return result.rows[0];
         } catch (error) {
             await client.query('ROLLBACK');
-            console.error("Error al eliminar usuario", error);
-            throw error;
+            console.error(errorEnumUser.userNotDeleted, error);
+            throw new DatabaseErrorCustom(errorEnumUser.userNotDeleted, 500);
         } finally {
             client.release();
         }
