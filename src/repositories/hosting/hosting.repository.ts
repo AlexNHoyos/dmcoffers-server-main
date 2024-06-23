@@ -1,5 +1,8 @@
 import { Hosting } from "../../models/hosting/hosting.entity.js";
 import pool from '../../shared/pg-database/db.js';
+import {DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
+import {errorEnumHosting } from '../../middleware/errorHandler/constants/errorConstants.js';
+
 
 
 export class HostingRepository {
@@ -9,8 +12,8 @@ export class HostingRepository {
             const result = await pool.query('SELECT * FROM hs_hosting_service hs ORDER BY hs.id ASC')
             return result.rows;
         } catch (error) {
-            console.error("Error al obtener los Hostings", error);
-            throw error;
+            console.error(errorEnumHosting.hostingsNotFounded, error);
+            throw  new DatabaseErrorCustom(errorEnumHosting.hostingsNotFounded, 500);
         }
     }
 
@@ -24,8 +27,8 @@ export class HostingRepository {
                 return undefined;
             }
         } catch (error) {
-            console.error("Error al obtener el hosting indicado", error);
-            throw error;
+            console.error(errorEnumHosting.hostingIndicatedNotFound, error);
+            throw  new DatabaseErrorCustom(errorEnumHosting.hostingIndicatedNotFound, 500);
         }
     }
 
@@ -53,8 +56,8 @@ export class HostingRepository {
         } catch (error) {
             // Hacer rollback de la transacción en caso de error
             await client.query('ROLLBACK');
-            console.error("Error al crear el hosting", error);
-            throw error;
+            console.error(errorEnumHosting.hostingNotCreated, error);
+            throw  new DatabaseErrorCustom(errorEnumHosting.hostingNotCreated, 500);
         } finally {
             // Liberar el cliente de nuevo al pool
             client.release();
@@ -84,8 +87,8 @@ export class HostingRepository {
                 return result.rows[0];
             } catch (error) {
                 await client.query('ROLLBACK');
-                console.error("Error al actualizar el Hosting", error);
-                throw error;
+                console.error(errorEnumHosting.hostingNotUpdated, error);
+                throw  new DatabaseErrorCustom(errorEnumHosting.hostingNotUpdated, 500);
             } finally {
                 client.release();
             }
@@ -103,8 +106,8 @@ export class HostingRepository {
             return result.rows[0];
         } catch (error) {
             await client.query('ROLLBACK');
-            console.error("Error al eliminar Hosting", error);
-            throw error;
+            console.error(errorEnumHosting.hostingNotDeleted, error);
+            throw  new DatabaseErrorCustom(errorEnumHosting.hostingNotDeleted, 500);
         } finally {
             client.release();
         }
