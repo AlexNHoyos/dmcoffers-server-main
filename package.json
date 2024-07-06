@@ -5,7 +5,7 @@
   "description": "Proyecto para DSW-UTN",
   "main": "app.ts",
   "scripts": {
-    "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./dist/app.js\""
+    "start-dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./dist/app.js\""
   },
   "author": "Hoyos, A. ; Marcosano, M. ; Ceballos, R.",
   "license": "ISC",
