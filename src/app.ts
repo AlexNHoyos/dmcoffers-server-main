@@ -5,7 +5,9 @@ import userRouter from './routes/usuarios/user.routes.js';
 import { publisherRouter } from './routes/publicadores/publisher.routes.js';
 import { categoriaRouter } from './routes/categorias/categorias.routes.js';
 import hostingRoutes from './routes/hosting/hosting.routes.js';
+import supportTicketRoutes from './routes/supportTicket/supportTicket.routes.js';
 import errorHandler from './middleware/errorHandler/errorHandler.js';
+
 // Creamos una instancia de la aplicación Express
 
 const app = express();
@@ -17,6 +19,7 @@ app.use('/api/users', userRouter);
 app.use('/api/publishers', publisherRouter);
 app.use('/api/categories', categoriaRouter);
 app.use('/api/hostings', hostingRoutes);
+app.use('/api/supporTicket', supportTicketRoutes);
 
 
 app.use(errorHandler);
