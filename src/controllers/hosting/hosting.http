@@ -1,0 +1,28 @@
+### obtener todos los hostings(get all)
+GET http://localhost:3000/api/hostings
+### obtener un hosting(get one)
+GET http://localhost:3000/api/hostings/1
+
+### crear un nuevo hosting
+POST http://localhost:3000/api/hostings
+Content-Type: application/json
+
+ {
+  "name": "Mauro_SERVER",
+  "creationuser": "Mauro",
+  "creationtimestamp": "2024-04-16T00:04:12.275Z",
+  "status": true
+}
+
+
+### modificar un hosting 
+PUT http://localhost:3000/api/hostings/1
+Content-Type: application/json
+
+ {
+  "name": "Mauro",
+  "status": true
+}
+
+### borrar un hosting
+DELETE http://localhost:3000/api/hostings/1

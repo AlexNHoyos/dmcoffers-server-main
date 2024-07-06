@@ -8,16 +8,17 @@ POST http://localhost:3000/api/users
 Content-Type: application/json
 
  {
-  "id": "2",
   "realname": "Mauro",
   "surname": "Marcosano",
   "username": "Pabluna",
   "birth_date": "2024-04-16T00:04:12.275Z",
+  "creationuser": "Mauro",
+  "creationtimestamp": "2024-04-16T00:04:12.275Z",
   "status": true
 }
 
 
-### modificar un user
+### modificar un user 
 PUT http://localhost:3000/api/users/1
 Content-Type: application/json
 
@@ -32,7 +33,6 @@ Content-Type: application/json
   "modificationtimestamp": "2024-04-16T00:04:12.275Z",
   "status": true
 }
-
 
 ### borrar un user
 DELETE http://localhost:3000/api/users/2
