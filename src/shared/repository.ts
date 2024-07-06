@@ -1,8 +1,7 @@
 export interface Repository<T> {
-  findAll(): T[] | undefined;
-  findOne(obj: { id: string }): T | undefined;
-  add(obj: T): T | undefined;
-  update(obj: T): T | undefined;
-  delete(obj: { id: string }): T | undefined;
+  findAll(): Promise<T[] | undefined>;
+  findOne(obj: { id: string }): Promise<T | undefined>;
+  add(obj: T): Promise<T | undefined>;
+  update(obj: T): Promise<T | undefined>;
+  delete(obj: { id: string }): Promise<T | undefined>;
 }
-
