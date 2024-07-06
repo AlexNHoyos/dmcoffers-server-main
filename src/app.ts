@@ -18,6 +18,7 @@ app.use('/api/users', userRouter);
 app.use('/api/publishers', publisherRoutes);
 app.use('/api/categories', categoriaRouter);
 app.use('/api/hostings', hostingRoutes);
+app.use('/api/supportTicket', supportTicketRoutes);
 
 
 app.use(errorHandler);
