@@ -12,16 +12,5 @@ export class Publisher {
     public creationuser: string,
     public modificationtimestamp: Date,
     public modificationuser: string
-  ) {
-    // Inicializamos las propiedades de la clase con los valores proporcionados en el constructor
-    this.id = id;
-    this.publishername = publishername;
-    this.foundation_date = foundation_date;
-    this.dissolution_date = dissolution_date;
-    this.status = status;
-    this.creationtimestamp = creationtimestamp;
-    this.creationuser = creationuser;
-    this.modificationtimestamp = modificationtimestamp;
-    this.modificationuser = modificationuser;
-  }
+  ) {}
 }
