@@ -1,108 +1,150 @@
-// Importamos el cliente de PostgreSQL
-import pool from '../../shared/pg-database/db';
-
-// Importamos la interfaz Repository desde nuestro módulo compartido
-import { Repository } from '../../shared/repository.js';
-
 // Importamos la entidad Publisher que representa a nuestros publicadores
 import { Publisher } from '../../models/publicadores/publisher.entity.js';
 
+// Importamos el cliente de PostgreSQL
+import pool from '../../shared/pg-database/db';
+
+import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
+import { errorEnumPublisher } from '../../middleware/errorHandler/constants/errorConstants.js';
+
 // Definimos la clase PublisherRepository e implementamos la interfaz Repository<Publisher>
-export class PublisherRepository implements Repository<Publisher> {
-  public async findAll(): Promise<Publisher[] | undefined> {
+export class PublisherRepository {
+  public async findAll() {
     try {
-      const queryResult = await pool.query('SELECT * FROM pub_game_publisher');
-      return queryResult.rows;
-    } catch (error: any) {
-      throw new Error('Error al obtener los publicadores: ' + error.message);
+      const result = await pool.query(
+        'SELECT * FROM pub_game_publisher pub ORDER BY pub.id ASC'
+      );
+      return result.rows;
+    } catch (error) {
+      console.error(errorEnumPublisher.publishersNotFounded, error);
+      throw new DatabaseErrorCustom(
+        errorEnumPublisher.publishersNotFounded,
+        500
+      );
     }
   }
 
-  public async findOne(pub: { id: string }): Promise<Publisher | undefined> {
+  public async findOne(id: string): Promise<Publisher | undefined> {
     try {
-      const queryResult = await pool.query(
-        'SELECT * FROM pub_game_publisher WHERE id = $1',
-        [pub.id]
+      const result = await pool.query(
+        'SELECT * FROM pub_game_publisher pub WHERE pub.id = $1',
+        [id]
       );
-      return queryResult.rows[0];
-    } catch (error: any) {
-      throw new Error('Error al obtener el publicador: ' + error.message);
+      if (result.rows.length > 0) {
+        const publisher = result.rows[0] as Publisher;
+        return publisher;
+      } else {
+        return undefined;
+      }
+    } catch (error) {
+      console.error(errorEnumPublisher.publisherIndicatedNotFound, error);
+      throw new DatabaseErrorCustom(
+        errorEnumPublisher.publisherIndicatedNotFound,
+        500
+      );
     }
   }
 
-  public async add(pub: Publisher): Promise<Publisher | undefined> {
+  public async create(pub: Publisher) {
+    const {
+      publishername,
+      foundation_date,
+      status,
+      creationtimestamp,
+      creationuser,
+      modificationtimestamp,
+      modificationuser,
+    } = pub;
+    const query = `INSERT INTO pub_game_publisher 
+    (publishername, foundation_date, status, creationtimestamp, creationuser, modificationtimestamp, modificationuser) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7) 
+    RETURNING *`;
+    const values = [
+      publishername,
+      foundation_date,
+      status,
+      creationtimestamp,
+      creationuser,
+      modificationtimestamp,
+      modificationuser,
+    ];
+    const client = await pool.connect();
+
     try {
-      const {
-        publishername,
-        foundation_date,
-        dissolution_date,
-        status,
-        creationtimestamp,
-        creationuser,
-        modificationtimestamp,
-        modificationuser,
-      } = pub;
-      const queryResult = await pool.query(
-        'INSERT INTO pub_game_publisher (publishername, foundation_date, dissolution_date, status, creationtimestamp, creationuser, modificationtimestamp, modificationuser) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-        [
-          publishername,
-          foundation_date,
-          dissolution_date,
-          status,
-          creationtimestamp,
-          creationuser,
-          modificationtimestamp,
-          modificationuser,
-        ]
+      // Iniciar una transacción
+      await client.query('BEGIN');
+      const result = await client.query(query, values);
+
+      // Hacer commit de la transacción
+      await client.query('COMMIT');
+
+      return result.rows[0];
+    } catch (error) {
+      // Hacer rollback de la transacción en caso de error
+      await client.query('ROLLBACK');
+      console.error(errorEnumPublisher.publisherNotCreated, error);
+      throw new DatabaseErrorCustom(
+        errorEnumPublisher.publisherNotCreated,
+        500
       );
-      return queryResult.rows[0];
-    } catch (error: any) {
-      throw new Error('Error al agregar el publicador: ' + error.message);
+    } finally {
+      // Liberar el cliente de nuevo al pool
+      client.release();
     }
   }
 
-  public async update(pub: Publisher): Promise<Publisher | undefined> {
+  async update(id: string, pub: Publisher) {
+    const { publishername, status } = pub;
+    const query = `
+    UPDATE pub_game_publisher pub 
+      SET 
+        publishername = $1,  
+        modificationuser = current_user,
+        modificationtimestamp = current_timestamp,
+        status = $2, 
+    WHERE pub.id = $3 
+    RETURNING *;`;
+    const values = [publishername, status, id];
+
+    const client = await pool.connect();
+
     try {
-      const {
-        id,
-        publishername,
-        foundation_date,
-        dissolution_date,
-        status,
-        creationtimestamp,
-        creationuser,
-        modificationtimestamp,
-        modificationuser,
-      } = pub;
-      const queryResult = await pool.query(
-        'UPDATE pub_game_publisher SET publishername = $1, foundation_date = $2, dissolution_date = $3, status = $4, creationtimestamp = $5, creationuser = $6, modificationtimestamp = $7, modificationuser = $8 WHERE id = $9 RETURNING *',
-        [
-          publishername,
-          foundation_date,
-          dissolution_date,
-          status,
-          creationtimestamp,
-          creationuser,
-          modificationtimestamp,
-          modificationuser,
-          id,
-        ]
+      await client.query('BEGIN');
+      const result = await client.query(query, values);
+      await client.query('COMMIT');
+      return result.rows[0];
+    } catch (error) {
+      await client.query('ROLLBACK');
+      console.error(errorEnumPublisher.publisherNotUpdated, error);
+      throw new DatabaseErrorCustom(
+        errorEnumPublisher.publisherNotUpdated,
+        500
       );
-      return queryResult.rows[0];
-    } catch (error: any) {
-      throw new Error('Error al actualizar el publicador: ' + error.message);
+    } finally {
+      client.release();
     }
   }
 
-  public async delete(pub: { id: string }): Promise<Publisher | undefined> {
+  public async delete(id: string): Promise<Publisher | undefined> {
+    const client = await pool.connect();
+
     try {
-      const queryResult = await pool.query(
-        'DELETE FROM pub_game_publisher WHERE id = $1 RETURNING *',
-        [pub.id]
+      await client.query('BEGIN');
+
+      const result = await client.query(
+        'DELETE FROM pub_game_publisher pub WHERE pub.id = $1 RETURNING *',
+        [id]
       );
-      return queryResult.rows[0];
-    } catch (error: any) {
-      throw new Error('Error al eliminar el publicador: ' + error.message);
+      return result.rows[0];
+    } catch (error) {
+      await client.query('ROLLBACK');
+      console.error(errorEnumPublisher.publisherNotDeleted, error);
+      throw new DatabaseErrorCustom(
+        errorEnumPublisher.publisherNotDeleted,
+        500
+      );
+    } finally {
+      client.release();
     }
   }
 }

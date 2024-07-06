@@ -1,24 +1,12 @@
-import { Router, Request, Response } from 'express';
-import {
-  getPublishers,
-  addPublisher,
-  getPublisherById,
-  removePublisher,
-} from '../../controllers/publicadores/publishers.controller';
+import { Router } from 'express';
+import * as publisherController from '../../controllers/publicadores/publishers.controller.js';
 
 const publisherRouter = Router();
 
-publisherRouter.get('/', (req: Request, res: Response) => {
-  getPublishers(req, res);
-});
-publisherRouter.post('/', (req: Request, res: Response) => {
-  addPublisher(req, res);
-});
-publisherRouter.get('/:id', (req: Request, res: Response) => {
-  getPublisherById(req, res);
-});
-publisherRouter.delete('/:id', (req: Request, res: Response) => {
-  removePublisher(req, res);
-});
+publisherRouter.get('/', publisherController.findAll);
+publisherRouter.post('/', publisherController.create);
+publisherRouter.get('/:id', publisherController.findOne);
+publisherRouter.delete('/:id', publisherController.remove);
+publisherRouter.put('/:id', publisherController.update);
 
 export default publisherRouter;

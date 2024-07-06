@@ -1,70 +1,93 @@
 // pubGamePublisherController.js
-import { Request, Response } from 'express';
-import pool from '../../shared/pg-database/db';
-import * as queries from '../../queries/publisher.queries';
+import { Request, Response, NextFunction } from 'express';
+import { PublisherRepository } from '../../repositories/publicadores/publisher.repository.js';
+
+const publisherRepository = new PublisherRepository();
+
+export const findAll = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const publishers = await publisherRepository.findAll();
+    if (publishers.length > 0) {
+      res.status(200).json(publishers);
+    } else {
+      res.status(404).json({ message: 'No se han encontrado publishers' });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 
 // Obtener todos los publicadores de juegos
-const getPublishers = (req: Request, res: Response): void => {
-  pool.query(queries.getPublishers, (error: Error, results: any) => {
-    if (error) throw error;
-    res.status(200).json(results.rows);
-  });
+export const findOne = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const id = req.params.id;
+  try {
+    const publisher = await publisherRepository.findOne(id);
+    if (publisher) {
+      res.status(200).json(publisher);
+    } else {
+      res.status(404).json({ message: 'Publisher no encontrado' });
+    }
+  } catch (error) {
+    next(error);
+  }
 };
 
-// Agregar un nuevo publicador de juegos
-const addPublisher = (req: Request, res: Response): void => {
-  const {
-    publishername,
-    foundation_date,
-    dissolution_date,
-    status,
-    creationtimestamp,
-    creationuser,
-    modificationtimestamp,
-    modificationuser,
-  } = req.body;
-  pool.query(
-    queries.addPublisher,
-    [
-      publishername,
-      foundation_date,
-      dissolution_date,
-      status,
-      creationtimestamp,
-      creationuser,
-      modificationtimestamp,
-      modificationuser,
-    ],
-    (error: Error, results: any) => {
-      if (error) throw error;
-      res.status(201).send('Publisher Created Successfully!');
-    }
-  );
+export const create = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const newPub = req.body;
+  try {
+    const createdPub = await publisherRepository.create(newPub);
+    res.status(201).json(createdPub);
+  } catch (error) {
+    next(error);
+  }
 };
-// Obtener un publicador por id
-const getPublisherById = (req: Request, res: Response): void => {
-  const id = parseInt(req.params.id);
-  pool.query(queries.getPublisherById, [id], (error, results) => {
-    if (error) throw error;
-    res.status(200).json(results.rows);
-  });
+
+export const update = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const id = req.params.id;
+  const pubUpdates = req.body;
+  try {
+    const updatedPub = await publisherRepository.update(id, pubUpdates);
+    if (updatedPub) {
+      res.status(200).json(updatedPub);
+    } else {
+      res.status(404).json({ message: 'Publisher no encontrado' });
+    }
+  } catch (error) {
+    next(error);
+  }
 };
 
 // Eliminar un publicador
-const removePublisher = (req: Request, res: Response): void => {
-  const id = parseInt(req.params.id);
-
-  pool.query(queries.getPublisherById, [id], (error, results) => {
-    const noPublisherFound = !results.rows.length;
-    if (noPublisherFound) {
-      res.send('Publisher does not exist in the database');
+export const remove = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const id = req.params.id;
+  try {
+    const deletedPublisher = await publisherRepository.delete(id);
+    if (deletedPublisher) {
+      res.status(200).json(deletedPublisher);
+    } else {
+      res.status(404).json({ message: 'Publisher no encontrado' });
     }
-
-    pool.query(queries.removePublisher, [id], (error, results) => {
-      if (error) throw error;
-      res.status(200).send('Publisher removed successfully.');
-    });
-  });
+  } catch (error) {
+    next(error);
+  }
 };
-
-export { getPublishers, addPublisher, getPublisherById, removePublisher };
