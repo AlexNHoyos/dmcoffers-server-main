@@ -1,7 +1,7 @@
-import { supportTicket } from "../../models/supportTicket/supportTicket.entity.js";
+import { supportTicket } from "../../models/support-ticket/support-ticket.entity.js";
 import pool from '../../shared/pg-database/db.js';
-import {DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
-import {errorEnumSupportTicket } from '../../middleware/errorHandler/constants/errorConstants.js';
+import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
+import { errorEnumSupportTicket } from '../../middleware/errorHandler/constants/errorConstants.js';
 
 
 
@@ -13,7 +13,7 @@ export class SupportTicketRepository {
             return result.rows;
         } catch (error) {
             console.error(errorEnumSupportTicket.ticketsNotFounded, error);
-            throw  new DatabaseErrorCustom(errorEnumSupportTicket.ticketsNotFounded, 500);
+            throw new DatabaseErrorCustom(errorEnumSupportTicket.ticketsNotFounded, 500);
         }
     }
 
@@ -28,19 +28,19 @@ export class SupportTicketRepository {
             }
         } catch (error) {
             console.error(errorEnumSupportTicket.ticketIndicatedNotFound, error);
-            throw  new DatabaseErrorCustom(errorEnumSupportTicket.ticketIndicatedNotFound, 500);
+            throw new DatabaseErrorCustom(errorEnumSupportTicket.ticketIndicatedNotFound, 500);
         }
     }
 
     async create(supportTicket: supportTicket) {
         const { creationuser, creationtimestamp, status } = supportTicket;
-        const query = 
-                `INSERT INTO hd_support_ticket
+        const query =
+            `INSERT INTO hd_support_ticket
                 (creationuser, creationtimestamp, status) 
                 VALUES ($1, $2, $3) 
                 RETURNING *;`;
         const values = [creationuser, creationtimestamp, status];
-        
+
         const client = await pool.connect();
 
         try {
@@ -57,7 +57,7 @@ export class SupportTicketRepository {
             // Hacer rollback de la transacción en caso de error
             await client.query('ROLLBACK');
             console.error(errorEnumSupportTicket.ticketNotCreated, error);
-            throw  new DatabaseErrorCustom(errorEnumSupportTicket.ticketNotCreated, 500);
+            throw new DatabaseErrorCustom(errorEnumSupportTicket.ticketNotCreated, 500);
         } finally {
             // Liberar el cliente de nuevo al pool
             client.release();
@@ -65,9 +65,9 @@ export class SupportTicketRepository {
     }
 
     async update(id: string, supportTicket: supportTicket) {
-            const { status } = supportTicket;
-            //arma la query de actualizcion
-            const query = 
+        const { status } = supportTicket;
+        //arma la query de actualizcion
+        const query =
             `UPDATE hd_support_ticket st
                 SET
                     status = $1,
@@ -75,27 +75,27 @@ export class SupportTicketRepository {
                     modificationtimestamp = current_timestamp,
                 WHERE st.id = $2
                 RETURNING *;`;
-            const values = [status, id];
-    
-            const client = await pool.connect();
-    
-            try {
-                await client.query('BEGIN');
-                const result = await client.query(query, values);
-                await client.query('COMMIT');
-                return result.rows[0];
-            } catch (error) {
-                await client.query('ROLLBACK');
-                console.error(errorEnumSupportTicket.ticketNotUpdated, error);
-                throw  new DatabaseErrorCustom(errorEnumSupportTicket.ticketNotUpdated, 500);
-            } finally {
-                client.release();
-            }
+        const values = [status, id];
+
+        const client = await pool.connect();
+
+        try {
+            await client.query('BEGIN');
+            const result = await client.query(query, values);
+            await client.query('COMMIT');
+            return result.rows[0];
+        } catch (error) {
+            await client.query('ROLLBACK');
+            console.error(errorEnumSupportTicket.ticketNotUpdated, error);
+            throw new DatabaseErrorCustom(errorEnumSupportTicket.ticketNotUpdated, 500);
+        } finally {
+            client.release();
         }
+    }
 
     async delete(id: string): Promise<supportTicket | undefined> {
         const client = await pool.connect();
-        
+
         try {
             await client.query('BEGIN');
 
@@ -106,7 +106,7 @@ export class SupportTicketRepository {
         } catch (error) {
             await client.query('ROLLBACK');
             console.error(errorEnumSupportTicket.ticketNotDeleted, error);
-            throw  new DatabaseErrorCustom(errorEnumSupportTicket.ticketNotDeleted, 500);
+            throw new DatabaseErrorCustom(errorEnumSupportTicket.ticketNotDeleted, 500);
         } finally {
             client.release();
         }
