@@ -1,10 +1,10 @@
 ### obtener todos los hostings(get all)
-GET http://localhost:3000/api/hostings
+GET http://localhost:3000/api/supportTicket
 ### obtener un hosting(get one)
-GET http://localhost:3000/api/hostings/1
+GET http://localhost:3000/api/supportTicket/1
 
 ### crear un nuevo hosting
-POST http://localhost:3000/api/supporTicket
+POST http://localhost:3000/api/supportTicket
 Content-Type: application/json
 
  {
@@ -15,7 +15,7 @@ Content-Type: application/json
 
 
 ### modificar un hosting 
-PUT http://localhost:3000/api/supportTicketsupporTicket/1
+PUT http://localhost:3000/api/supportTicket/1
 Content-Type: application/json
 
  {
@@ -23,4 +23,4 @@ Content-Type: application/json
 }
 
 ### borrar un hosting
-DELETE http://localhost:3000/api/hostings/1
+DELETE http://localhost:3000/api/supportTicket/1

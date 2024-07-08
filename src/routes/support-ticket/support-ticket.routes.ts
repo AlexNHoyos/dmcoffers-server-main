@@ -1,9 +1,9 @@
 // src/routes/supportTicketRoutes.ts
 
 import { Router } from 'express';
-import * as supportTicketController from '../../controllers/supportTicket/supportTicket.controller.js';
+import * as supportTicketController from '../../controllers/support-ticket/support-ticket.controller.js';
 
-const supportTicketRouter = Router();
+const supportTicketRouter = Router();;
 
 supportTicketRouter.get('/', supportTicketController.findAll);
 supportTicketRouter.get('/:id', supportTicketController.findOne);

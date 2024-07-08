@@ -3,10 +3,10 @@
 import express from 'express';
 import userRouter from './routes/usuarios/user.routes.js';
 import { categoriaRouter } from './routes/categorias/categorias.routes.js';
-import hostingRoutes from './routes/hosting/hosting.routes.js';
-import supportTicketRoutes from './routes/supportTicket/supportTicket.routes.js';
+import hostingRouter from './routes/hosting/hosting.routes.js';
+import supportTicketRouter from './routes/support-ticket/support-ticket.routes.js';
 import errorHandler from './middleware/errorHandler/errorHandler.js';
-import publisherRoutes from './routes/publicadores/publisher.routes.js';
+import publisherRouter from './routes/publicadores/publisher.routes.js';
 
 // Creamos una instancia de la aplicación Express
 
@@ -15,10 +15,10 @@ const app = express();
 app.use(express.json());
 
 app.use('/api/users', userRouter);
-app.use('/api/publishers', publisherRoutes);
+app.use('/api/publishers', publisherRouter);
 app.use('/api/categories', categoriaRouter);
-app.use('/api/hostings', hostingRoutes);
-app.use('/api/supportTicket', supportTicketRoutes);
+app.use('/api/hostings', hostingRouter);
+app.use('/api/supportTicket', supportTicketRouter);
 
 
 app.use(errorHandler);

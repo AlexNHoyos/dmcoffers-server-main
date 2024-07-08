@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { SupportTicketRepository } from '../../repositories/supportTicket/supportTicket.repository.js'; 
+import { SupportTicketRepository } from '../../repositories/support-ticket/support-ticket.repository.js';
+
 
 const supportTicketRepository = new SupportTicketRepository();
 
