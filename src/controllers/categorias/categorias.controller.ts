@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, response } from 'express';
-import { CategoriasRepository } from '../repositories/categorias.repository.js';
-import { Categorias } from '../models/categorias.entity.js';
+import { CategoriasRepository } from '../../repositories/categorias/categorias.repository.js';
+import { Categorias } from '../../models/categorias/categorias.entity.js';
 
 const repository = new CategoriasRepository();
 

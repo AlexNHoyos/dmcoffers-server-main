@@ -1,5 +1,5 @@
-import { Categorias } from '../models/categorias.entity.js'
-import { Repository } from '../shared/repository.js';
+import { Categorias } from '../../models/categorias/categorias.entity.js'
+import { Repository } from '../../shared/repository.js';
 
 const categorias = [
     new Categorias(

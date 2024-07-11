@@ -1,5 +1,5 @@
 import express from 'express';
-import { categoriaRouter } from './routes/categorias/categorias.routes';
+import { categoriaRouter } from './routes/categorias/categorias/categorias.routes';
 const app = express();
 app.use(express.json());
 
