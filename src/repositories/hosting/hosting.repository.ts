@@ -17,7 +17,7 @@ export class HostingRepository {
         }
     }
 
-    async findOne(id: string): Promise<Hosting | undefined> {
+    async findOne(id: number): Promise<Hosting | undefined> {
         try {
             const result = await pool.query('SELECT * FROM hs_hosting_service hs WHERE hs.id = $1', [id]);
             if (result.rows.length > 0) {
@@ -64,7 +64,7 @@ export class HostingRepository {
         }
     }
 
-    async update(id: string, hosting: Hosting) {
+    async update(id: number, hosting: Hosting) {
             const { name,  status } = hosting;
             //arma la query de actualizcion
             const query = 
@@ -94,7 +94,7 @@ export class HostingRepository {
             }
         }
 
-    async delete(id: string): Promise<Hosting | undefined> {
+    async delete(id: number): Promise<Hosting | undefined> {
         const client = await pool.connect();
         
         try {

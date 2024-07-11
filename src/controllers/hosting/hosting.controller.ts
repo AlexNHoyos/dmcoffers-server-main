@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { validationResult } from 'express-validator';
 import { HostingRepository } from '../../repositories/hosting/hosting.repository.js'; 
 
 const hostingRepository = new HostingRepository();
@@ -17,7 +18,12 @@ export const findAll = async (req: Request, res: Response, next: NextFunction) =
 };
 
 export const findOne = async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id;
+    const id = parseInt(req.params.id, 10);
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     try {
         const hosting = await hostingRepository.findOne(id);
         if (hosting) {
@@ -30,8 +36,13 @@ export const findOne = async (req: Request, res: Response, next: NextFunction) =
     }
 };
 
+
 export const create = async (req: Request, res: Response, next: NextFunction) => {
     const newHosting = req.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     try {
         const createdHosting = await hostingRepository.create(newHosting);
         res.status(201).json(createdHosting);
@@ -41,8 +52,12 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
 };
 
 export const update = async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id;
+    const id = parseInt(req.params.id, 10);
     const hostingUpdates = req.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     try {
         const updatedHosting = await hostingRepository.update(id, hostingUpdates);
         if (updatedHosting) {
@@ -56,7 +71,11 @@ export const update = async (req: Request, res: Response, next: NextFunction) =>
 };
 
 export const remove = async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id;
+    const id = parseInt(req.params.id, 10);
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     try {
         const deletedHosting = await hostingRepository.delete(id);
         if (deletedHosting) {
