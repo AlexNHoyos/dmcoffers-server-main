@@ -1,11 +1,12 @@
-import { supportTicket } from "../../models/support-ticket/support-ticket.entity.js";
-import pool from '../../shared/pg-database/db.js';
-import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
-import { errorEnumSupportTicket } from '../../middleware/errorHandler/constants/errorConstants.js';
+import { supportTicket } from "../../models/support-ticket/support-ticket.entity";
+import pool from '../../shared/pg-database/db';
+import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError';
+import { errorEnumSupportTicket } from '../../middleware/errorHandler/constants/errorConstants';
+import { Repository } from "../../shared/repository";
 
 
 
-export class SupportTicketRepository {
+export class SupportTicketRepository implements Repository<supportTicket>{
 
     async findAll() {
         try {
@@ -17,7 +18,7 @@ export class SupportTicketRepository {
         }
     }
 
-    async findOne(id: string): Promise<supportTicket | undefined> {
+    async findOne(id: number): Promise<supportTicket | undefined> {
         try {
             const result = await pool.query('SELECT * FROM hd_support_ticket st WHERE st.id = $1', [id]);
             if (result.rows.length > 0) {
@@ -64,7 +65,7 @@ export class SupportTicketRepository {
         }
     }
 
-    async update(id: string, supportTicket: supportTicket) {
+    async update(id: number, supportTicket: supportTicket) {
         const { status } = supportTicket;
         //arma la query de actualizcion
         const query =
@@ -93,7 +94,7 @@ export class SupportTicketRepository {
         }
     }
 
-    async delete(id: string): Promise<supportTicket | undefined> {
+    async delete(id: number): Promise<supportTicket | undefined> {
         const client = await pool.connect();
 
         try {

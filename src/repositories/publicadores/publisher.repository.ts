@@ -6,9 +6,10 @@ import pool from '../../shared/pg-database/db';
 
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumPublisher } from '../../middleware/errorHandler/constants/errorConstants.js';
+import { Repository } from '../../shared/repository.js';
 
 // Definimos la clase PublisherRepository e implementamos la interfaz Repository<Publisher>
-export class PublisherRepository {
+export class PublisherRepository implements Repository<Publisher>{
   public async findAll() {
     try {
       const result = await pool.query(
@@ -24,7 +25,7 @@ export class PublisherRepository {
     }
   }
 
-  public async findOne(id: string): Promise<Publisher | undefined> {
+  public async findOne(id: number): Promise<Publisher | undefined> {
     try {
       const result = await pool.query(
         'SELECT * FROM pub_game_publisher pub WHERE pub.id = $1',
@@ -93,7 +94,7 @@ export class PublisherRepository {
     }
   }
 
-  async update(id: string, pub: Publisher) {
+  async update(id: number, pub: Publisher) {
     const { publishername, status } = pub;
     const query = `
     UPDATE pub_game_publisher pub 
@@ -125,7 +126,7 @@ export class PublisherRepository {
     }
   }
 
-  public async delete(id: string): Promise<Publisher | undefined> {
+  public async delete(id: number): Promise<Publisher | undefined> {
     const client = await pool.connect();
 
     try {

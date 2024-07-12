@@ -1,8 +1,8 @@
-import { User } from '../../models/usuarios/user.entity.js';
-import { Repository } from '../../shared/testRepository';
-import pool from '../../shared/pg-database/db.js';
-import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
-import { errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants.js';
+import { User } from '../../models/usuarios/user.entity';
+import { Repository } from '../../shared/repository';
+import pool from '../../shared/pg-database/db';
+import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError';
+import { errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants';
 
 export class UserRepository implements Repository<User> {
   async findAll() {
@@ -17,7 +17,7 @@ export class UserRepository implements Repository<User> {
     }
   }
 
-  async findOne(id: string): Promise<User | undefined> {
+  async findOne(id: number): Promise<User | undefined> {
     try {
       const result = await pool.query(
         'SELECT * FROM swe_usrapl su WHERE su.id = $1',
@@ -84,7 +84,7 @@ export class UserRepository implements Repository<User> {
     }
   }
 
-  async update(id: string, user: User) {
+  async update(id: number, user: User) {
     const { realname, surname, username, birth_date, delete_date, status } =
       user;
     //arma la query de actualizcion
@@ -128,7 +128,7 @@ export class UserRepository implements Repository<User> {
     }
   }
 
-  async delete(id: string): Promise<User | undefined> {
+  async delete(id: number): Promise<User | undefined> {
     const client = await pool.connect();
 
     try {
