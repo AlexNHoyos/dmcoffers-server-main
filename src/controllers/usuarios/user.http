@@ -19,17 +19,13 @@ Content-Type: application/json
 
 
 ### modificar un user 
-PUT http://localhost:3000/api/users/1
+PUT http://localhost:3000/api/users/4
 Content-Type: application/json
 
  {
-  "realname": "Mauro",
-  "surname": "Marcosano",
-  "username": "Patroclo",
-  "birth_date": "2024-04-16T00:04:12.275Z",
-  "creationuser": "Mauro",
-  "creationtimestamp": "2024-04-16T00:04:12.275Z",
-  "modificationuser": "Rama",
+  "realname": "Maximiliano",
+  "surname": "Rodriguez",
+  "modificationuser": "Maxi",
   "modificationtimestamp": "2024-04-16T00:04:12.275Z",
   "status": true
 }

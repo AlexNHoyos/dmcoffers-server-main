@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { SupportTicketRepository } from '../../repositories/support-ticket/support-ticket.repository.js';
+import { SupportTicketRepository } from '../../repositories/support-ticket/support-ticket.repository';
+import { validationResult } from 'express-validator';
 
 
 const supportTicketRepository = new SupportTicketRepository();
@@ -18,7 +19,12 @@ export const findAll = async (req: Request, res: Response, next: NextFunction) =
 };
 
 export const findOne = async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id;
+    const id = parseInt(req.params.id, 10);
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     try {
         const supportTicket = await supportTicketRepository.findOne(id);
         if (supportTicket) {
@@ -33,6 +39,11 @@ export const findOne = async (req: Request, res: Response, next: NextFunction) =
 
 export const create = async (req: Request, res: Response, next: NextFunction) => {
     const newsupportTicket = req.body;
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     try {
         const createdSupportTicket = await supportTicketRepository.create(newsupportTicket);
         res.status(201).json(createdSupportTicket);
@@ -42,8 +53,13 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
 };
 
 export const update = async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id;
+    const id = parseInt(req.params.id, 10);
     const supportTicketUpdates = req.body;
+        
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     try {
         const updatedSupportTicket = await supportTicketRepository.update(id, supportTicketUpdates);
         if (updatedSupportTicket) {
@@ -57,7 +73,12 @@ export const update = async (req: Request, res: Response, next: NextFunction) =>
 };
 
 export const remove = async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id;
+    const id = parseInt(req.params.id, 10);
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     try {
         const deletedSupportTicket = await supportTicketRepository.delete(id);
         if (deletedSupportTicket) {

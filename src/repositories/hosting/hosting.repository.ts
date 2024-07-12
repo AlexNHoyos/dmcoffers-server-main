@@ -1,11 +1,12 @@
-import { Hosting } from "../../models/hosting/hosting.entity.js";
-import pool from '../../shared/pg-database/db.js';
-import {DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
-import {errorEnumHosting } from '../../middleware/errorHandler/constants/errorConstants.js';
+import { Hosting } from "../../models/hosting/hosting.entity";
+import pool from '../../shared/pg-database/db';
+import { Repository } from '../../shared/repository';
+import {DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError';
+import {errorEnumHosting } from '../../middleware/errorHandler/constants/errorConstants';
 
 
 
-export class HostingRepository {
+export class HostingRepository implements Repository<Hosting>{
 
     async findAll() {
         try {

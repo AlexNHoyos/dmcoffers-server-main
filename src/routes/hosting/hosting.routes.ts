@@ -2,7 +2,7 @@
 
 import { Router } from 'express';
 import { body, param } from 'express-validator';
-import * as hostingController from '../../controllers/hosting/hosting.controller.js';
+import * as hostingController from '../../controllers/hosting/hosting.controller';
 
 const hostingRouter = Router();
 

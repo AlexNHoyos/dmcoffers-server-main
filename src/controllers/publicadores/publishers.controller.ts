@@ -1,6 +1,7 @@
 // pubGamePublisherController.js
 import { Request, Response, NextFunction } from 'express';
-import { PublisherRepository } from '../../repositories/publicadores/publisher.repository.js';
+import { PublisherRepository } from '../../repositories/publicadores/publisher.repository';
+import { validationResult } from 'express-validator';
 
 const publisherRepository = new PublisherRepository();
 
@@ -27,7 +28,11 @@ export const findOne = async (
   res: Response,
   next: NextFunction
 ) => {
-  const id = req.params.id;
+  const id = parseInt(req.params.id, 10);
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+}
   try {
     const publisher = await publisherRepository.findOne(id);
     if (publisher) {
@@ -46,6 +51,10 @@ export const create = async (
   next: NextFunction
 ) => {
   const newPub = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+  }
   try {
     const createdPub = await publisherRepository.create(newPub);
     res.status(201).json(createdPub);
@@ -59,8 +68,14 @@ export const update = async (
   res: Response,
   next: NextFunction
 ) => {
-  const id = req.params.id;
+  const id = parseInt(req.params.id, 10);
   const pubUpdates = req.body;
+  
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     const updatedPub = await publisherRepository.update(id, pubUpdates);
     if (updatedPub) {
@@ -79,7 +94,13 @@ export const remove = async (
   res: Response,
   next: NextFunction
 ) => {
-  const id = req.params.id;
+  const id = parseInt(req.params.id, 10);
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+  }
+  
   try {
     const deletedPublisher = await publisherRepository.delete(id);
     if (deletedPublisher) {

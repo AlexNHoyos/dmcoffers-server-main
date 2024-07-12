@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
-import { HostingRepository } from '../../repositories/hosting/hosting.repository.js'; 
+import { HostingRepository } from '../../repositories/hosting/hosting.repository'; 
 
 const hostingRepository = new HostingRepository();
 
@@ -54,6 +54,7 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
 export const update = async (req: Request, res: Response, next: NextFunction) => {
     const id = parseInt(req.params.id, 10);
     const hostingUpdates = req.body;
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -73,6 +74,7 @@ export const update = async (req: Request, res: Response, next: NextFunction) =>
 export const remove = async (req: Request, res: Response, next: NextFunction) => {
     const id = parseInt(req.params.id, 10);
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }

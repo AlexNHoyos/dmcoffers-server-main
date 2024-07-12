@@ -1,4 +1,4 @@
-import { CustomError } from './interface/customError.Interface.js';
+import { CustomError } from './interface/customError.Interface';
 
 export class DatabaseErrorCustom extends Error implements CustomError {
     status: number;
