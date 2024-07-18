@@ -1,8 +1,8 @@
 // IUserService.ts
 
-import { IService } from '../IService.interface';
+import { IBaseService } from '../IBaseService';
 import { User } from '../../../models/usuarios/user.entity';
 
-export interface IUserService extends IService<User> {
+export interface IUserService extends IBaseService<User> {
   // Métodos adicionales específicos para User, agregar cuando los haya
 }
