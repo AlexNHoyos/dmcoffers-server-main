@@ -11,7 +11,6 @@ export class User {
         public modificationuser: string,
         public modificationtimestamp: Date,
         public status: boolean
-    ) {
-    }
+    ) {}
 }
 
