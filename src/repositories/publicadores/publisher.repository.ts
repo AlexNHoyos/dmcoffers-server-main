@@ -6,10 +6,10 @@ import pool from '../../shared/pg-database/db';
 
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumPublisher } from '../../middleware/errorHandler/constants/errorConstants.js';
-import { IRepository } from '../interfaces/IRepository.Interface.js';
+import { IBaseRepository } from '../interfaces/IBaseRepository.js';
 
 // Definimos la clase PublisherRepository e implementamos la interfaz Repository<Publisher>
-export class PublisherRepository implements IRepository<Publisher>{
+export class PublisherRepository implements IBaseRepository<Publisher>{
   public async findAll() {
     try {
       const result = await pool.query(

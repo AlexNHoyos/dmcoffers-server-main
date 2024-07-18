@@ -1,12 +1,12 @@
 import { Hosting } from "../../models/hosting/hosting.entity";
 import pool from '../../shared/pg-database/db';
-import { IRepository } from '../interfaces/IRepository.Interface';
+import { IBaseRepository } from '../interfaces/IBaseRepository';
 import {DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError';
 import {errorEnumHosting } from '../../middleware/errorHandler/constants/errorConstants';
 
 
 
-export class HostingRepository implements IRepository<Hosting>{
+export class HostingRepository implements IBaseRepository<Hosting>{
 
     async findAll() {
         try {

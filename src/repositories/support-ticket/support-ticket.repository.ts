@@ -2,11 +2,11 @@ import { supportTicket } from "../../models/support-ticket/support-ticket.entity
 import pool from '../../shared/pg-database/db';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError';
 import { errorEnumSupportTicket } from '../../middleware/errorHandler/constants/errorConstants';
-import { IRepository } from "../interfaces/IRepository.Interface";
+import { IBaseRepository } from "../interfaces/IBaseRepository";
 
 
 
-export class SupportTicketRepository implements IRepository<supportTicket>{
+export class SupportTicketRepository implements IBaseRepository<supportTicket>{
 
     async findAll() {
         try {
