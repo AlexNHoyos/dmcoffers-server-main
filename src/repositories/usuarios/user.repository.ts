@@ -1,10 +1,10 @@
 import { User } from '../../models/usuarios/user.entity';
-import { Repository } from '../../shared/repository';
+import { IBaseRepository } from '../interfaces/IBaseRepository';
 import pool from '../../shared/pg-database/db';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError';
 import { errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants';
 
-export class UserRepository implements Repository<User> {
+export class UserRepository implements IBaseRepository<User> {
   async findAll() {
     try {
       const result = await pool.query(

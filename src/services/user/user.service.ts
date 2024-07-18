@@ -1,7 +1,7 @@
 // user.service.ts
 import { UserRepository } from '../../repositories/usuarios/user.repository';
 import { User } from '../../models/usuarios/user.entity';
-import { IUserService } from '../interfaces/user.service.interface';
+import { IUserService } from '../interfaces/user/IUserService';
 import { ValidationError } from '../../middleware/errorHandler/authenticationError';
 
 export class UserService implements IUserService {

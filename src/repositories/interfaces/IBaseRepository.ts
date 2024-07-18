@@ -1,4 +1,4 @@
-export interface Repository<T> {
+export interface IBaseRepository<T> {
   findAll(): Promise<T[] | undefined>;
   findOne(id: number): Promise<T | undefined>;
   create(obj: T): Promise<T | undefined>;

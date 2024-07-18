@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import { UserService } from '../../services/user/user.service';
-import { IUserService } from '../../services/interfaces/user.service.interface';
+import { IUserService } from '../../services/interfaces/user/IUserService';
 
 const userService: IUserService = new UserService();
 
