@@ -1,19 +1,33 @@
 import { User } from "../usuarios/user.entity";
-export class UserAuth extends User {
+export class UserAuth {
     private _password: string;
     salt: string | undefined;
-
-    constructor(
+    id: string | undefined;
+    username: string;
+    creationuser: string;
+    creationtimestamp: Date;
+    status: boolean;
+    
+    constructor(        
         username: string,
         creationuser: string,
+        creationtimestamp: Date,
         status: boolean,
         password: string,
-        salt?: string
-    ) {
-        super(username, creationuser);
-        this._password = password;
+        salt?: string,
+        id?: string
+    ) 
+    {
+        this.id = id;
+        this.username = username;
+        this.creationuser = creationuser;
+        this.creationtimestamp = creationtimestamp;
+        this.status = status;
         this.salt = salt;
+        this._password = password
+        
     }
+
 
     set password(newPassword: string) {
         this._password = newPassword;

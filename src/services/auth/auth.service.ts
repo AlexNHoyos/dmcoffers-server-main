@@ -24,13 +24,14 @@ export class AuthService  {
     userAuth.salt = await hashPassword(userAuth.salt)
 
 
-    const validatedUserAuth = new UserAuth(
-      userAuth.username!,
-      userAuth.creationuser!,
-      userAuth.status!,
+    const validatedUserAuth : UserAuth = new UserAuth( 
+      userAuth.username, 
+      userAuth.creationuser,
+      userAuth.creationtimestamp,
+      userAuth.status,
       userAuth.password,
-      userAuth.salt
-  );  
+      userAuth.salt, 
+    );  
 
     
     return validatedUserAuth;
@@ -52,5 +53,5 @@ export class AuthService  {
       return false;
     }
     return passwordPattern.test(password);
-}
+  }
 }
