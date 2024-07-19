@@ -40,30 +40,7 @@ export class UserService implements IUserService {
     }
 
 
-     newUser.creationtimestamp = new Date();
-
-     const userToValidate : UserAuth = new UserAuth( 
-      newUser.username, 
-      newUser.creationuser!,
-      newUser.creationtimestamp,
-      newUser.status!,
-      newUser.password!,
-      newUser.salt, 
-    );  
-
-    const userToCreate: User = {
-      id: undefined, 
-      realname: newUser.realname ,
-      surname: newUser.surname ,
-      username: newUser.username ,
-      birth_date: newUser.birth_date ,
-      delete_date: newUser.delete_date ,
-      status: newUser.status ,
-      creationuser: newUser.creationuser, 
-      creationtimestamp: newUser.creationtimestamp, 
-      modificationuser: newUser.modificationuser ,
-      modificationtimestamp: newUser.modificationtimestamp  
-  };
+     const { userToValidate, userToCreate }: { userToValidate: UserAuth; userToCreate: User; } = this.initializeUser(newUser);
 
     const userAuthValidated = await this.authService.validateUserAuthOnCreate(userToValidate);
 
@@ -90,6 +67,8 @@ export class UserService implements IUserService {
       
     return userOutput;
   }
+
+
 
   async update(id: number, user: User): Promise<User> {
     const oldUser = await this.userRepository.findOne(id);
@@ -120,5 +99,37 @@ export class UserService implements IUserService {
 
   async findByUserName(userName: string):  Promise<User | undefined> {
     return this.userRepository.findByUserName(userName);
+  }
+
+
+  private initializeUser(newUser: UserViewModel) {
+
+    newUser.creationtimestamp = new Date();
+
+    const userToValidate: UserAuth = new UserAuth(
+      newUser.username!,
+      newUser.creationuser!,
+      newUser.creationtimestamp,
+      newUser.status!,
+      newUser.password!,
+      newUser.salt
+    );
+
+    const userToCreate: User = {
+      id: undefined,
+      realname: newUser.realname,
+      surname: newUser.surname,
+      username: newUser.username,
+      birth_date: newUser.birth_date,
+      delete_date: newUser.delete_date,
+      status: newUser.status,
+      creationuser: newUser.creationuser,
+      creationtimestamp: newUser.creationtimestamp,
+      modificationuser: newUser.modificationuser,
+      modificationtimestamp: newUser.modificationtimestamp
+    };
+
+    return { userToValidate, userToCreate };
+
   }
 }
