@@ -1,12 +1,13 @@
 // Importamos el módulo 'express' para crear un servidor web
 // Importamos el enrutador para las rutas relacionadas con los editores
-import express from 'express';
+import express, { Request, Response } from 'express';
 import userRouter from './routes/usuarios/user.routes';
 import { categoriaRouter } from './routes/categorias/categorias.routes';
 import hostingRouter from './routes/hosting/hosting.routes';
 import supportTicketRouter from './routes/support-ticket/support-ticket.routes';
 import errorHandler from './middleware/errorHandler/errorHandler';
 import publisherRouter from './routes/publicadores/publisher.routes';
+import { authenticateToken } from './middleware/auth/authToken';
 
 // Creamos una instancia de la aplicación Express
 
@@ -21,6 +22,10 @@ app.use('/api/hostings', hostingRouter);
 app.use('/api/supportTicket', supportTicketRouter);
 
 
+app.post('/login', authenticateToken, (req: Request, res: Response) => {
+  res.json({ message: 'Esta es una ruta protegida', user: (req as any).user });
+});
+
 app.use(errorHandler);
 
 // Middleware para manejar solicitudes a rutas no encontradas
@@ -30,6 +35,8 @@ app.use((_, res) => {
   // Enviamos una respuesta con estado 404 (Recurso no encontrado)
   // y un mensaje en formato JSON
 });
+
+
 
 // Iniciamos el servidor Express en el puerto 3000
 

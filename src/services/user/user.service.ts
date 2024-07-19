@@ -1,15 +1,23 @@
 // user.service.ts
 import { UserRepository } from '../../repositories/usuarios/user.repository';
 import { User } from '../../models/usuarios/user.entity';
+import { UserAuth } from '../../models/auth/user-auth.entity';
 import { IUserService } from '../interfaces/user/IUserService';
-import { ValidationError } from '../../middleware/errorHandler/authenticationError';
+import { ValidationError } from '../../middleware/errorHandler/validationError';
+import { AuthService } from '../auth/auth.service';
+import { UserAuthRepository } from '../../repositories/usuarios/user-auth.repository';
+import { AuthenticationError } from '../../middleware/errorHandler/authenticationError';
 
 export class UserService implements IUserService {
+  private authService: AuthService = new AuthService;
   private userRepository: UserRepository;
+  private userAuthRepository: UserAuthRepository;
 
   constructor() {
     this.userRepository = new UserRepository();
+    this.userAuthRepository = new UserAuthRepository();
   }
+
 
   async findAll(): Promise<User[]> {
     return this.userRepository.findAll();
@@ -19,8 +27,27 @@ export class UserService implements IUserService {
     return this.userRepository.findOne(id);
   }
 
-  async create(user: User): Promise<User> {
-    return this.userRepository.create(user);
+  async create(newUser: UserAuth): Promise<UserAuth> {
+
+    if (!newUser || !newUser.username) {
+      throw new ValidationError('Usuario no posee userName', 404);
+   }
+    const userExisted = await this.findByUserName(newUser.username);
+
+    if (userExisted) {
+      throw new AuthenticationError('El Usuario ya existe', 404);
+    }
+    newUser.creationtimestamp = new Date();
+
+    const userAuthValidated = await this.authService.validateUserAuthOnCreate(newUser);
+
+    const userCreated = await this.userRepository.create(newUser); 
+    
+    const userAuthCreated = await this.userAuthRepository.create(userAuthValidated);
+        
+    
+      
+    return userCreated;
   }
 
   async update(id: number, user: User): Promise<User> {
@@ -48,5 +75,9 @@ export class UserService implements IUserService {
 
   async delete(id: number): Promise<User | undefined> {
     return this.userRepository.delete(id);
+  }
+
+  async findByUserName(userName: string):  Promise<User | undefined> {
+    return this.userRepository.findByUserName(userName);
   }
 }

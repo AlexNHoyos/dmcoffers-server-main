@@ -1,14 +1,14 @@
-import { User } from '../../models/usuarios/user.entity';
+import { UserAuth } from '../../models/auth/user-auth.entity';
+import { IBaseRepository } from '../interfaces/IBaseRepository';
 import pool from '../../shared/pg-database/db';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError';
 import { errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants';
-import { IUserRepository } from '../interfaces/user/IUserRepository';
 
-export class UserRepository implements IUserRepository {
+export class UserAuthRepository implements IBaseRepository<UserAuth> {
   async findAll() {
     try {
       const result = await pool.query(
-        'SELECT * FROM swe_usrapl su ORDER BY id ASC'
+        'SELECT * FROM swe_usrauth au ORDER BY au ASC'
       );
       return result.rows;
     } catch (error) {
@@ -17,14 +17,14 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async findOne(id: number): Promise<User | undefined> {
+  async findOne(id: number): Promise<UserAuth | undefined> {
     try {
       const result = await pool.query(
-        'SELECT * FROM swe_usrapl su WHERE su.id = $1',
+        'SELECT * FROM swe_usrauth au WHERE au.id = $1',
         [id]
       );
       if (result.rows.length > 0) {
-        const user = result.rows[0] as User;
+        const user = result.rows[0] as UserAuth;
         return user;
       } else {
         return undefined;
@@ -35,29 +35,25 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async create(user: User) {
+  async create(user: UserAuth) {
     const {
-      realname,
-      surname,
       username,
-      birth_date,
-      delete_date,
+      password,
       creationuser,
       creationtimestamp,
+      salt,
       status,
     } = user;
-    const query = `INSERT INTO swe_usrapl 
-                (realname, surname, username, birth_date, delete_date, creationuser, creationtimestamp, status) 
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+    const query = `INSERT INTO swe_usrauth 
+                ( username, password, creationuser, creationtimestamp, salt, status) 
+                VALUES ($1, $2, $3, $4, $5, $6) 
                 RETURNING *;`;
     const values = [
-      realname,
-      surname,
       username,
-      birth_date,
-      delete_date,
+      password,
       creationuser,
       creationtimestamp,
+      salt,
       status,
     ];
 
@@ -84,30 +80,26 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async update(id: number, user: User) {
-    const { realname, surname, username, birth_date, delete_date, status } =
+  async update(id: number, user: UserAuth) {
+    const {  username,password, salt, status } =
       user;
     //arma la query de actualizcion
     const query = `
-                UPDATE swe_usrapl su
+                UPDATE swe_usrauth ua
                 SET
-                    realname = $1,
-                    surname = $2,
-                    username = $3,
-                    birth_date = $4,
-                    delete_date = $5,
+                    username = $1,
+                    password = $2,
+                    salt = $3,
                     modificationuser = current_user,
                     modificationtimestamp = current_timestamp,
-                    status = $6
-                WHERE su.id = $7
+                    status = $4,
+                WHERE ua.id = $5
                 RETURNING *;
             `;
     const values = [
-      realname,
-      surname,
       username,
-      birth_date,
-      delete_date,
+      password,
+      salt,
       status,
       id,
     ];
@@ -128,7 +120,7 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async delete(id: number): Promise<User | undefined> {
+  async delete(id: number): Promise<UserAuth | undefined> {
     const client = await pool.connect();
 
     try {
@@ -147,24 +139,6 @@ export class UserRepository implements IUserRepository {
       throw new DatabaseErrorCustom(errorEnumUser.userNotDeleted, 500);
     } finally {
       client.release();
-    }
-  }
-
-  async findByUserName(userName: string): Promise<User | undefined> {
-    try {
-      const result = await pool.query(
-        'SELECT * FROM swe_usrapl su WHERE su.username = $1',
-        [userName]
-      );
-      if (result.rows.length > 0) {
-        const user = result.rows[0] as User;
-        return user;
-      } else {
-        return undefined;
-      }
-    } catch (error) {
-      console.error(errorEnumUser.userIndicatedNotFound, error);
-      throw new DatabaseErrorCustom(errorEnumUser.userIndicatedNotFound, 500);
     }
   }
 }

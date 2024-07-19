@@ -1,10 +1,10 @@
 import { CustomError } from './interface/customError.Interface';
 
-export class ValidationError extends Error implements CustomError {
+export class AuthenticationError extends Error implements CustomError {
   status: number;
-  constructor(message: string, status = 400) {
+  constructor(message: string, status = 404) {
     super(message);
-    this.name = 'ValidationError';
+    this.name = 'AuthenticationError';
     this.status = status;
     Error.captureStackTrace(this, this.constructor);
   }
