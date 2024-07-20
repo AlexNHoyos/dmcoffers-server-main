@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { CustomError } from './interface/customError.Interface';
+import { CustomError } from './interface/customError.Interface.js';
 
 const errorHandler = (err: CustomError, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack || err);

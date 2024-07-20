@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { secretKeyJWT } from '../../shared/Utils/Keys';
+import { secretKeyJWT } from '../../shared/Utils/Keys.js';
 
 
 const secretKey = process.env.SECRET_KEY || secretKeyJWT;

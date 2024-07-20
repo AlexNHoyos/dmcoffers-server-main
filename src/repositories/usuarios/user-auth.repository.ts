@@ -1,8 +1,8 @@
-import { UserAuth } from '../../models/usuarios/user-auth.entity';
-import { IBaseRepository } from '../interfaces/IBaseRepository';
-import pool from '../../shared/pg-database/db';
-import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError';
-import { errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants';
+import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
+import { IBaseRepository } from '../interfaces/IBaseRepository.js';
+import pool from '../../shared/pg-database/db.js';
+import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
+import { errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants.js';
 
 export class UserAuthRepository implements IBaseRepository<UserAuth> {
   async findAll() {

@@ -1,13 +1,13 @@
 // Importamos el módulo 'express' para crear un servidor web
 // Importamos el enrutador para las rutas relacionadas con los editores
 import express, { Request, Response } from 'express';
-import userRouter from './routes/usuarios/user.routes';
-import { categoriaRouter } from './routes/categorias/categorias.routes';
-import hostingRouter from './routes/hosting/hosting.routes';
-import supportTicketRouter from './routes/support-ticket/support-ticket.routes';
-import errorHandler from './middleware/errorHandler/errorHandler';
-import publisherRouter from './routes/publicadores/publisher.routes';
-import { authenticateToken } from './middleware/auth/authToken';
+import userRouter from './routes/usuarios/user.routes.js';
+import { categoriaRouter } from './routes/categorias/categorias.routes.js';
+import hostingRouter from './routes/hosting/hosting.routes.js';
+import supportTicketRouter from './routes/support-ticket/support-ticket.routes.js';
+import errorHandler from './middleware/errorHandler/errorHandler.js';
+import publisherRouter from './routes/publicadores/publisher.routes.js';
+import { authenticateToken } from './middleware/auth/authToken.js';
 
 // Creamos una instancia de la aplicación Express
 

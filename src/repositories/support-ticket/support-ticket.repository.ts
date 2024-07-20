@@ -1,8 +1,8 @@
-import { supportTicket } from "../../models/support-ticket/support-ticket.entity";
-import pool from '../../shared/pg-database/db';
-import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError';
-import { errorEnumSupportTicket } from '../../middleware/errorHandler/constants/errorConstants';
-import { IBaseRepository } from "../interfaces/IBaseRepository";
+import { supportTicket } from "../../models/support-ticket/support-ticket.entity.js";
+import pool from '../../shared/pg-database/db.js';
+import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
+import { errorEnumSupportTicket } from '../../middleware/errorHandler/constants/errorConstants.js';
+import { IBaseRepository } from "../interfaces/IBaseRepository.js";
 
 
 

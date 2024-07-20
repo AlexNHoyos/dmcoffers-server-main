@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { SupportTicketRepository } from '../../repositories/support-ticket/support-ticket.repository';
+import { SupportTicketRepository } from '../../repositories/support-ticket/support-ticket.repository.js';
 import { validationResult } from 'express-validator';
 
 

@@ -1,6 +1,6 @@
 // pubGamePublisherController.js
 import { Request, Response, NextFunction } from 'express';
-import { PublisherRepository } from '../../repositories/publicadores/publisher.repository';
+import { PublisherRepository } from '../../repositories/publicadores/publisher.repository.js';
 import { validationResult } from 'express-validator';
 
 const publisherRepository = new PublisherRepository();

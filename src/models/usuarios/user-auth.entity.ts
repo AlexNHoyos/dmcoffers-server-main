@@ -1,4 +1,4 @@
-import { User } from "./user.entity";
+import { User } from "./user.entity.js";
 export class UserAuth {
     private _password: string;
     salt: string | undefined;

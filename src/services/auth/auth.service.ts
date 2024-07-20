@@ -1,8 +1,8 @@
 // auth.service.ts
-import { UserAuthRepository } from '../../repositories/usuarios/user-auth.repository';
-import { UserAuth } from '../../models/usuarios/user-auth.entity';
-import { hashPassword }  from '../../middleware/auth/authHash'
-import { ValidationError } from '../../middleware/errorHandler/validationError';
+import { UserAuthRepository } from '../../repositories/usuarios/user-auth.repository.js';
+import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
+import { hashPassword }  from '../../middleware/auth/authHash.js'
+import { ValidationError } from '../../middleware/errorHandler/validationError.js';
 
 export class AuthService  {
   private userAuthRepository: UserAuthRepository;

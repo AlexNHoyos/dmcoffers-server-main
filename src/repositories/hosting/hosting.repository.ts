@@ -1,8 +1,8 @@
-import { Hosting } from "../../models/hosting/hosting.entity";
-import pool from '../../shared/pg-database/db';
-import { IBaseRepository } from '../interfaces/IBaseRepository';
-import {DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError';
-import {errorEnumHosting } from '../../middleware/errorHandler/constants/errorConstants';
+import { Hosting } from "../../models/hosting/hosting.entity.js";
+import pool from '../../shared/pg-database/db.js';
+import { IBaseRepository } from '../interfaces/IBaseRepository.js';
+import {DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
+import {errorEnumHosting } from '../../middleware/errorHandler/constants/errorConstants.js';
 
 
 

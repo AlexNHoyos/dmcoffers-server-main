@@ -1,13 +1,13 @@
 // user.service.ts
-import { UserRepository } from '../../repositories/usuarios/user.repository';
-import { User } from '../../models/usuarios/user.entity';
-import { UserAuth } from '../../models/usuarios/user-auth.entity';
-import { IUserService } from '../interfaces/user/IUserService';
-import { ValidationError } from '../../middleware/errorHandler/validationError';
-import { AuthService } from '../auth/auth.service';
-import { UserAuthRepository } from '../../repositories/usuarios/user-auth.repository';
-import { AuthenticationError } from '../../middleware/errorHandler/authenticationError';
-import { UserDto } from '../../models-dto/usuarios/user-dto.entity';
+import { UserRepository } from '../../repositories/usuarios/user.repository.js';
+import { User } from '../../models/usuarios/user.entity.js';
+import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
+import { IUserService } from '../interfaces/user/IUserService.js';
+import { ValidationError } from '../../middleware/errorHandler/validationError.js';
+import { AuthService } from '../auth/auth.service.js';
+import { UserAuthRepository } from '../../repositories/usuarios/user-auth.repository.js';
+import { AuthenticationError } from '../../middleware/errorHandler/authenticationError.js';
+import { UserDto } from '../../models-dto/usuarios/user-dto.entity.js';
 
 export class UserService implements IUserService {
   private authService: AuthService = new AuthService;

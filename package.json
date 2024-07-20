@@ -1,7 +1,7 @@
 {
   "name": "dmcoffers-server-main",
   "version": "1.1.0",
-  "type": "commonjs",
+  "type": "module",
   "description": "Proyecto para DSW-UTN",
   "main": "app.ts",
   "scripts": {
@@ -9,7 +9,7 @@
     "start": "node ./dist/app.js",
     "start-dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./dist/app.js\""
   },
-  "author": "Hoyos, A. ; Marcosano, M. ; Ceballos, R.",
+  "author": "Hoyos, A. ; Marcosano, M. ; Ceballos, R.; Fernandez, M.; Tobajas Ramirez, I.",
   "license": "ISC",
   "dependencies": {
     "argon2": "^0.40.3",

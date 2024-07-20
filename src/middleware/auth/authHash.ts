@@ -1,5 +1,5 @@
 import argon2 from 'argon2';
-import  { AuthenticationError } from '../../middleware/errorHandler/authenticationError';
+import  { AuthenticationError } from '../../middleware/errorHandler/authenticationError.js';
 
 export async function hashPassword(password: string): Promise<string> {
     try {
