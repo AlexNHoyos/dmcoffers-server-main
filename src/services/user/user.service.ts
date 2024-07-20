@@ -1,13 +1,13 @@
 // user.service.ts
 import { UserRepository } from '../../repositories/usuarios/user.repository';
 import { User } from '../../models/usuarios/user.entity';
-import { UserAuth } from '../../models/auth/user-auth.entity';
+import { UserAuth } from '../../models/usuarios/user-auth.entity';
 import { IUserService } from '../interfaces/user/IUserService';
 import { ValidationError } from '../../middleware/errorHandler/validationError';
 import { AuthService } from '../auth/auth.service';
 import { UserAuthRepository } from '../../repositories/usuarios/user-auth.repository';
 import { AuthenticationError } from '../../middleware/errorHandler/authenticationError';
-import { UserViewModel } from '../../models-view/usuarios/user-view.entity';
+import { UserDto } from '../../models-dto/usuarios/user-dto.entity';
 
 export class UserService implements IUserService {
   private authService: AuthService = new AuthService;
@@ -28,7 +28,7 @@ export class UserService implements IUserService {
     return this.userRepository.findOne(id);
   }
 
-  async create(newUser: UserViewModel): Promise<UserViewModel> {
+  async create(newUser: UserDto): Promise<UserDto> {
 
     if (!newUser || !newUser.username) {
       throw new ValidationError('Usuario no posee userName', 404);
@@ -40,15 +40,14 @@ export class UserService implements IUserService {
     }
 
 
-     const { userToValidate, userToCreate }: { userToValidate: UserAuth; userToCreate: User; } = this.initializeUser(newUser);
+    const { userToValidate, userToCreate }: { userToValidate: UserAuth; userToCreate: User; } = this.initializeUser(newUser);
 
     const userAuthValidated = await this.authService.validateUserAuthOnCreate(userToValidate);
 
-    const userCreated = await this.userRepository.create(userToCreate); 
-    
-    const userAuthCreated = await this.userAuthRepository.create(userAuthValidated);
-        
-    const userOutput : UserViewModel = {
+
+    const [userCreated, userAuthCreated] = await this.userRepository.registerUser(userToCreate, userAuthValidated);
+           
+    const userOutput : UserDto = {
       idUser: userCreated.id,
       idUserAuth: userAuthCreated.id,
       realname: userCreated.realname,
@@ -58,13 +57,14 @@ export class UserService implements IUserService {
       creationuser: userCreated.creationuser,
       creationtimestamp: userCreated.creationtimestamp,
       password: userAuthCreated.password,
-      salt: undefined,
-      status: undefined,
-      delete_date: undefined,
+      salt: userAuthCreated.salt,
+      status: userCreated.status,
+      delete_date: userCreated.delete_date,
       modificationuser: undefined,
       modificationtimestamp: undefined,
     }
       
+ 
     return userOutput;
   }
 
@@ -102,15 +102,13 @@ export class UserService implements IUserService {
   }
 
 
-  private initializeUser(newUser: UserViewModel) {
+  private initializeUser(newUser: UserDto) {
 
     newUser.creationtimestamp = new Date();
 
     const userToValidate: UserAuth = new UserAuth(
-      newUser.username!,
       newUser.creationuser!,
       newUser.creationtimestamp,
-      newUser.status!,
       newUser.password!,
       newUser.salt
     );

@@ -1,4 +1,4 @@
-export class UserViewModel {
+export class UserDto {
     idUser: string | undefined;
     idUserAuth: string | undefined;
     realname: string | undefined;

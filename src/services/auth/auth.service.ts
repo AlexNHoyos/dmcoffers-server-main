@@ -1,6 +1,6 @@
 // auth.service.ts
 import { UserAuthRepository } from '../../repositories/usuarios/user-auth.repository';
-import { UserAuth } from '../../models/auth/user-auth.entity';
+import { UserAuth } from '../../models/usuarios/user-auth.entity';
 import { hashPassword }  from '../../middleware/auth/authHash'
 import { ValidationError } from '../../middleware/errorHandler/validationError';
 
@@ -25,10 +25,8 @@ export class AuthService  {
 
 
     const validatedUserAuth : UserAuth = new UserAuth( 
-      userAuth.username, 
       userAuth.creationuser,
       userAuth.creationtimestamp,
-      userAuth.status,
       userAuth.password,
       userAuth.salt, 
     );  

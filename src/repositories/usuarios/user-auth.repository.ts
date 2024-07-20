@@ -1,4 +1,4 @@
-import { UserAuth } from '../../models/auth/user-auth.entity';
+import { UserAuth } from '../../models/usuarios/user-auth.entity';
 import { IBaseRepository } from '../interfaces/IBaseRepository';
 import pool from '../../shared/pg-database/db';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError';
@@ -37,24 +37,23 @@ export class UserAuthRepository implements IBaseRepository<UserAuth> {
 
   async create(user: UserAuth) {
     const {
-      username,
+
       password,
       creationuser,
       creationtimestamp,
       salt,
-      status,
+ 
     } = user;
     const query = `INSERT INTO swe_usrauth 
-                ( username, password, creationuser, creationtimestamp, salt, status) 
-                VALUES ($1, $2, $3, $4, $5, $6) 
+                ( password, creationuser, creationtimestamp, salt) 
+                VALUES ($1, $2, $3, $4, $5) 
                 RETURNING *;`;
-    const values = [
-      username,
+    const values = [ 
       password,
       creationuser,
       creationtimestamp,
       salt,
-      status,
+ 
     ];
 
     const client = await pool.connect();
@@ -81,26 +80,23 @@ export class UserAuthRepository implements IBaseRepository<UserAuth> {
   }
 
   async update(id: number, user: UserAuth) {
-    const {  username,password, salt, status } =
+    const {  password, salt } =
       user;
     //arma la query de actualizcion
     const query = `
                 UPDATE swe_usrauth ua
-                SET
-                    username = $1,
-                    password = $2,
-                    salt = $3,
+                SET                    
+                    password = $1,
+                    salt = $2,
                     modificationuser = current_user,
                     modificationtimestamp = current_timestamp,
-                    status = $4,
-                WHERE ua.id = $5
+                    status = $3,
+                WHERE ua.id = $4
                 RETURNING *;
             `;
     const values = [
-      username,
       password,
       salt,
-      status,
       id,
     ];
 
