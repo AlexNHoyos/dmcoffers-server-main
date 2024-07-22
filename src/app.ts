@@ -1,6 +1,8 @@
 // Importamos el módulo 'express' para crear un servidor web
 // Importamos el enrutador para las rutas relacionadas con los editores
 import express, { Request, Response } from 'express';
+import cors from 'cors';
+
 import userRouter from './routes/usuarios/user.routes.js';
 import { categoriaRouter } from './routes/categorias/categorias.routes.js';
 import hostingRouter from './routes/hosting/hosting.routes.js';
@@ -14,13 +16,13 @@ import { authenticateToken } from './middleware/auth/authToken.js';
 const app = express();
 // Configuramos Express para que pueda analizar solicitudes con formato JSON
 app.use(express.json());
+app.use(cors());
 
 app.use('/api/users', userRouter);
 app.use('/api/publishers', publisherRouter);
 app.use('/api/categories', categoriaRouter);
 app.use('/api/hostings', hostingRouter);
 app.use('/api/supportTicket', supportTicketRouter);
-
 
 app.post('/login', authenticateToken, (req: Request, res: Response) => {
   res.json({ message: 'Esta es una ruta protegida', user: (req as any).user });
@@ -35,8 +37,6 @@ app.use((_, res) => {
   // Enviamos una respuesta con estado 404 (Recurso no encontrado)
   // y un mensaje en formato JSON
 });
-
-
 
 // Iniciamos el servidor Express en el puerto 3000
 
