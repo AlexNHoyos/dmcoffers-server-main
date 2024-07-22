@@ -1,8 +1,8 @@
 import { User } from '../../models/usuarios/user.entity.js';
 import { Repository } from '../../shared/testRepository';
 import pool from '../../shared/pg-database/db.js';
-import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
-import { errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants.js';
+import { DatabaseErrorCustom } from '../../middleware/errorHandler.ts/dataBaseError.js';
+import { errorEnumUser } from '../../middleware/errorHandler.ts/constants/errorConstants.js';
 
 export class UserRepository implements Repository<User> {
   async findAll() {

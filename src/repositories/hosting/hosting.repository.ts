@@ -1,7 +1,7 @@
 import { Hosting } from "../../models/hosting/hosting.entity.js";
 import pool from '../../shared/pg-database/db.js';
-import {DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
-import {errorEnumHosting } from '../../middleware/errorHandler/constants/errorConstants.js';
+import {DatabaseErrorCustom } from '../../middleware/errorHandler.ts/dataBaseError.js';
+import {errorEnumHosting } from '../../middleware/errorHandler.ts/constants/errorConstants.js';
 
 
 

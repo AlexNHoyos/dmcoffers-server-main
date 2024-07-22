@@ -4,8 +4,8 @@ import { Publisher } from '../../models/publicadores/publisher.entity.js';
 // Importamos el cliente de PostgreSQL
 import pool from '../../shared/pg-database/db';
 
-import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
-import { errorEnumPublisher } from '../../middleware/errorHandler/constants/errorConstants.js';
+import { DatabaseErrorCustom } from '../../middleware/errorHandler.ts/dataBaseError.js';
+import { errorEnumPublisher } from '../../middleware/errorHandler.ts/constants/errorConstants.js';
 
 // Definimos la clase PublisherRepository e implementamos la interfaz Repository<Publisher>
 export class PublisherRepository {
