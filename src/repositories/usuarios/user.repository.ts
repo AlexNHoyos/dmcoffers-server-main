@@ -1,10 +1,11 @@
 import { User } from '../../models/usuarios/user.entity.js';
-import { Repository } from '../../shared/testRepository';
 import pool from '../../shared/pg-database/db.js';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants.js';
+import { IUserRepository } from '../interfaces/user/IUserRepository.js';
+import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
 
-export class UserRepository implements Repository<User> {
+export class UserRepository implements IUserRepository {
   async findAll() {
     try {
       const result = await pool.query(
@@ -17,7 +18,7 @@ export class UserRepository implements Repository<User> {
     }
   }
 
-  async findOne(id: string): Promise<User | undefined> {
+  async findOne(id: number): Promise<User | undefined> {
     try {
       const result = await pool.query(
         'SELECT * FROM swe_usrapl su WHERE su.id = $1',
@@ -35,7 +36,7 @@ export class UserRepository implements Repository<User> {
     }
   }
 
-  async create(user: User) {
+  async create(user: User ) {
     const {
       realname,
       surname,
@@ -84,7 +85,7 @@ export class UserRepository implements Repository<User> {
     }
   }
 
-  async update(id: string, user: User) {
+  async update(id: number, user: User) {
     const { realname, surname, username, birth_date, delete_date, status } =
       user;
     //arma la query de actualizcion
@@ -128,7 +129,7 @@ export class UserRepository implements Repository<User> {
     }
   }
 
-  async delete(id: string): Promise<User | undefined> {
+  async delete(id: number): Promise<User | undefined> {
     const client = await pool.connect();
 
     try {
@@ -149,4 +150,92 @@ export class UserRepository implements Repository<User> {
       client.release();
     }
   }
+
+  async findByUserName(userName: string): Promise<User | undefined> {
+    try {
+      const result = await pool.query(
+        'SELECT * FROM swe_usrapl su WHERE su.username = $1',
+        [userName]
+      );
+      if (result.rows.length > 0) {
+        const user = result.rows[0] as User;
+        return user;
+      } else {
+        return undefined;
+      }
+    } catch (error) {
+      console.error(errorEnumUser.userIndicatedNotFound, error);
+      throw new DatabaseErrorCustom(errorEnumUser.userIndicatedNotFound, 500);
+    }
+  }
+
+  async registerUser(user: User, userAuth: UserAuth): Promise<[User, UserAuth]> {
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        // Insertar el usuario
+        const userInsertQuery = `
+            INSERT INTO swe_usrapl (realname, surname, username, birth_date, delete_date, creationuser, creationtimestamp, status) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+            RETURNING *;
+        `;
+        const userValues = [
+            user.realname,
+            user.surname,
+            user.username,
+            user.birth_date,
+            user.delete_date,
+            user.creationuser,
+            user.creationtimestamp,
+            user.status,
+        ];
+
+        const userResult = await client.query(userInsertQuery, userValues);
+        const insertedUser = userResult.rows[0];
+
+        // Insertar la autenticación del usuario
+        const userAuthInsertQuery = `
+            INSERT INTO swe_usrauth (id, creationuser, creationtimestamp, password, salt) 
+            VALUES ($1, $2, $3, $4, $5) 
+            RETURNING *;
+        `;
+        const userAuthValues = [
+            insertedUser.id, // Asumiendo que la tabla swe_usrapl tiene un campo id
+            insertedUser.creationuser,
+            insertedUser.creationtimestamp,
+            userAuth.password,
+            userAuth.salt,
+        ];
+
+        const userAuthResult = await client.query(userAuthInsertQuery, userAuthValues);
+        const insertedUserAuth = userAuthResult.rows[0];
+
+        await client.query('COMMIT');
+
+        return [insertedUser, insertedUserAuth];
+
+    } catch (error) {
+      // Hacer rollback de la transacción en caso de error
+
+      await client.query('ROLLBACK');
+
+      console.error(errorEnumUser.userNotCreated, error);
+
+      throw new DatabaseErrorCustom(errorEnumUser.userNotCreated, 500);
+      
+    } finally {
+      // Liberar el cliente de nuevo al pool
+      client.release();
+    }
+  }
+
+
 }
+
+
+
+
+
+
