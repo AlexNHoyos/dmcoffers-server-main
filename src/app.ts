@@ -25,10 +25,6 @@ app.use('/api/supportTicket', supportTicketRouter);
 app.use('/api/auth', authRouter);
 
 
-app.post('/api/protected', authenticateToken, (req: Request, res: Response) => {
-  res.json({ message: 'Esta es una ruta protegida', user: (req as any).user });
-});
-
 app.use(errorHandler);
 
 // Middleware para manejar solicitudes a rutas no encontradas
