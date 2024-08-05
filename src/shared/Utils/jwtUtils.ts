@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { secretKeyJWT } from '../../shared/Utils/Keys';
+import { secretKeyJWT } from '../../shared/Utils/Keys.js';
 
 const secretKey = secretKeyJWT;
 
