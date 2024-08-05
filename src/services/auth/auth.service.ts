@@ -3,6 +3,7 @@ import { UserAuthRepository } from '../../repositories/usuarios/user-auth.reposi
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
 import { hashPassword }  from '../../middleware/auth/authHash.js'
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
+import {verifyPassword} from '../../middleware/auth/authHash.js';
 
 export class AuthService  {
   private userAuthRepository: UserAuthRepository;
@@ -11,6 +12,14 @@ export class AuthService  {
     this.userAuthRepository = new UserAuthRepository();
   }
  
+  async findOne(id: number): Promise<UserAuth | undefined> {
+    return this.userAuthRepository.findOne(id);
+  }
+
+  async verifyPassword(hashedPassword: string, password: string): Promise<boolean> {
+    return verifyPassword(hashedPassword,password);
+  }
+
 
   async validateUserAuthOnCreate(userAuth: UserAuth): Promise<UserAuth> {
 
