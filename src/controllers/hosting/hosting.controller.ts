@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
-import { HostingRepository } from '../../repositories/hosting/hosting.repository'; 
+import { HostingRepository } from '../../repositories/hosting/hosting.repository.js'; 
 
 const hostingRepository = new HostingRepository();
 

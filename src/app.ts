@@ -1,12 +1,15 @@
 // Importamos el módulo 'express' para crear un servidor web
 // Importamos el enrutador para las rutas relacionadas con los editores
-import express from 'express';
-import userRouter from './routes/usuarios/user.routes';
-import { categoriaRouter } from './routes/categorias/categorias.routes';
-import hostingRouter from './routes/hosting/hosting.routes';
-import supportTicketRouter from './routes/support-ticket/support-ticket.routes';
-import errorHandler from './middleware/errorHandler/errorHandler';
-import publisherRouter from './routes/publicadores/publisher.routes';
+import express, { Request, Response } from 'express';
+import userRouter from './routes/usuarios/user.routes.js';
+import { categoriaRouter } from './routes/categorias/categorias.routes.js';
+import hostingRouter from './routes/hosting/hosting.routes.js';
+import supportTicketRouter from './routes/support-ticket/support-ticket.routes.js';
+import errorHandler from './middleware/errorHandler/errorHandler.js';
+import publisherRouter from './routes/publicadores/publisher.routes.js';
+import authRouter from './routes/auth/auth.routes.js';
+import { authenticateToken } from './middleware/auth/authToken.js';
+
 
 // Creamos una instancia de la aplicación Express
 
@@ -17,8 +20,9 @@ app.use(express.json());
 app.use('/api/users', userRouter);
 app.use('/api/publishers', publisherRouter);
 app.use('/api/categories', categoriaRouter);
-app.use('/api/hostings', hostingRouter);
+app.use('/api/hostings', authenticateToken, hostingRouter);
 app.use('/api/supportTicket', supportTicketRouter);
+app.use('/api/auth', authRouter);
 
 
 app.use(errorHandler);
@@ -30,6 +34,8 @@ app.use((_, res) => {
   // Enviamos una respuesta con estado 404 (Recurso no encontrado)
   // y un mensaje en formato JSON
 });
+
+
 
 // Iniciamos el servidor Express en el puerto 3000
 

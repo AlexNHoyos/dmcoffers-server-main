@@ -1,7 +1,7 @@
 // src/routes/supportTicketRoutes.ts
 
 import { Router } from 'express';
-import * as supportTicketController from '../../controllers/support-ticket/support-ticket.controller';
+import * as supportTicketController from '../../controllers/support-ticket/support-ticket.controller.js';
 import {body, param } from 'express-validator';
 
 const supportTicketRouter = Router();;

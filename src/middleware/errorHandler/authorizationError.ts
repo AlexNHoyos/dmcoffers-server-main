@@ -1,4 +1,4 @@
-import { CustomError } from './interface/customError.Interface';
+import { CustomError } from './interface/customError.Interface.js';
 
 export class AuthorizationError extends Error implements CustomError {
   status: number;

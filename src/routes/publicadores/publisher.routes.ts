@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as publisherController from '../../controllers/publicadores/publishers.controller';
+import * as publisherController from '../../controllers/publicadores/publishers.controller.js';
 import { body , param } from 'express-validator';
 
 const publisherRouter = Router();
