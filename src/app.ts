@@ -20,7 +20,7 @@ app.use(express.json());
 app.use('/api/users', userRouter);
 app.use('/api/publishers', publisherRouter);
 app.use('/api/categories', categoriaRouter);
-app.use('/api/hostings', hostingRouter);
+app.use('/api/hostings', authenticateToken, hostingRouter);
 app.use('/api/supportTicket', supportTicketRouter);
 app.use('/api/auth', authRouter);
 
