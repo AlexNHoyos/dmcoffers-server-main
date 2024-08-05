@@ -7,7 +7,7 @@ const userRouter = Router();
 
 userRouter.get('/', userController.findAll);
 userRouter.get('/:id', param('id').notEmpty().isInt({ min: 1 }).withMessage('Formato de ID invalido'), userController.findOne);
-userRouter.post('/',
+userRouter.post('/register',
     [
       body('realname').notEmpty().isString().withMessage('realname debe ser un string'),
       body('surname').notEmpty().isString().withMessage('surname debe ser un string'),

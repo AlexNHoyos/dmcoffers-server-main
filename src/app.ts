@@ -9,6 +9,7 @@ import hostingRouter from './routes/hosting/hosting.routes.js';
 import supportTicketRouter from './routes/support-ticket/support-ticket.routes.js';
 import errorHandler from './middleware/errorHandler/errorHandler.js';
 import publisherRouter from './routes/publicadores/publisher.routes.js';
+import authRouter from './routes/auth/auth.routes.js';
 import { authenticateToken } from './middleware/auth/authToken.js';
 
 // Creamos una instancia de la aplicación Express
@@ -21,12 +22,9 @@ app.use(cors());
 app.use('/api/users', userRouter);
 app.use('/api/publishers', publisherRouter);
 app.use('/api/categories', categoriaRouter);
-app.use('/api/hostings', hostingRouter);
+app.use('/api/hostings', authenticateToken, hostingRouter);
 app.use('/api/supportTicket', supportTicketRouter);
-
-app.post('/login', authenticateToken, (req: Request, res: Response) => {
-  res.json({ message: 'Esta es una ruta protegida', user: (req as any).user });
-});
+app.use('/api/auth', authRouter);
 
 app.use(errorHandler);
 
