@@ -1,0 +1,26 @@
+### obtener todos los hostings(get all)
+GET http://localhost:3000/api/supportTicket
+### obtener un hosting(get one)
+GET http://localhost:3000/api/supportTicket/1
+
+### crear un nuevo hosting
+POST http://localhost:3000/api/supportTicket
+Content-Type: application/json
+
+ {
+  "creationuser": "Mauro",
+  "creationtimestamp": "2024-04-16T00:04:12.275Z",
+  "status": false
+}
+
+
+### modificar un hosting 
+PUT http://localhost:3000/api/supportTicket/1
+Content-Type: application/json
+
+ {
+  "status": true
+}
+
+### borrar un hosting
+DELETE http://localhost:3000/api/supportTicket/1

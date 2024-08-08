@@ -1,12 +1,12 @@
 import { Hosting } from "../../models/hosting/hosting.entity.js";
 import pool from '../../shared/pg-database/db.js';
+import { IBaseRepository } from '../interfaces/IBaseRepository.js';
+import {DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
+import {errorEnumHosting } from '../../middleware/errorHandler/constants/errorConstants.js';
 
-import { DatabaseErrorCustom } from "../../middleware/dataBaseError.js";
-import {errorEnumHosting } from '../../middleware/errorHandler.ts/constants/errorConstants.js';
 
 
-
-export class HostingRepository {
+export class HostingRepository implements IBaseRepository<Hosting>{
 
     async findAll() {
         try {
@@ -18,7 +18,7 @@ export class HostingRepository {
         }
     }
 
-    async findOne(id: string): Promise<Hosting | undefined> {
+    async findOne(id: number): Promise<Hosting | undefined> {
         try {
             const result = await pool.query('SELECT * FROM hs_hosting_service hs WHERE hs.id = $1', [id]);
             if (result.rows.length > 0) {
@@ -65,7 +65,7 @@ export class HostingRepository {
         }
     }
 
-    async update(id: string, hosting: Hosting) {
+    async update(id: number, hosting: Hosting) {
             const { name,  status } = hosting;
             //arma la query de actualizcion
             const query = 
@@ -95,7 +95,7 @@ export class HostingRepository {
             }
         }
 
-    async delete(id: string): Promise<Hosting | undefined> {
+    async delete(id: number): Promise<Hosting | undefined> {
         const client = await pool.connect();
         
         try {

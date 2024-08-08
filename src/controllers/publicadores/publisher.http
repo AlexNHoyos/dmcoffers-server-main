@@ -1,49 +1,34 @@
-### obtener todos los publishers(get all)
+### Obtener todos los publishers(GET ALL)
 GET http://localhost:3000/api/publishers
-### obtener un publisher(get one)
+### Obtener un publisher(GET ONE)
 GET http://localhost:3000/api/publishers/1
 
-### crear un nuevo publisher
+### Crear un nuevo publisher
 POST http://localhost:3000/api/publishers
 Content-Type: application/json
 
 
  {
-  "id": "2",
   "publishername": "Hi rez",
   "foundation_date": "2024-04-16T00:04:12.275Z",
   "dissolution_date": "2024-04-16T00:04:12.275Z",
   "status": true,
   "creationtimestamp": "2024-04-16T00:04:12.275Z",
-  "creationuser": "Alex",
-  "modificationtimestamp": "2024-04-16T00:04:12.275Z",
-  "modificationuser": "Mauro"
+  "creationuser": "Alex"
 }
 
 
-### modificar un publisher (PUT  - recurso completo e idempotente)
+### Modificar un publisher (PUT  - recurso completo e idempotente)
 PUT http://localhost:3000/api/publishers/1
 Content-Type: application/json
 
  {
   "publishername": "Ubisofttttttt",
-  "foundation_date": "2024-04-16T00:04:12.275Z",
   "dissolution_date": "2024-04-16T00:04:12.275Z",
   "status": true,
-  "creationtimestamp": "2024-04-16T00:04:12.275Z",
-  "creationuser": "Ramiroooooooooooo",
   "modificationtimestamp": "2024-04-16T00:04:12.275Z",
   "modificationuser": "Mauro"
 }
 
-
-### modificar un publisher (PATCH  - recurso parcial)
-PATCH http://localhost:3000/api/publishers/2
-
-{
-  "status": false,
-  "creationuser": "Alexxxxxxxxxxxxxxxxxxxxxx",
-} 
-
-### borrar un publisher
+### Borrar un publisher
 DELETE http://localhost:3000/api/publishers/2
