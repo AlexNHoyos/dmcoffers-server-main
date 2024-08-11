@@ -40,7 +40,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       return res.status(400).json({ message: 'Contraseña incorrecta' });
     }
 
-    const accessToken = generateToken({ username: user.username, id: user.id });
+    const accessToken = generateToken({ username: user.username, id: user.id});
 
     res.json({ accessToken });
   } catch (error) {
