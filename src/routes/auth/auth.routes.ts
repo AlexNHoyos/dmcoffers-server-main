@@ -15,6 +15,8 @@ export default authRouter;
 
 
 
+//--------DOCUMENTACION DEL ENDPOINT PARA SWAGER ------------// 
+
 /**
  * @swagger
  * components:
@@ -26,8 +28,7 @@ export default authRouter;
  *                      type: string
  *                      description: Nombre de Usuario 
  *                  password:
- *                      type: string
- *                     
+ *                      type: string                    
  *                      description: Password del Usuario
  *              required:
  *                  - username
@@ -40,8 +41,6 @@ export default authRouter;
  * /api/auth/login:
  *    post:
  *      summary: Login de Usuario
- *      security:
- *        - apiAuth: []
  *      tags:
  *        - Auth
  *      requestBody:

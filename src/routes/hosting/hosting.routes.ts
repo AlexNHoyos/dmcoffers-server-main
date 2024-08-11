@@ -34,6 +34,8 @@ hostingRouter.delete('/:id', param('id').isInt({ min: 1 }).withMessage('Formato 
 export default hostingRouter;
 
 
+//--------DOCUMENTACION DEL ENDPOINT PARA SWAGER ------------// 
+
 /**
  * @swagger
  * /api/hostings/findall:
@@ -91,7 +93,7 @@ export default hostingRouter;
  *      tags:
  *        - Hostings
  *      requestBody:
- *          description: Esquema de Creacion de Usuario
+ *          description: Esquema de Creacion de un Hosting
  *          required: true
  *          content:
  *            application/json:

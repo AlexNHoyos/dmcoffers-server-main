@@ -13,7 +13,7 @@ commonRouter.use('/api/users', userRouter);
 commonRouter.use('/api/publishers', publisherRouter);
 commonRouter.use('/api/categories', categoriaRouter);
 commonRouter.use('/api/hostings', authenticateToken, hostingRouter);
-commonRouter.use('/api/supportTicket', supportTicketRouter);
+commonRouter.use('/api/supportTicket', authenticateToken, supportTicketRouter);
 commonRouter.use('/api/auth', authRouter);
 
 export default commonRouter;
