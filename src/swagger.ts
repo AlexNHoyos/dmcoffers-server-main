@@ -12,6 +12,7 @@ const options: swaggerJSDoc.Options = {
       info: {
         title: 'Api Desarrollo de Sofware UTN',
         version: '1.0.0',
+        description: `Esta es la API para el proyecto de Desarrollo de Software UTN.\n\n**[Ver JSON de Swagger](http://localhost:3000/swagger.json)**`,
       },
       components: {
         securitySchemes: {
