@@ -15,7 +15,7 @@ export default authRouter;
 
 
 
-//--------DOCUMENTACION DEL ENDPOINT PARA SWAGER ------------// 
+//--------DOCUMENTACION DEL ENDPOINT PARA SWAGGER ------------// 
 
 /**
  * @swagger
@@ -53,6 +53,8 @@ export default authRouter;
  *      responses:
  *        200:
  *          description: Login Exitoso
+ *        400:
+ *          description: Credenciales incorrectas
  *        401:
  *          description: Credenciales incorrectas
  *        404:

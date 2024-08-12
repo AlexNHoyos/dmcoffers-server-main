@@ -5,7 +5,7 @@ import { body , param } from 'express-validator';
 
 const userRouter = Router();
 
-userRouter.get('/finall', userController.findAll);
+userRouter.get('/findall', userController.findAll);
 userRouter.get('/:id', param('id').notEmpty().isInt({ min: 1 }).withMessage('Formato de ID invalido'), userController.findOne);
 userRouter.post('/register',
     [

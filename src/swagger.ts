@@ -3,7 +3,7 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import { Express } from "express";
 import  swaggerUi  from 'swagger-ui-express';
-import { log } from "util";
+
 
 // Define __dirname
 const __filename = fileURLToPath(import.meta.url);
