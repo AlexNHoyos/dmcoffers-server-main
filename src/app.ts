@@ -3,14 +3,10 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 
-import userRouter from './routes/usuarios/user.routes.js';
-import { categoriaRouter } from './routes/categorias/categorias.routes.js';
-import hostingRouter from './routes/hosting/hosting.routes.js';
-import supportTicketRouter from './routes/support-ticket/support-ticket.routes.js';
 import errorHandler from './middleware/errorHandler/errorHandler.js';
-import publisherRouter from './routes/publicadores/publisher.routes.js';
-import authRouter from './routes/auth/auth.routes.js';
-import { authenticateToken } from './middleware/auth/authToken.js';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocs from './swagger.js';
+import commonRouter from './routes/common.routes.js';
 
 // Creamos una instancia de la aplicación Express
 
@@ -19,14 +15,13 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.use('/api/users', userRouter);
-app.use('/api/publishers', publisherRouter);
-app.use('/api/categories', categoriaRouter);
-app.use('/api/hostings', authenticateToken, hostingRouter);
-app.use('/api/supportTicket', supportTicketRouter);
-app.use('/api/auth', authRouter);
+app.use(commonRouter);
 
 app.use(errorHandler);
+
+//ruta para utilizar documentacion de swagger
+
+swaggerDocs(app);
 
 // Middleware para manejar solicitudes a rutas no encontradas
 app.use((_, res) => {
