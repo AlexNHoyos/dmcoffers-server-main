@@ -9,7 +9,7 @@ import { errorEnumPublisher } from '../../middleware/errorHandler/constants/erro
 import { IBaseRepository } from '../interfaces/IBaseRepository.js';
 
 // Definimos la clase PublisherRepository e implementamos la interfaz Repository<Publisher>
-export class PublisherRepository implements IBaseRepository<Publisher>{
+export class PublisherRepository implements IBaseRepository<Publisher> {
   public async findAll() {
     try {
       const result = await pool.query(
@@ -136,6 +136,7 @@ export class PublisherRepository implements IBaseRepository<Publisher>{
         'DELETE FROM pub_game_publisher pub WHERE pub.id = $1 RETURNING *',
         [id]
       );
+      await client.query('COMMIT');
       return result.rows[0];
     } catch (error) {
       await client.query('ROLLBACK');
