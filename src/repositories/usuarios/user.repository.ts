@@ -134,20 +134,28 @@ export class UserRepository implements IUserRepository {
 
     try {
       await client.query('BEGIN');
+      
+      await client.query('DELETE FROM swe_usrauth ua WHERE ua.id = $1 RETURNING *',[id]);
 
       // Ejecutar la query de Delete
-      const result = await client.query(
-        'DELETE FROM swe_usrapl su WHERE su.id = $1 RETURNING *',
-        [id]
-      );
+      const result = await client.query('DELETE FROM swe_usrapl su WHERE su.id = $1 RETURNING *', [id] );
+
       await client.query('COMMIT');
+
       return result.rows[0];
+
     } catch (error) {
+
       await client.query('ROLLBACK');
+
       console.error(errorEnumUser.userNotDeleted, error);
+
       throw new DatabaseErrorCustom(errorEnumUser.userNotDeleted, 500);
+
     } finally {
+
       client.release();
+
     }
   }
 
