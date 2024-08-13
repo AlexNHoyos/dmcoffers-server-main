@@ -5,7 +5,7 @@ import { body , param } from 'express-validator';
 
 const userRouter = Router();
 
-userRouter.get('/finall', userController.findAll);
+userRouter.get('/findall', userController.findAll);
 userRouter.get('/:id', param('id').notEmpty().isInt({ min: 1 }).withMessage('Formato de ID invalido'), userController.findOne);
 userRouter.post('/register',
     [
@@ -175,7 +175,7 @@ export default userRouter;
 
 
 
-//
+
 
 
 //----SCHEMAS----//
@@ -192,10 +192,10 @@ export default userRouter;
  *           description: Nombre de Usuario
  *         surname:
  *           type: string
- *           description: Nombre de Usuario
+ *           description: Apellido de Usuario
  *         username:
  *           type: string
- *           description: Nombre de Usuario
+ *           description: Nick o User name de Usuario
  *         birth_date:
  *           type: string
  *           format: date-time
@@ -208,7 +208,7 @@ export default userRouter;
  *           description: Estado del Usuario. Activo o Inactivo
  *         password:
  *           type: string                    
- *           description: Password del Usuario
+ *           description: Password del Usuario. Debe Contener Mayúsculas, Minúsculas y números.
  *         salt:
  *           type: string                    
  *           description: Salt del Usuario
@@ -236,10 +236,10 @@ export default userRouter;
  *           description: Nombre de Usuario
  *         surname:
  *           type: string
- *           description: Nombre de Usuario
+ *           description: apellido de Usuario
  *         modificationuser:
  *           type: string
- *           description: Nombre de usuario que creó el Usuario
+ *           description: Nombre del usuario que creó el Usuario
  *         modificationtimestamp:
  *           type: string
  *           format: date-time

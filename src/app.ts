@@ -3,7 +3,7 @@
 import express, { Request, Response } from 'express';
 import errorHandler from './middleware/errorHandler/errorHandler.js';
 import  swaggerUi  from 'swagger-ui-express';
-import swaggerSpec from './swagger.js';
+import swaggerDocs from './swagger.js';
 import commonRouter from './routes/common.routes.js';
 
 
@@ -18,13 +18,9 @@ app.use(commonRouter);
 
 app.use(errorHandler);
 
-//routa para utilizar documentacion de swagger
-app.use('/api/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+//ruta para utilizar documentacion de swagger
 
-app.get('/swagger.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(swaggerSpec);
-});
+swaggerDocs(app)
 
 // Middleware para manejar solicitudes a rutas no encontradas
 app.use((_, res) => {
@@ -33,8 +29,6 @@ app.use((_, res) => {
   // Enviamos una respuesta con estado 404 (Recurso no encontrado)
   // y un mensaje en formato JSON
 });
-
-
 
 // Iniciamos el servidor Express en el puerto 3000
 
