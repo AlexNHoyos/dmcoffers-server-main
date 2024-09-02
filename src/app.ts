@@ -2,7 +2,7 @@
 // Importamos el enrutador para las rutas relacionadas con los editores
 import express, { Request, Response } from 'express';
 import errorHandler from './middleware/errorHandler/errorHandler.js';
-import  swaggerUi  from 'swagger-ui-express';
+
 import swaggerDocs from './swagger.js';
 import commonRouter from './routes/common.routes.js';
 
@@ -30,10 +30,6 @@ app.use((_, res) => {
   // y un mensaje en formato JSON
 });
 
-// Iniciamos el servidor Express en el puerto 3000
 
-// Para correr esto hay que hacer npm run start-dev en terminal
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`); // necesita comillas invertidas para que tome el valor de port como variable y no convierta el texto completo en string
-});
+export default app;
+
