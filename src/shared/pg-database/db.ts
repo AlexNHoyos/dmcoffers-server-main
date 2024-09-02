@@ -3,6 +3,7 @@ import pkg from 'pg';
 import dotenv from 'dotenv';
 import path from 'path';
 import { DataSource } from 'typeorm';
+import { Hosting } from '../../models/hosting/hosting.entity.js';
 
 // Cargar las variables de entorno desde el archivo .env
 if (process.env.NODE_ENV != 'production') {
@@ -26,11 +27,12 @@ export const AppDataSource = new DataSource({
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database:  process.env.POSTGRES_DB,
-  synchronize: true,
+  synchronize: false, // tiene que estar en true momentaneamente se deja en false por cuestiones funcionales
   logging: false,
-  entities: ['src/entities/**/*.ts'],
-  migrations: ['src/migrations/**/*.ts'],
-  subscribers: ['src/subscribers/**/*.ts'],
+  entities: [Hosting], // se deben agregar las entidades que vayan pasando a typeORM
+  migrations: ['src/migrations/**/*.js'],
+  subscribers: ['src/subscribers/**/*.js'], 
+  
 });
 
 

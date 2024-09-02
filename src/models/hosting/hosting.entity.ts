@@ -1,11 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('hs_hosting_service') // El nombre de la tabla en la base de datos
 
 export class Hosting {
 
     @PrimaryGeneratedColumn()
-    public id: string ;
+    public id: number ;
 
     @Column()
     public name: string ;
@@ -13,13 +13,13 @@ export class Hosting {
     @Column()
     public creationuser: string ;
 
-    @Column()
+    @CreateDateColumn()
     public creationtimestamp: Date ;
 
     @Column({ nullable: true })
     public modificationuser: string ;
 
-    @Column({ nullable: true })
+    @UpdateDateColumn({ nullable: true })
     public modificationtimestamp: Date ;
 
     @Column()
@@ -27,7 +27,7 @@ export class Hosting {
 
 
     constructor(
-        id: string,
+        id: number,
         name: string,
         creationuser: string,
         creationtimestamp: Date,

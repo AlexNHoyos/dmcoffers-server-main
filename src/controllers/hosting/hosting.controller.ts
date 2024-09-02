@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
-import { HostingRepository } from '../../repositories/hosting/hosting.repository.js'; 
+import { HostingService } from '../../services/hosting/hosting.service.js'; 
 
-const hostingRepository = new HostingRepository();
+const hostingService = new HostingService();
 
 export const findAll = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const hostings = await hostingRepository.findAll();
+        const hostings = await hostingService.findAll();
         if (hostings.length > 0) {
             res.status(200).json(hostings);
         } else {
@@ -25,7 +25,7 @@ export const findOne = async (req: Request, res: Response, next: NextFunction) =
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        const hosting = await hostingRepository.findOne(id);
+        const hosting = await hostingService.findOne(id);
         if (hosting) {
             res.status(200).json(hosting);
         } else {
@@ -44,7 +44,7 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        const createdHosting = await hostingRepository.create(newHosting);
+        const createdHosting = await hostingService.create(newHosting);
         res.status(201).json(createdHosting);
     } catch (error) {
         next(error);
@@ -60,7 +60,7 @@ export const update = async (req: Request, res: Response, next: NextFunction) =>
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        const updatedHosting = await hostingRepository.update(id, hostingUpdates);
+        const updatedHosting = await hostingService.update(id, hostingUpdates);
         if (updatedHosting) {
             res.status(200).json(updatedHosting);
         } else {
@@ -79,7 +79,7 @@ export const remove = async (req: Request, res: Response, next: NextFunction) =>
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        const deletedHosting = await hostingRepository.delete(id);
+        const deletedHosting = await hostingService.delete(id);
         if (deletedHosting) {
             res.status(200).json(deletedHosting);
         } else {

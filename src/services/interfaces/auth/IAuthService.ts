@@ -1,4 +1,4 @@
-import { IBaseService } from '../IBaseService';
+import { IBaseService } from '../IBaseService.js';
 import { UserAuth } from '../../../models/usuarios/user-auth.entity.js';
 
 export interface IAuthService extends IBaseService<UserAuth> {
