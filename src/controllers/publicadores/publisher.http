@@ -1,10 +1,10 @@
 ### Obtener todos los publishers(GET ALL)
 GET http://localhost:3000/api/publishers
 ### Obtener un publisher(GET ONE)
-GET http://localhost:3000/api/publishers/1
+GET http://localhost:3000/api/publishers/3
 
 ### Crear un nuevo publisher
-POST http://localhost:3000/api/publishers
+POST http://localhost:3000/api/publishers/create
 Content-Type: application/json
 
 
@@ -19,15 +19,13 @@ Content-Type: application/json
 
 
 ### Modificar un publisher (PUT  - recurso completo e idempotente)
-PUT http://localhost:3000/api/publishers/1
+PUT http://localhost:3000/api/publishers/9
 Content-Type: application/json
 
  {
   "publishername": "Ubisofttttttt",
   "dissolution_date": "2024-04-16T00:04:12.275Z",
-  "status": true,
-  "modificationtimestamp": "2024-04-16T00:04:12.275Z",
-  "modificationuser": "Mauro"
+  "status": true
 }
 
 ### Borrar un publisher

@@ -95,17 +95,24 @@ export class PublisherRepository implements IBaseRepository<Publisher> {
   }
 
   async update(id: number, pub: Publisher) {
-    const { publishername, status } = pub;
+    const { publishername, dissolution_date, status, modificationuser } = pub;
     const query = `
     UPDATE pub_game_publisher pub 
       SET 
-        publishername = $1,  
-        modificationuser = current_user,
+        publishername = $1,
+        dissolution_date = $2, 
+        modificationuser = $5,
         modificationtimestamp = current_timestamp,
-        status = $2, 
-    WHERE pub.id = $3 
+        status = $3 
+    WHERE pub.id = $4 
     RETURNING *;`;
-    const values = [publishername, status, id];
+    const values = [
+      publishername,
+      dissolution_date,
+      status,
+      id,
+      modificationuser,
+    ];
 
     const client = await pool.connect();
 

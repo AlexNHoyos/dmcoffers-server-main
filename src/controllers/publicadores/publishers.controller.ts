@@ -32,7 +32,7 @@ export const findOne = async (
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
-}
+  }
   try {
     const publisher = await publisherRepository.findOne(id);
     if (publisher) {
@@ -53,7 +53,7 @@ export const create = async (
   const newPub = req.body;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({ errors: errors.array() });
   }
   try {
     const createdPub = await publisherRepository.create(newPub);
@@ -70,10 +70,10 @@ export const update = async (
 ) => {
   const id = parseInt(req.params.id, 10);
   const pubUpdates = req.body;
-  
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({ errors: errors.array() });
   }
 
   try {
@@ -98,9 +98,9 @@ export const remove = async (
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({ errors: errors.array() });
   }
-  
+
   try {
     const deletedPublisher = await publisherRepository.delete(id);
     if (deletedPublisher) {

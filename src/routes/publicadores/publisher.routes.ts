@@ -4,7 +4,7 @@ import { body, param } from 'express-validator';
 
 const publisherRouter = Router();
 
-publisherRouter.get('/findall', publisherController.findAll);
+publisherRouter.get('/', publisherController.findAll);
 publisherRouter.post(
   '/create',
   [
@@ -57,7 +57,7 @@ publisherRouter.put(
     body('modificationtimestamp')
       .optional()
       .isISO8601()
-      .withMessage('modificationuser debe ser una fecha válida'),
+      .withMessage('modificationtimestamp debe ser una fecha válida'),
     body('modificationuser')
       .optional()
       .isString()
@@ -72,7 +72,7 @@ export default publisherRouter;
 
 /**
  * @swagger
- * /api/publishers/findall:
+ * /api/publishers/:
  *    get:
  *      summary: Obtener Listado de Publicadores creados
  *      security:

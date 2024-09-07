@@ -1,45 +1,115 @@
 import { Router } from 'express';
 import * as userController from '../../controllers/usuarios/user.controller.js';
-import { body , param } from 'express-validator';
-
+import { body, param } from 'express-validator';
 
 const userRouter = Router();
 
-userRouter.get('/finall', userController.findAll);
-userRouter.get('/:id', param('id').notEmpty().isInt({ min: 1 }).withMessage('Formato de ID invalido'), userController.findOne);
-userRouter.post('/register',
-    [
-      body('realname').notEmpty().isString().withMessage('realname debe ser un string'),
-      body('surname').notEmpty().isString().withMessage('surname debe ser un string'),
-      body('username').notEmpty().isString().withMessage('username debe ser un string'),
-      body('birth_date').notEmpty().isISO8601().withMessage('Fecha de Nacimiento debe ser una fecha válida'),
-      body('creationuser').notEmpty().isString().withMessage('CreationUser debe ser un string'),
-      body('status').isBoolean().notEmpty().withMessage('Status debe ser un booleano'),
-      body('password').notEmpty().isString().withMessage('password debe ser un string'),
-      body('salt').optional().isString().withMessage('salt debe ser un string opcional')
-    ], userController.create);
+userRouter.get('/findall', userController.findAll);
+userRouter.get(
+  '/:id',
+  param('id')
+    .notEmpty()
+    .isInt({ min: 1 })
+    .withMessage('Formato de ID invalido'),
+  userController.findOne
+);
+userRouter.post(
+  '/register',
+  [
+    body('realname')
+      .notEmpty()
+      .isString()
+      .withMessage('realname debe ser un string'),
+    body('surname')
+      .notEmpty()
+      .isString()
+      .withMessage('surname debe ser un string'),
+    body('username')
+      .notEmpty()
+      .isString()
+      .withMessage('username debe ser un string'),
+    body('birth_date')
+      .notEmpty()
+      .isISO8601()
+      .withMessage('Fecha de Nacimiento debe ser una fecha válida'),
+    body('creationuser')
+      .notEmpty()
+      .isString()
+      .withMessage('CreationUser debe ser un string'),
+    body('status')
+      .isBoolean()
+      .notEmpty()
+      .withMessage('Status debe ser un booleano'),
+    body('password')
+      .notEmpty()
+      .isString()
+      .withMessage('password debe ser un string'),
+    body('salt')
+      .optional()
+      .isString()
+      .withMessage('salt debe ser un string opcional'),
+  ],
+  userController.create
+);
 
-userRouter.put('/:id',
-    [
-      param('id').notEmpty().isInt({ min: 1 }).withMessage('Formato de ID invalido'),
-      body('realname').optional().isString().withMessage('realname debe ser un string'),
-      body('surname').optional().isString().withMessage('surname debe ser un string'),
-      body('username').optional().isString().withMessage('username debe ser un string'),
-      body('birth_date').optional().isISO8601().withMessage('Fecha de Nacimiento debe ser una fecha válida'),
-      body('modificationuser').optional().isString().withMessage('modificationuser debe ser un string'),
-      body('modificationtimestamp').optional().isISO8601().withMessage('modificationuser debe ser una fecha válida'),
-      body('password').optional().isString().withMessage('password debe ser un string'),
-      body('salt').optional().isString().withMessage('salt debe ser un string opcional'),
-      body('status').optional().isBoolean().withMessage('Status debe ser un booleano')
-    ], userController.update);
-userRouter.delete('/:id', param('id').notEmpty().isInt({ min: 1 }).withMessage('Formato de ID invalido'), userController.remove);
+userRouter.put(
+  '/:id',
+  [
+    param('id')
+      .notEmpty()
+      .isInt({ min: 1 })
+      .withMessage('Formato de ID invalido'),
+    body('realname')
+      .optional()
+      .isString()
+      .withMessage('realname debe ser un string'),
+    body('surname')
+      .optional()
+      .isString()
+      .withMessage('surname debe ser un string'),
+    body('username')
+      .optional()
+      .isString()
+      .withMessage('username debe ser un string'),
+    body('birth_date')
+      .optional()
+      .isISO8601()
+      .withMessage('Fecha de Nacimiento debe ser una fecha válida'),
+    body('modificationuser')
+      .optional()
+      .isString()
+      .withMessage('modificationuser debe ser un string'),
+    body('modificationtimestamp')
+      .optional()
+      .isISO8601()
+      .withMessage('modificationuser debe ser una fecha válida'),
+    body('password')
+      .optional()
+      .isString()
+      .withMessage('password debe ser un string'),
+    body('salt')
+      .optional()
+      .isString()
+      .withMessage('salt debe ser un string opcional'),
+    body('status')
+      .optional()
+      .isBoolean()
+      .withMessage('Status debe ser un booleano'),
+  ],
+  userController.update
+);
+userRouter.delete(
+  '/:id',
+  param('id')
+    .notEmpty()
+    .isInt({ min: 1 })
+    .withMessage('Formato de ID invalido'),
+  userController.remove
+);
 
 export default userRouter;
 
-
-
-
-//--------DOCUMENTACION DEL ENDPOINT PARA SWAGER ------------// 
+//--------DOCUMENTACION DEL ENDPOINT PARA SWAGER ------------//
 
 /**
  * @swagger
@@ -58,7 +128,7 @@ export default userRouter;
  *        404:
  *          description: No se encontraron Usuarios
  *        500:
- *          description: Error Interno del Servidor     
+ *          description: Error Interno del Servidor
  */
 
 /**
@@ -85,7 +155,7 @@ export default userRouter;
  *        404:
  *          description: No se encontró Usuario
  *        500:
- *          description: Error Interno del Servidor     
+ *          description: Error Interno del Servidor
  */
 
 /**
@@ -108,9 +178,8 @@ export default userRouter;
  *        404:
  *          description: No se creó Usuario
  *        500:
- *          description: Error Interno del Servidor     
+ *          description: Error Interno del Servidor
  */
-
 
 /**
  * @swagger
@@ -143,7 +212,7 @@ export default userRouter;
  *        404:
  *          description: No se encotró Usuario
  *        500:
- *          description: Error Interno del Servidor     
+ *          description: Error Interno del Servidor
  */
 
 /**
@@ -170,13 +239,8 @@ export default userRouter;
  *        404:
  *          description: No se encontró Usuario
  *        500:
- *          description: Error Interno del Servidor     
+ *          description: Error Interno del Servidor
  */
-
-
-
-
-
 
 //----SCHEMAS----//
 
@@ -207,10 +271,10 @@ export default userRouter;
  *           type: boolean
  *           description: Estado del Usuario. Activo o Inactivo
  *         password:
- *           type: string                    
+ *           type: string
  *           description: Password del Usuario. Debe Contener Mayúsculas, Minúsculas y números.
  *         salt:
- *           type: string                    
+ *           type: string
  *           description: Salt del Usuario
  *       required:
  *         - realname
@@ -220,8 +284,8 @@ export default userRouter;
  *         - creationuser
  *         - status
  *         - password
- *         - salt  
- * 
+ *         - salt
+ *
  */
 
 /**
@@ -248,12 +312,9 @@ export default userRouter;
  *           type: boolean
  *           description: Estado del Usuario. Activo o Inactivo
  *       required:
- *         - realname 
+ *         - realname
  *         - surname
  *         - modificationuser
  *         - modificationtimestamp
- *         - status 
+ *         - status
  */
-
-
-
