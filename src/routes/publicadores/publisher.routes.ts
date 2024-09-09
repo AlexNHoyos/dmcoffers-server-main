@@ -15,7 +15,7 @@ publisherRouter.post(
       .isISO8601()
       .withMessage('foundation date debe ser una fecha válida'),
     body('dissolution_date')
-      .optional()
+      .optional({ nullable: true }) // Permitir valores nulos explícitos)
       .isISO8601()
       .withMessage('dissolution date debe ser una fecha válida'),
     body('status').isBoolean().withMessage('Status debe ser un booleano'),

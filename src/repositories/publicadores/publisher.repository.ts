@@ -50,6 +50,7 @@ export class PublisherRepository implements IBaseRepository<Publisher> {
     const {
       publishername,
       foundation_date,
+      dissolution_date,
       status,
       creationtimestamp,
       creationuser,
@@ -57,12 +58,13 @@ export class PublisherRepository implements IBaseRepository<Publisher> {
       modificationuser,
     } = pub;
     const query = `INSERT INTO pub_game_publisher 
-    (publishername, foundation_date, status, creationtimestamp, creationuser, modificationtimestamp, modificationuser) 
-    VALUES ($1, $2, $3, $4, $5, $6, $7) 
+    (publishername, foundation_date, dissolution_date, status, creationtimestamp, creationuser, modificationtimestamp, modificationuser) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
     RETURNING *`;
     const values = [
       publishername,
       foundation_date,
+      dissolution_date,
       status,
       creationtimestamp,
       creationuser,

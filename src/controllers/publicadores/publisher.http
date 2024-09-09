@@ -11,7 +11,6 @@ Content-Type: application/json
  {
   "publishername": "Hi rez",
   "foundation_date": "2024-04-16T00:04:12.275Z",
-  "dissolution_date": "2024-04-16T00:04:12.275Z",
   "status": true,
   "creationtimestamp": "2024-04-16T00:04:12.275Z",
   "creationuser": "Alex"
