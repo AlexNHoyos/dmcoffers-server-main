@@ -26,7 +26,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       return res.status(400).json({ message: 'Usuario no encontrado' });
     }
     
-    const authUser = await authService.findOne(user.id);
+    const authUser = await authService.findOne(user.userauth?.id!);
 
 
     if (!authUser) {
