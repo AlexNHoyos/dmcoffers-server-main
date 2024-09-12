@@ -38,6 +38,7 @@ export const findOne = async (req: Request, res: Response, next: NextFunction) =
 };
 
 export const create = async (req: Request, res: Response, next: NextFunction) => {
+    
     const newUser = req.body;
     const errors = validationResult(req);
 

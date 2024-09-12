@@ -41,7 +41,7 @@ export class UserAuthRepository implements IBaseRepository<UserAuth> {
       password,
       creationuser,
       creationtimestamp,
-      salt,
+      //salt,
  
     } = user;
     const query = `INSERT INTO swe_usrauth 
@@ -52,7 +52,7 @@ export class UserAuthRepository implements IBaseRepository<UserAuth> {
       password,
       creationuser,
       creationtimestamp,
-      salt,
+      //salt,
  
     ];
 
@@ -80,7 +80,7 @@ export class UserAuthRepository implements IBaseRepository<UserAuth> {
   }
 
   async update(id: number, user: UserAuth) {
-    const {  password, salt } =
+    const {  password /*, salt*/ } =
       user;
     //arma la query de actualizcion
     const query = `
@@ -96,7 +96,7 @@ export class UserAuthRepository implements IBaseRepository<UserAuth> {
             `;
     const values = [
       password,
-      salt,
+      //salt,
       id,
     ];
 

@@ -16,7 +16,6 @@ userRouter.post('/register',
       body('creationuser').notEmpty().isString().withMessage('CreationUser debe ser un string'),
       body('status').isBoolean().notEmpty().withMessage('Status debe ser un booleano'),
       body('password').notEmpty().isString().withMessage('password debe ser un string'),
-      body('salt').optional().isString().withMessage('salt debe ser un string opcional')
     ], userController.create);
 
 userRouter.put('/:id',
@@ -29,7 +28,6 @@ userRouter.put('/:id',
       body('modificationuser').optional().isString().withMessage('modificationuser debe ser un string'),
       body('modificationtimestamp').optional().isISO8601().withMessage('modificationuser debe ser una fecha válida'),
       body('password').optional().isString().withMessage('password debe ser un string'),
-      body('salt').optional().isString().withMessage('salt debe ser un string opcional'),
       body('status').optional().isBoolean().withMessage('Status debe ser un booleano')
     ], userController.update);
 userRouter.delete('/:id', param('id').notEmpty().isInt({ min: 1 }).withMessage('Formato de ID invalido'), userController.remove);
@@ -209,9 +207,7 @@ export default userRouter;
  *         password:
  *           type: string                    
  *           description: Password del Usuario. Debe Contener Mayúsculas, Minúsculas y números.
- *         salt:
- *           type: string                    
- *           description: Salt del Usuario
+
  *       required:
  *         - realname
  *         - surname
@@ -219,8 +215,7 @@ export default userRouter;
  *         - birth_date
  *         - creationuser
  *         - status
- *         - password
- *         - salt  
+ *         - password 
  * 
  */
 
