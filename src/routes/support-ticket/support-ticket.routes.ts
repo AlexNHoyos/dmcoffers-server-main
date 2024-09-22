@@ -96,7 +96,7 @@ export default supportTicketRouter;
  *        - in: path
  *          name: id
  *          required: true
- *          description: ID del Support Ticket
+ *          description: ID del Hosting
  *          schema:
  *            type: number
  *      responses:
