@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as desarrolladorController from '../../controllers/desarrolladores/desarrolladores.controller';
+import * as desarrolladorController from '../../controllers/desarrolladores/desarrolladores.controller.js';
 import { body, param } from 'express-validator';
 
 const desarrolladorRouter = Router();
