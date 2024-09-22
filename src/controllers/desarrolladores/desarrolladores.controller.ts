@@ -87,7 +87,7 @@ export const update = async (
     }
 };
 
-// Eliminar un publicador
+// Eliminar un desarrollador
 export const remove = async (
     req: Request,
     res: Response,

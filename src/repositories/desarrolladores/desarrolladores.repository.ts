@@ -129,15 +129,46 @@ export class DesarrolladoresRepository implements IBaseRepository<Desarrollador>
         }
     }
 
-
     public async delete(id: number): Promise<Desarrollador | undefined> {
         const client = await pool.connect();
 
         try {
             await client.query('BEGIN');
 
+            // Eliminamos el alias 'dev' del DELETE
             const result = await client.query(
-                'DELETE FROM pub_game_developer dev WHERE dev.id = $1 RETURNING *',
+                'DELETE FROM pub_game_developer WHERE id = $1 RETURNING *',
+                [id]
+            );
+
+            if (result.rows.length > 0) {
+                await client.query('COMMIT');
+                return result.rows[0];
+            } else {
+                await client.query('ROLLBACK');
+                return undefined; // No se encontró el registro
+            }
+        } catch (error) {
+            await client.query('ROLLBACK');
+            console.error(errorEnumDesarrollador.desarrolladorNotDeleted, error);
+            throw new DatabaseErrorCustom(
+                errorEnumDesarrollador.desarrolladorNotDeleted,
+                500
+            );
+        } finally {
+            client.release();
+        }
+    }
+
+
+    /* public async delete(id: number): Promise<Desarrollador | undefined> {
+        const client = await pool.connect();
+
+        try {
+            await client.query('BEGIN');
+
+            const result = await client.query(
+                'DELETE FROM pub_game_developer WHERE id = $1 RETURNING *',
                 [id]
             );
             return result.rows[0];
@@ -151,5 +182,5 @@ export class DesarrolladoresRepository implements IBaseRepository<Desarrollador>
         } finally {
             client.release();
         }
-    }
+    } */
 }
