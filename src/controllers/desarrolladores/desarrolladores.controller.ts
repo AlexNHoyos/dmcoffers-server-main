@@ -1,4 +1,3 @@
-// pubGamePublisherController.js
 import { Request, Response, NextFunction } from 'express';
 import { DesarrolladoresRepository } from '../../repositories/desarrolladores/desarrolladores.repository.js';
 import { validationResult } from 'express-validator';

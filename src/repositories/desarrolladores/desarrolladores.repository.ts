@@ -1,4 +1,4 @@
-// Importamos la entidad Publisher que representa a nuestros publicadores
+// Importamos la entidad developer que representa a nuestros publicadores
 import { Desarrollador } from '../../models/desarrolladores/desarrolladores.entity.js';
 
 // Importamos el cliente de PostgreSQL
