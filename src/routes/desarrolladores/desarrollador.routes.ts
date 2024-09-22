@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as desarrolladorController from '../../controllers/desarrolladores/desarrolladores.controller.js';
+import * as desarrolladorController from '../../controllers/desarrolladores/desarrolladores.controller';
 import { body, param } from 'express-validator';
 
 const desarrolladorRouter = Router();
@@ -19,7 +19,7 @@ desarrolladorRouter.delete('/:id', param('id').isInt({ min: 1 }).withMessage('Fo
 desarrolladorRouter.put('/:id',
     [
         param('id').isInt({ min: 1 }).withMessage('Formato de ID invalido'),
-        body('desarrolladorname').optional().isString().withMessage('developer name debe ser un string'),
+        body('developername').optional().isString().withMessage('developer name debe ser un string'),
         body('dissolution_date').optional().isISO8601().withMessage('dissolution date debe ser una fecha válida'),
         body('status').optional().isBoolean().withMessage('Status debe ser un booleano'),
         body('modificationtimestamp').optional().isISO8601().withMessage('modificationuser debe ser una fecha válida'),
