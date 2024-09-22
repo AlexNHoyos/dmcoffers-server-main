@@ -99,14 +99,15 @@ export class DesarrolladoresRepository implements IBaseRepository<Desarrollador>
     async update(id: number, dev: Desarrollador) {
         const { developername, status } = dev;
         const query = `
-    UPDATE pub_game_developer dev 
+    UPDATE pub_game_developer 
       SET 
         developername = $1,  
         modificationuser = current_user,
         modificationtimestamp = current_timestamp,
-        status = $2, 
-    WHERE dev.id = $3 
+        status = $2 
+    WHERE id = $3 
     RETURNING *;`;
+
         const values = [developername, status, id];
 
         const client = await pool.connect();
@@ -127,6 +128,7 @@ export class DesarrolladoresRepository implements IBaseRepository<Desarrollador>
             client.release();
         }
     }
+
 
     public async delete(id: number): Promise<Desarrollador | undefined> {
         const client = await pool.connect();
