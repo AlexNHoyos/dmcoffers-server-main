@@ -5,14 +5,11 @@ import { Categorias } from '../../models/categorias/categorias.entity.js';
 import pool from '../../shared/pg-database/db.js';
 
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
-import {
-  errorEnumCategories,
-  errorEnumPublisher,
-} from '../../middleware/errorHandler/constants/errorConstants.js';
+import { errorEnumCategories } from '../../middleware/errorHandler/constants/errorConstants.js';
 import { IBaseRepository } from '../interfaces/IBaseRepository.js';
 
 export class CategoriasRepository implements IBaseRepository<Categorias> {
-  public async findAll() {
+  async findAll() {
     try {
       const result = await pool.query(
         'SELECT * FROM pub_category pc ORDER BY pc.id ASC'
@@ -27,7 +24,7 @@ export class CategoriasRepository implements IBaseRepository<Categorias> {
     }
   }
 
-  public async findOne(id: number): Promise<Categorias | undefined> {
+  async findOne(id: number): Promise<Categorias | undefined> {
     try {
       const result = await pool.query(
         'SELECT * FROM pub_category pc WHERE pc.id = $1',
@@ -48,7 +45,7 @@ export class CategoriasRepository implements IBaseRepository<Categorias> {
     }
   }
 
-  public async create(cat: Categorias) {
+  async create(cat: Categorias) {
     const {
       description,
       creationtimestamp,
@@ -97,12 +94,12 @@ export class CategoriasRepository implements IBaseRepository<Categorias> {
     const query = `
     UPDATE pub_category pc 
       SET 
-        description = $2,
-        modificationuser = $3,
-        modificationtimestamp = current_timestamp,
-    WHERE pc.id = $1 
+        description = $1,
+        modificationuser = $2,
+        modificationtimestamp = current_timestamp
+    WHERE pc.id = $3 
     RETURNING *;`;
-    const values = [id, description, modificationuser];
+    const values = [description, modificationuser, id];
 
     const client = await pool.connect();
 
@@ -123,7 +120,7 @@ export class CategoriasRepository implements IBaseRepository<Categorias> {
     }
   }
 
-  public async delete(id: number): Promise<Categorias | undefined> {
+  async delete(id: number): Promise<Categorias | undefined> {
     const client = await pool.connect();
 
     try {

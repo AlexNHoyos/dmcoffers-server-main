@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { CategoriasRepository } from '../../repositories/categorias/categorias.repository.js';
 import { validationResult } from 'express-validator';
-import { Categorias } from '../../models/categorias/categorias.entity.js';
 
 const categoriasRepository = new CategoriasRepository();
 

@@ -5,6 +5,6 @@ export class Categorias {
     public creationtimestamp: Date,
     public creationuser: String,
     public modificationtimestamp: Date,
-    public modificationuser: Date
+    public modificationuser: String
   ) {}
 }

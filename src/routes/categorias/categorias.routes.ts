@@ -1,17 +1,54 @@
 import { Router } from 'express';
-import * as categoriasController from '../../controllers/categorias/categorias.controller.js';
 import { body, param } from 'express-validator';
+import * as categoriasController from '../../controllers/categorias/categorias.controller.js';
 
 const categoriaRouter = Router();
 
 categoriaRouter.get('/', categoriasController.findAll);
+categoriaRouter.post(
+  '/create',
+  [
+    body('description')
+      .isString()
+      .withMessage('La descripcion debe ser un string'),
+    body('creationuser')
+      .isString()
+      .withMessage('CreationUser debe ser un string'),
+    body('creationtimestamp')
+      .isISO8601()
+      .withMessage('CreationTimestamp debe ser una fecha válida'),
+  ],
+  categoriasController.create
+);
 categoriaRouter.get(
   '/:id',
   param('id').isInt({ min: 1 }).withMessage('Formato de ID invalido'),
   categoriasController.findOne
 );
-categoriaRouter.post('/create', categoriasController.create);
-categoriaRouter.put('/:id', categoriasController.update);
-categoriaRouter.delete('/:id', categoriasController.remove);
+
+categoriaRouter.put(
+  '/:id',
+  [
+    param('id').isInt({ min: 1 }).withMessage('Formato de ID invalido'),
+    body('description')
+      .optional()
+      .isString()
+      .withMessage('La descripcion debe ser un string'),
+    body('modificationtimestamp')
+      .optional()
+      .isISO8601()
+      .withMessage('modificationtimestamp debe ser una fecha válida'),
+    body('modificationuser')
+      .optional()
+      .isString()
+      .withMessage('modificationuser debe ser un string'),
+  ],
+  categoriasController.update
+);
+categoriaRouter.delete(
+  '/:id',
+  param('id').isInt({ min: 1 }).withMessage('Formato de ID invalido'),
+  categoriasController.remove
+);
 
 export default categoriaRouter;

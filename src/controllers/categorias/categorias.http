@@ -4,29 +4,26 @@ GET http://localhost:3000/api/categories
 
 ### Obtener un categorias
 
-GET http://localhost:3000/api/categories/1
+GET http://localhost:3000/api/categories/3
 
 ### Crear un categorias
 
 POST http://localhost:3000/api/categories/create
-
-Content-TypeL application/json
-
-{
-    "description": "Categoria de Prueba",
-    "creationtimestamp": "2024-04-14 15:30:00.000",
-    "modificationtimestamp": "2024-04-14 15:30:00.000"
-}
-
-### Modificar un categorias / cambio total
-PUT http://localhost:3000/api/categories/1
 Content-Type: application/json
 
 {
-    "description": "Modificacion total de categorias de prueba",
-    "creationtimestamp": "2024-04-14 15:30:00.000",
-    "modificationtimestamp": "2024-04-14 15:30:00.000",
-    "modificationuser": "2024-04-14 15:30:00.000"
+    "description": "Categoria de Prueba",
+    "creationtimestamp": "2024-04-16T00:04:12.275Z",
+    "creationuser": "Alex"
+}
+
+### Modificar un categorias / cambio total
+PUT http://localhost:3000/api/categories/3
+Content-Type: application/json
+
+{
+    "description": "Modificacion total",
+    "modificationuser": "Alex"
 }
 
 ### Borrar un categorias
