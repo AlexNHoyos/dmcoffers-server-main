@@ -1,11 +1,17 @@
 import { Router } from 'express';
-import { sanitizeCategoriaInput, findAll, findOne, add, update, remove } from '../../controllers/categorias/categorias.controller.js';
+import * as categoriasController from '../../controllers/categorias/categorias.controller.js';
+import { body, param } from 'express-validator';
 
-export const categoriaRouter = Router();
+const categoriaRouter = Router();
 
-categoriaRouter.get('/', findAll);
-categoriaRouter.get('/:id', findOne);
-categoriaRouter.post('/', sanitizeCategoriaInput, add);
-categoriaRouter.put('/:id', sanitizeCategoriaInput, update);
-categoriaRouter.patch('/:id', sanitizeCategoriaInput, update);
-categoriaRouter.delete('/:id', remove);
+categoriaRouter.get('/', categoriasController.findAll);
+categoriaRouter.get(
+  '/:id',
+  param('id').isInt({ min: 1 }).withMessage('Formato de ID invalido'),
+  categoriasController.findOne
+);
+categoriaRouter.post('/create', categoriasController.create);
+categoriaRouter.put('/:id', categoriasController.update);
+categoriaRouter.delete('/:id', categoriasController.remove);
+
+export default categoriaRouter;

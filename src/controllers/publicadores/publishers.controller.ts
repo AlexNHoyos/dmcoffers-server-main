@@ -22,7 +22,6 @@ export const findAll = async (
   }
 };
 
-// Obtener todos los publicadores de juegos
 export const findOne = async (
   req: Request,
   res: Response,

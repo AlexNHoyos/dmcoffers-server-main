@@ -8,12 +8,11 @@ GET http://localhost:3000/api/categories/1
 
 ### Crear un categorias
 
-POST http://localhost:3000/api/categories
+POST http://localhost:3000/api/categories/create
 
 Content-TypeL application/json
 
 {
-    "id": 1,
     "description": "Categoria de Prueba",
     "creationtimestamp": "2024-04-14 15:30:00.000",
     "modificationtimestamp": "2024-04-14 15:30:00.000"
