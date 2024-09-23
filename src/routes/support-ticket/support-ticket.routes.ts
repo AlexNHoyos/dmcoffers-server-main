@@ -18,7 +18,6 @@ supportTicketRouter.get(
 supportTicketRouter.post(
   '/create',
   [
-    body('name').isString().withMessage('Name debe ser un string'),
     body('creationuser')
       .notEmpty()
       .isString()

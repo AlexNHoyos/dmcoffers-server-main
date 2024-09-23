@@ -11,11 +11,11 @@ import { authenticateToken } from '../middleware/auth/authToken.js';
 const commonRouter = Router();
 
 commonRouter.use('/api/users', authenticateToken, userRouter);
-commonRouter.use('/api/publishers', publisherRouter);
-commonRouter.use('/api/developers', desarrolladorRouter);
-commonRouter.use('/api/categories', categoriaRouter);
-commonRouter.use('/api/hostings', hostingRouter);
-commonRouter.use('/api/supportTicket', supportTicketRouter);
+commonRouter.use('/api/publishers', authenticateToken, publisherRouter);
+commonRouter.use('/api/developers', authenticateToken, desarrolladorRouter);
+commonRouter.use('/api/categories', authenticateToken, categoriaRouter);
+commonRouter.use('/api/hostings', authenticateToken, hostingRouter);
+commonRouter.use('/api/supportTicket', authenticateToken, supportTicketRouter);
 commonRouter.use('/api/auth', authRouter);
 
 export default commonRouter;
