@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as userController from '../../controllers/usuarios/user.controller.js';
 import { body, param } from 'express-validator';
+import { authenticateToken } from '../../middleware/auth/authToken.js';
 
 const userRouter = Router();
 
@@ -10,7 +11,7 @@ userRouter.get(
   param('id')
     .notEmpty()
     .isInt({ min: 1 })
-    .withMessage('Formato de ID invalido'),
+    .withMessage('Formato de ID invalido'), authenticateToken,
   userController.findOne
 );
 userRouter.post(
@@ -55,8 +56,7 @@ userRouter.post(
 userRouter.put(
   '/:id',
   [
-    param('id')
-      .notEmpty()
+    param('id').notEmpty()
       .isInt({ min: 1 })
       .withMessage('Formato de ID invalido'),
     body('realname')
@@ -95,7 +95,7 @@ userRouter.put(
       .optional()
       .isBoolean()
       .withMessage('Status debe ser un booleano'),
-  ],
+  ], authenticateToken,
   userController.update
 );
 userRouter.delete(
@@ -104,6 +104,7 @@ userRouter.delete(
     .notEmpty()
     .isInt({ min: 1 })
     .withMessage('Formato de ID invalido'),
+  authenticateToken,
   userController.remove
 );
 
