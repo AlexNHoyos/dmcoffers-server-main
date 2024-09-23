@@ -1,5 +1,3 @@
-
-
 import { Router } from 'express';
 import { body, param } from 'express-validator';
 import * as hostingController from '../../controllers/hosting/hosting.controller.js';
@@ -7,14 +5,22 @@ import * as hostingController from '../../controllers/hosting/hosting.controller
 const hostingRouter = Router();
 
 hostingRouter.get('/findall', hostingController.findAll);
-hostingRouter.get('/:id', param('id').isInt({ min: 1 }).withMessage('Formato de ID invalido'), hostingController.findOne);
+hostingRouter.get(
+  '/:id',
+  param('id').isInt({ min: 1 }).withMessage('Formato de ID invalido'),
+  hostingController.findOne
+);
 hostingRouter.post(
   '/create',
   [
     body('name').isString().withMessage('Name debe ser un string'),
-    body('creationuser').isString().withMessage('CreationUser debe ser un string'),
-    body('creationtimestamp').isISO8601().withMessage('CreationTimestamp debe ser una fecha válida'),
-    body('status').isBoolean().withMessage('Status debe ser un booleano')
+    body('creationuser')
+      .isString()
+      .withMessage('CreationUser debe ser un string'),
+    body('creationtimestamp')
+      .isISO8601()
+      .withMessage('CreationTimestamp debe ser una fecha válida'),
+    body('status').isBoolean().withMessage('Status debe ser un booleano'),
   ],
   hostingController.create
 );
@@ -23,18 +29,30 @@ hostingRouter.put(
   [
     param('id').isInt({ min: 1 }).withMessage('Formato de ID invalido'),
     body('name').optional().isString().withMessage('Name debe ser un string'),
-    body('modificationuser').optional().isString().withMessage('modificationuser debe ser un string'),
-    body('modificationtimestamp').optional().isISO8601().withMessage('modificationuser debe ser una fecha válida'),
-    body('status').optional().isBoolean().withMessage('Status debe ser un booleano')
+    body('modificationuser')
+      .optional()
+      .isString()
+      .withMessage('modificationuser debe ser un string'),
+    body('modificationtimestamp')
+      .optional()
+      .isISO8601()
+      .withMessage('modificationuser debe ser una fecha válida'),
+    body('status')
+      .optional()
+      .isBoolean()
+      .withMessage('Status debe ser un booleano'),
   ],
   hostingController.update
 );
-hostingRouter.delete('/:id', param('id').isInt({ min: 1 }).withMessage('Formato de ID invalido'), hostingController.remove);
+hostingRouter.delete(
+  '/:id',
+  param('id').isInt({ min: 1 }).withMessage('Formato de ID invalido'),
+  hostingController.remove
+);
 
 export default hostingRouter;
 
-
-//--------DOCUMENTACION DEL ENDPOINT PARA SWAGER ------------// 
+//--------DOCUMENTACION DEL ENDPOINT PARA SWAGER ------------//
 
 /**
  * @swagger
@@ -53,7 +71,7 @@ export default hostingRouter;
  *        404:
  *          description: No se encontraron Hostings
  *        500:
- *          description: Error Interno del Servidor     
+ *          description: Error Interno del Servidor
  */
 
 /**
@@ -80,7 +98,7 @@ export default hostingRouter;
  *        404:
  *          description: No se encontró Hosting
  *        500:
- *          description: Error Interno del Servidor     
+ *          description: Error Interno del Servidor
  */
 
 /**
@@ -107,9 +125,8 @@ export default hostingRouter;
  *        404:
  *          description: No se encontró Hosting
  *        500:
- *          description: Error Interno del Servidor     
+ *          description: Error Interno del Servidor
  */
-
 
 /**
  * @swagger
@@ -128,7 +145,7 @@ export default hostingRouter;
  *          schema:
  *            type: number
  *      requestBody:
- *          description: Esquema de Creacion de Usuario
+ *          description: Esquema de Creacion de Hosting
  *          required: true
  *          content:
  *            application/json:
@@ -142,7 +159,7 @@ export default hostingRouter;
  *        404:
  *          description: No se encontró Hosting
  *        500:
- *          description: Error Interno del Servidor     
+ *          description: Error Interno del Servidor
  */
 
 /**
@@ -169,13 +186,10 @@ export default hostingRouter;
  *        404:
  *          description: No se encontró Hosting
  *        500:
- *          description: Error Interno del Servidor     
+ *          description: Error Interno del Servidor
  */
 
-
-
 //
-
 
 //----SCHEMAS----//
 
