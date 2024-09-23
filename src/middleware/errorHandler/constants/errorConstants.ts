@@ -38,3 +38,11 @@ export enum errorEnumSupportTicket {
     ticketNotDeleted = 'Error al borrar el support ticket'
 }
 
+export enum errorEnumDesarrollador {
+    desarrolladorNotCreated = 'Error al crear desarrollador',
+    desarrolladorIndicatedNotFound = 'Error al obtener desarrollador Indicado',
+    desarrolladorNotFounded = 'Error al obtener desarrollador',
+    desarrolladorNotUpdated = 'Error al actualizar desarrollador',
+    desarrolladorNotDeleted = 'Error al borrar desarrollador'
+}
+
