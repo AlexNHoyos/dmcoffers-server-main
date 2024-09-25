@@ -6,11 +6,11 @@ export class Publisher {
     public id: string,
     public publishername: string,
     public foundation_date: Date,
-    public dissolution_date: Date,
+    public dissolution_date: Date | null,
     public status: boolean,
     public creationtimestamp: Date,
     public creationuser: string,
-    public modificationtimestamp: Date,
+    public modificationtimestamp: Date | null,
     public modificationuser: string
   ) {}
 }

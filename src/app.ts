@@ -1,26 +1,27 @@
 // Importamos el módulo 'express' para crear un servidor web
 // Importamos el enrutador para las rutas relacionadas con los editores
 import express, { Request, Response } from 'express';
+import cors from 'cors';
+
 import errorHandler from './middleware/errorHandler/errorHandler.js';
 
 import swaggerDocs from './swagger.js';
 import commonRouter from './routes/common.routes.js';
-
 
 // Creamos una instancia de la aplicación Express
 
 const app = express();
 // Configuramos Express para que pueda analizar solicitudes con formato JSON
 app.use(express.json());
+app.use(cors());
 
 app.use(commonRouter);
-
 
 app.use(errorHandler);
 
 //ruta para utilizar documentacion de swagger
 
-swaggerDocs(app)
+swaggerDocs(app);
 
 // Middleware para manejar solicitudes a rutas no encontradas
 app.use((_, res) => {

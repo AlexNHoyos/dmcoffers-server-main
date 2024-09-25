@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as userController from '../../controllers/usuarios/user.controller.js';
-import { body , param } from 'express-validator';
-
+import { body, param } from 'express-validator';
+import { authenticateToken } from '../../middleware/auth/authToken.js';
 
 const userRouter = Router();
 
@@ -34,10 +34,7 @@ userRouter.delete('/:id', param('id').notEmpty().isInt({ min: 1 }).withMessage('
 
 export default userRouter;
 
-
-
-
-//--------DOCUMENTACION DEL ENDPOINT PARA SWAGER ------------// 
+//--------DOCUMENTACION DEL ENDPOINT PARA SWAGER ------------//
 
 /**
  * @swagger
@@ -56,7 +53,7 @@ export default userRouter;
  *        404:
  *          description: No se encontraron Usuarios
  *        500:
- *          description: Error Interno del Servidor     
+ *          description: Error Interno del Servidor
  */
 
 /**
@@ -83,7 +80,7 @@ export default userRouter;
  *        404:
  *          description: No se encontró Usuario
  *        500:
- *          description: Error Interno del Servidor     
+ *          description: Error Interno del Servidor
  */
 
 /**
@@ -106,9 +103,8 @@ export default userRouter;
  *        404:
  *          description: No se creó Usuario
  *        500:
- *          description: Error Interno del Servidor     
+ *          description: Error Interno del Servidor
  */
-
 
 /**
  * @swagger
@@ -141,7 +137,7 @@ export default userRouter;
  *        404:
  *          description: No se encotró Usuario
  *        500:
- *          description: Error Interno del Servidor     
+ *          description: Error Interno del Servidor
  */
 
 /**
@@ -168,13 +164,8 @@ export default userRouter;
  *        404:
  *          description: No se encontró Usuario
  *        500:
- *          description: Error Interno del Servidor     
+ *          description: Error Interno del Servidor
  */
-
-
-
-
-
 
 //----SCHEMAS----//
 
@@ -205,7 +196,7 @@ export default userRouter;
  *           type: boolean
  *           description: Estado del Usuario. Activo o Inactivo
  *         password:
- *           type: string                    
+ *           type: string
  *           description: Password del Usuario. Debe Contener Mayúsculas, Minúsculas y números.
 
  *       required:
@@ -243,12 +234,9 @@ export default userRouter;
  *           type: boolean
  *           description: Estado del Usuario. Activo o Inactivo
  *       required:
- *         - realname 
+ *         - realname
  *         - surname
  *         - modificationuser
  *         - modificationtimestamp
- *         - status 
+ *         - status
  */
-
-
-

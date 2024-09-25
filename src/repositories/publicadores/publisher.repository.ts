@@ -9,7 +9,7 @@ import { errorEnumPublisher } from '../../middleware/errorHandler/constants/erro
 import { IBaseRepository } from '../interfaces/IBaseRepository.js';
 
 // Definimos la clase PublisherRepository e implementamos la interfaz Repository<Publisher>
-export class PublisherRepository implements IBaseRepository<Publisher>{
+export class PublisherRepository implements IBaseRepository<Publisher> {
   public async findAll() {
     try {
       const result = await pool.query(
@@ -50,6 +50,7 @@ export class PublisherRepository implements IBaseRepository<Publisher>{
     const {
       publishername,
       foundation_date,
+      dissolution_date,
       status,
       creationtimestamp,
       creationuser,
@@ -57,12 +58,13 @@ export class PublisherRepository implements IBaseRepository<Publisher>{
       modificationuser,
     } = pub;
     const query = `INSERT INTO pub_game_publisher 
-    (publishername, foundation_date, status, creationtimestamp, creationuser, modificationtimestamp, modificationuser) 
-    VALUES ($1, $2, $3, $4, $5, $6, $7) 
+    (publishername, foundation_date, dissolution_date, status, creationtimestamp, creationuser, modificationtimestamp, modificationuser) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
     RETURNING *`;
     const values = [
       publishername,
       foundation_date,
+      dissolution_date,
       status,
       creationtimestamp,
       creationuser,
@@ -95,17 +97,24 @@ export class PublisherRepository implements IBaseRepository<Publisher>{
   }
 
   async update(id: number, pub: Publisher) {
-    const { publishername, status } = pub;
+    const { publishername, dissolution_date, status, modificationuser } = pub;
     const query = `
     UPDATE pub_game_publisher pub 
       SET 
-        publishername = $1,  
-        modificationuser = current_user,
+        publishername = $1,
+        dissolution_date = $2, 
+        modificationuser = $5,
         modificationtimestamp = current_timestamp,
-        status = $2, 
-    WHERE pub.id = $3 
+        status = $3 
+    WHERE pub.id = $4 
     RETURNING *;`;
-    const values = [publishername, status, id];
+    const values = [
+      publishername,
+      dissolution_date,
+      status,
+      id,
+      modificationuser,
+    ];
 
     const client = await pool.connect();
 
@@ -136,6 +145,7 @@ export class PublisherRepository implements IBaseRepository<Publisher>{
         'DELETE FROM pub_game_publisher pub WHERE pub.id = $1 RETURNING *',
         [id]
       );
+      await client.query('COMMIT');
       return result.rows[0];
     } catch (error) {
       await client.query('ROLLBACK');

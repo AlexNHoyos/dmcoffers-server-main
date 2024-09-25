@@ -1,21 +1,27 @@
 import { Router } from 'express';
 import * as authController from '../../controllers/auth/auth.controller.js';
-import { body , param } from 'express-validator';
-
+import { body, param } from 'express-validator';
 
 const authRouter = Router();
 
-authRouter.post('/login',
-    [
-      body('username').notEmpty().isString().withMessage('username debe ser un string'),
-      body('password').notEmpty().isString().withMessage('password debe ser un string')
-    ], authController.login);
+authRouter.post(
+  '/login',
+  [
+    body('username')
+      .notEmpty()
+      .isString()
+      .withMessage('username debe ser un string'),
+    body('password')
+      .notEmpty()
+      .isString()
+      .withMessage('password debe ser un string'),
+  ],
+  authController.login
+);
 
 export default authRouter;
 
-
-
-//--------DOCUMENTACION DEL ENDPOINT PARA SWAGGER ------------// 
+//--------DOCUMENTACION DEL ENDPOINT PARA SWAGGER ------------//
 
 /**
  * @swagger
@@ -26,15 +32,14 @@ export default authRouter;
  *              properties:
  *                  username:
  *                      type: string
- *                      description: Nombre de Usuario 
+ *                      description: Nombre de Usuario
  *                  password:
- *                      type: string                    
+ *                      type: string
  *                      description: Password del Usuario
  *              required:
  *                  - username
  *                  - password
  */
-
 
 /**
  * @swagger
@@ -60,5 +65,5 @@ export default authRouter;
  *        404:
  *          description: No se encontró Usuario
  *        500:
- *          description: Error Interno del Servidor     
+ *          description: Error Interno del Servidor
  */
