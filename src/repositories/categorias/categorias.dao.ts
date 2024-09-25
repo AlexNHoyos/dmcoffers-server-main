@@ -5,7 +5,7 @@ import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError
 import { errorEnumCategories } from '../../middleware/errorHandler/constants/errorConstants.js';
 import { AppDataSource } from '../../shared/pg-database/db.js';
 
-export class HostingRepository implements IBaseRepository<Categorias> {
+export class CategoriasRepository implements IBaseRepository<Categorias> {
   private repository: Repository<Categorias>;
 
   constructor() {
