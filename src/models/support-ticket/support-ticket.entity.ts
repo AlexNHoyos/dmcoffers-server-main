@@ -3,10 +3,10 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 
 @Entity('hd_support_ticket') // El nombre de la tabla en la base de datos
 
-export class supportTicket {
+export class SupportTicket {
 
     @PrimaryGeneratedColumn()
-    public id: string;
+    public id: number;
 
     @Column({type: "boolean"})
     public status: boolean;
@@ -24,7 +24,7 @@ export class supportTicket {
     public modificationtimestamp: Date;
 
     constructor(
-        id: string,
+        id: number,
         status: boolean,
         creationuser: string,
         creationtimestamp: Date,

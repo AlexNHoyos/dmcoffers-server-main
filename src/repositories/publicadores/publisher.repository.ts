@@ -18,10 +18,7 @@ export class PublisherRepository implements IBaseRepository<Publisher> {
       return result.rows;
     } catch (error) {
       console.error(errorEnumPublisher.publishersNotFounded, error);
-      throw new DatabaseErrorCustom(
-        errorEnumPublisher.publishersNotFounded,
-        500
-      );
+      throw new DatabaseErrorCustom(errorEnumPublisher.publishersNotFounded, 500);
     }
   }
 
@@ -39,10 +36,7 @@ export class PublisherRepository implements IBaseRepository<Publisher> {
       }
     } catch (error) {
       console.error(errorEnumPublisher.publisherIndicatedNotFound, error);
-      throw new DatabaseErrorCustom(
-        errorEnumPublisher.publisherIndicatedNotFound,
-        500
-      );
+      throw new DatabaseErrorCustom(errorEnumPublisher.publisherIndicatedNotFound, 500);
     }
   }
 
@@ -86,10 +80,7 @@ export class PublisherRepository implements IBaseRepository<Publisher> {
       // Hacer rollback de la transacción en caso de error
       await client.query('ROLLBACK');
       console.error(errorEnumPublisher.publisherNotCreated, error);
-      throw new DatabaseErrorCustom(
-        errorEnumPublisher.publisherNotCreated,
-        500
-      );
+      throw new DatabaseErrorCustom(errorEnumPublisher.publisherNotCreated, 500);
     } finally {
       // Liberar el cliente de nuevo al pool
       client.release();
@@ -126,10 +117,7 @@ export class PublisherRepository implements IBaseRepository<Publisher> {
     } catch (error) {
       await client.query('ROLLBACK');
       console.error(errorEnumPublisher.publisherNotUpdated, error);
-      throw new DatabaseErrorCustom(
-        errorEnumPublisher.publisherNotUpdated,
-        500
-      );
+      throw new DatabaseErrorCustom(errorEnumPublisher.publisherNotUpdated, 500);
     } finally {
       client.release();
     }
@@ -150,10 +138,7 @@ export class PublisherRepository implements IBaseRepository<Publisher> {
     } catch (error) {
       await client.query('ROLLBACK');
       console.error(errorEnumPublisher.publisherNotDeleted, error);
-      throw new DatabaseErrorCustom(
-        errorEnumPublisher.publisherNotDeleted,
-        500
-      );
+      throw new DatabaseErrorCustom(errorEnumPublisher.publisherNotDeleted, 500);
     } finally {
       client.release();
     }
