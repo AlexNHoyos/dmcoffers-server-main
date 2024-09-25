@@ -219,6 +219,10 @@ export default publisherRouter;
  *         publishername:
  *           type: string
  *           description: Nombre de Publicador
+ *         foundation_date:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de modificacion del publicador
  *         creationuser:
  *           type: string
  *           description: Nombre de usuario que creó el publicador
@@ -230,6 +234,7 @@ export default publisherRouter;
  *           type: boolean
  *           description: Estado del Publicador. Activo o inactivo
  *       required:
+ *         - foundation_date
  *         - publishername
  *         - creationuser
  *         - creationtimestamp

@@ -1,18 +1,47 @@
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, DeleteDateColumn,Relation } from 'typeorm';
+import { UserAuth } from './user-auth.entity.js';
+
+@Entity('swe_usrapl') // El nombre de la tabla en la base de datos
+
 export class User {
-    public id: string | undefined;
+    @PrimaryGeneratedColumn()
+    public id: number | undefined;
+
+    @Column({name: "realname",type: "varchar"})
     public realname: string | undefined;
+    
+    @Column({name: "surname",type: "varchar"})
     public surname: string | undefined;
+    
+    @Column({name: "username",type: "varchar"})
     public username: string | undefined;
+    
+    @Column({name: "birth_date",type: "timestamp"})
     public birth_date: Date | undefined;
+    
+    @DeleteDateColumn({name: "delete_date",type: "timestamp"})
     public delete_date: Date | undefined;
+    
+    @Column({name: "creationuser",type: "varchar"})
     public creationuser: string | undefined;
+    
+    @CreateDateColumn()
     public creationtimestamp: Date | undefined;
+    
+    @Column({name: "modificationuser",type: "varchar", nullable: true })
     public modificationuser: string | undefined;
+    
+    @UpdateDateColumn({nullable: true })
     public modificationtimestamp: Date | undefined;
+    
+    @Column({name: "status",type: "boolean"})
     public status: boolean | undefined;
 
+    @OneToOne(() => UserAuth, (userauth) => userauth.user, { cascade: true, eager: true }) // Unidireccional: Solo User tiene la referencia
+    public userauth?: Relation<UserAuth>;
+
     constructor(
-        id?: string,
+        id?: number,
         realname?: string,
         surname?: string,
         username?: string,

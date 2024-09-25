@@ -1,5 +1,5 @@
 // user.service.ts
-import { UserRepository } from '../../repositories/usuarios/user.repository.js';
+import { UserRepository } from '../../repositories/usuarios/user.dao.js';
 import { User } from '../../models/usuarios/user.entity.js';
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
 import { IUserService } from '../interfaces/user/IUserService.js';
@@ -40,24 +40,20 @@ export class UserService implements IUserService {
     }
 
 
-    const { userToValidate, userToCreate }: { userToValidate: UserAuth; userToCreate: User; } = this.initializeUser(newUser);
+    const userToCreate = await this.initializeUser(newUser);
 
-    const userAuthValidated = await this.authService.validateUserAuthOnCreate(userToValidate);
-
-
-    const [userCreated, userAuthCreated] = await this.userRepository.registerUser(userToCreate, userAuthValidated);
+    const userCreated = await this.userRepository.registerUser(userToCreate);
            
     const userOutput : UserDto = {
       idUser: userCreated.id,
-      idUserAuth: userAuthCreated.id,
+      idUserAuth: userCreated.userauth?.id,
       realname: userCreated.realname,
       surname: userCreated.surname,
       username: userCreated.username,
       birth_date: userCreated.birth_date,
       creationuser: userCreated.creationuser,
       creationtimestamp: userCreated.creationtimestamp,
-      password: userAuthCreated.password,
-      salt: userAuthCreated.salt,
+      password: userCreated.userauth?.password,
       status: userCreated.status,
       delete_date: userCreated.delete_date,
       modificationuser: undefined,
@@ -76,6 +72,8 @@ export class UserService implements IUserService {
       throw new ValidationError('Usuario no encontrado', 400);
    }
 
+
+   
     const updatedUser: User = {
       id: oldUser.id, 
       realname: user.realname ?? oldUser.realname,
@@ -87,7 +85,7 @@ export class UserService implements IUserService {
       creationuser: oldUser.creationuser, // No debe cambiar en la actualización
       creationtimestamp: oldUser.creationtimestamp, // No debe cambiar en la actualización
       modificationuser: user.modificationuser ?? oldUser?.modificationuser,
-      modificationtimestamp: user.modificationtimestamp ?? new Date() // Fecha de modificación actual
+      modificationtimestamp: user.modificationtimestamp ?? new Date(), // Fecha de modificación actual
   };
 
     return this.userRepository.update(id, updatedUser);
@@ -102,32 +100,36 @@ export class UserService implements IUserService {
   }
 
 
-  private initializeUser(newUser: UserDto) {
+  private async initializeUser(newUser: UserDto) {
 
     newUser.creationtimestamp = new Date();
 
     const userToValidate: UserAuth = new UserAuth(
+      newUser.password!,
       newUser.creationuser!,
       newUser.creationtimestamp,
-      newUser.password!,
-      newUser.salt
+
     );
 
-    const userToCreate: User = {
-      id: undefined,
-      realname: newUser.realname,
-      surname: newUser.surname,
-      username: newUser.username,
-      birth_date: newUser.birth_date,
-      delete_date: newUser.delete_date,
-      status: newUser.status,
-      creationuser: newUser.creationuser,
-      creationtimestamp: newUser.creationtimestamp,
-      modificationuser: newUser.modificationuser,
-      modificationtimestamp: newUser.modificationtimestamp
-    };
+    const userAuthValidated = await this.authService.validateUserAuthOnCreate(userToValidate);
 
-    return { userToValidate, userToCreate };
+    const userToCreate: User = new User ();
+      userToCreate.id= undefined;
+      userToCreate.realname= newUser.realname;
+      userToCreate.surname= newUser.surname;
+      userToCreate.username= newUser.username;
+      userToCreate.birth_date= newUser.birth_date;
+      userToCreate.delete_date= newUser.delete_date;
+      userToCreate.status= newUser.status;
+      userToCreate.creationuser= newUser.creationuser;
+      userToCreate.creationtimestamp= newUser.creationtimestamp;
+      userToCreate.modificationuser= newUser.modificationuser;
+      userToCreate.modificationtimestamp= newUser.modificationtimestamp;
+      userToCreate.userauth= userAuthValidated?? undefined;
+  
+    
+    
+    return userToCreate;
 
   }
 }

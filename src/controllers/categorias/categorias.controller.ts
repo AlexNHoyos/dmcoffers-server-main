@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { CategoriasRepository } from '../../repositories/categorias/categorias.repository.js';
+import { CategoriasRepository } from '../../repositories/categorias/categorias.dao.js';
 import { validationResult } from 'express-validator';
 
 const categoriasRepository = new CategoriasRepository();

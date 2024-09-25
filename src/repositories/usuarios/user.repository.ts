@@ -177,7 +177,7 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async registerUser(user: User, userAuth: UserAuth): Promise<[User, UserAuth]> {
+  async registerUser(user: User): Promise<User> {
     const client = await pool.connect();
 
     try {
@@ -213,8 +213,7 @@ export class UserRepository implements IUserRepository {
             insertedUser.id, // Asumiendo que la tabla swe_usrapl tiene un campo id
             insertedUser.creationuser,
             insertedUser.creationtimestamp,
-            userAuth.password,
-            userAuth.salt,
+
         ];
 
         const userAuthResult = await client.query(userAuthInsertQuery, userAuthValues);
@@ -222,7 +221,7 @@ export class UserRepository implements IUserRepository {
 
         await client.query('COMMIT');
 
-        return [insertedUser, insertedUserAuth];
+        return insertedUser;
 
     } catch (error) {
       // Hacer rollback de la transacción en caso de error

@@ -18,10 +18,7 @@ export class DesarrolladoresRepository implements IBaseRepository<Desarrollador>
             return result.rows;
         } catch (error) {
             console.error(errorEnumDesarrollador.desarrolladorNotFounded, error);
-            throw new DatabaseErrorCustom(
-                errorEnumDesarrollador.desarrolladorNotFounded,
-                500
-            );
+            throw new DatabaseErrorCustom(errorEnumDesarrollador.desarrolladorNotFounded, 500);
         }
     }
 
@@ -39,10 +36,7 @@ export class DesarrolladoresRepository implements IBaseRepository<Desarrollador>
             }
         } catch (error) {
             console.error(errorEnumDesarrollador.desarrolladorIndicatedNotFound, error);
-            throw new DatabaseErrorCustom(
-                errorEnumDesarrollador.desarrolladorIndicatedNotFound,
-                500
-            );
+            throw new DatabaseErrorCustom( errorEnumDesarrollador.desarrolladorIndicatedNotFound, 500);
         }
     }
 
@@ -86,10 +80,7 @@ export class DesarrolladoresRepository implements IBaseRepository<Desarrollador>
             // Hacer rollback de la transacción en caso de error
             await client.query('ROLLBACK');
             console.error(errorEnumDesarrollador.desarrolladorNotCreated, error);
-            throw new DatabaseErrorCustom(
-                errorEnumDesarrollador.desarrolladorNotCreated,
-                500
-            );
+            throw new DatabaseErrorCustom(errorEnumDesarrollador.desarrolladorNotCreated, 500);
         } finally {
             // Liberar el cliente de nuevo al pool
             client.release();
@@ -120,10 +111,7 @@ export class DesarrolladoresRepository implements IBaseRepository<Desarrollador>
         } catch (error) {
             await client.query('ROLLBACK');
             console.error(errorEnumDesarrollador.desarrolladorNotUpdated, error);
-            throw new DatabaseErrorCustom(
-                errorEnumDesarrollador.desarrolladorNotUpdated,
-                500
-            );
+            throw new DatabaseErrorCustom(errorEnumDesarrollador.desarrolladorNotUpdated, 500);
         } finally {
             client.release();
         }
@@ -151,36 +139,10 @@ export class DesarrolladoresRepository implements IBaseRepository<Desarrollador>
         } catch (error) {
             await client.query('ROLLBACK');
             console.error(errorEnumDesarrollador.desarrolladorNotDeleted, error);
-            throw new DatabaseErrorCustom(
-                errorEnumDesarrollador.desarrolladorNotDeleted,
-                500
-            );
+            throw new DatabaseErrorCustom(errorEnumDesarrollador.desarrolladorNotDeleted, 500);
         } finally {
             client.release();
         }
     }
 
-
-    /* public async delete(id: number): Promise<Desarrollador | undefined> {
-        const client = await pool.connect();
-
-        try {
-            await client.query('BEGIN');
-
-            const result = await client.query(
-                'DELETE FROM pub_game_developer WHERE id = $1 RETURNING *',
-                [id]
-            );
-            return result.rows[0];
-        } catch (error) {
-            await client.query('ROLLBACK');
-            console.error(errorEnumDesarrollador.desarrolladorNotDeleted, error);
-            throw new DatabaseErrorCustom(
-                errorEnumDesarrollador.desarrolladorNotDeleted,
-                500
-            );
-        } finally {
-            client.release();
-        }
-    } */
 }

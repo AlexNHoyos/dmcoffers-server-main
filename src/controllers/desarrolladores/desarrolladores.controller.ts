@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { DesarrolladoresRepository } from '../../repositories/desarrolladores/desarrolladores.repository.js';
+import { DesarrolladoresRepository } from '../../repositories/desarrolladores/desarrolladores.dao.js';
 import { validationResult } from 'express-validator';
 
 const desarrolladorRepository = new DesarrolladoresRepository();

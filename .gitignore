@@ -30,3 +30,6 @@ dist/**/*
 ## built vscode extensions
 *.vsix
 src/shared/pg-database/.env
+
+##Build
+*.tsbuildinfo

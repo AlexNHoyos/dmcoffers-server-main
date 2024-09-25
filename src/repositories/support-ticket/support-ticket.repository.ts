@@ -1,4 +1,4 @@
-import { supportTicket } from "../../models/support-ticket/support-ticket.entity.js";
+import { SupportTicket } from "../../models/support-ticket/support-ticket.entity.js";
 import pool from '../../shared/pg-database/db.js';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumSupportTicket } from '../../middleware/errorHandler/constants/errorConstants.js';
@@ -6,7 +6,7 @@ import { IBaseRepository } from "../interfaces/IBaseRepository.js";
 
 
 
-export class SupportTicketRepository implements IBaseRepository<supportTicket>{
+export class SupportTicketRepository implements IBaseRepository<SupportTicket>{
 
     async findAll() {
         try {
@@ -18,11 +18,11 @@ export class SupportTicketRepository implements IBaseRepository<supportTicket>{
         }
     }
 
-    async findOne(id: number): Promise<supportTicket | undefined> {
+    async findOne(id: number): Promise<SupportTicket | undefined> {
         try {
             const result = await pool.query('SELECT * FROM hd_support_ticket st WHERE st.id = $1', [id]);
             if (result.rows.length > 0) {
-                const supportTicket = result.rows[0] as supportTicket;
+                const supportTicket = result.rows[0] as SupportTicket;
                 return supportTicket;
             } else {
                 return undefined;
@@ -33,7 +33,7 @@ export class SupportTicketRepository implements IBaseRepository<supportTicket>{
         }
     }
 
-    async create(supportTicket: supportTicket) {
+    async create(supportTicket: SupportTicket) {
         const { creationuser, creationtimestamp, status } = supportTicket;
         const query =
             `INSERT INTO hd_support_ticket
@@ -65,7 +65,7 @@ export class SupportTicketRepository implements IBaseRepository<supportTicket>{
         }
     }
 
-    async update(id: number, supportTicket: supportTicket) {
+    async update(id: number, supportTicket: SupportTicket) {
         const { status } = supportTicket;
         //arma la query de actualizcion
         const query =
@@ -94,7 +94,7 @@ export class SupportTicketRepository implements IBaseRepository<supportTicket>{
         }
     }
 
-    async delete(id: number): Promise<supportTicket | undefined> {
+    async delete(id: number): Promise<SupportTicket | undefined> {
         const client = await pool.connect();
 
         try {

@@ -1,30 +1,42 @@
 import { User } from "./user.entity.js";
-export class UserAuth {
-    private _password: string;
-    salt: string | undefined;
-    id: string | undefined;
-    modificationuser: string | undefined;
-    creationuser: string;
-    creationtimestamp: Date;
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, JoinColumn, PrimaryColumn,Relation } from 'typeorm';
 
+
+@Entity('swe_usrauth')
+export class UserAuth {
+
+    @PrimaryGeneratedColumn({type: "int"})
+    id: number | undefined;
+
+    @Column({name: "password",type: "varchar"})
+    private _password: string ;
     
-    constructor(        
-        creationuser: string,
-        creationtimestamp: Date,
-        password: string,
-        salt?: string,
-        id?: string,
-        modificationuser?: string
+    @Column({name: "creationuser", type: "varchar"})
+    creationuser: string | undefined; 
+    
+    @CreateDateColumn({name: "creationtimestamp", type: "timestamp", })
+    creationtimestamp: Date | undefined;
+
+
+
+    @OneToOne(() => User, (user) => user.userauth)
+    @JoinColumn({ name: 'id_usrapl' }) // 'id' es la clave primaria de User y la FK en UserAuth
+    public user!: Relation<User>;
+
+    constructor(   
+        password: string,  
+        creationuser?: string,
+        creationtimestamp?: Date,
+        id?: number,
     ) 
     {
         this.id = id;
         this.creationuser = creationuser;
         this.creationtimestamp = creationtimestamp;
-        this.salt = salt;
         this._password = password
-        this.modificationuser = modificationuser;
-        
     }
+
+  
 
 
     set password(newPassword: string) {
@@ -32,7 +44,10 @@ export class UserAuth {
     }
 
     get password(): string {
-        return this._password;
+
+        const pass = this._password
+
+        return pass?? "";
     }
 
 }

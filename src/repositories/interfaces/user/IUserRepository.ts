@@ -7,6 +7,6 @@ export interface IUserRepository extends IBaseRepository<User | UserAuth > {
     
     findByUserName(userName: string): Promise<User | undefined>;
    
-    registerUser( user: User, userAuth: UserAuth): Promise<[User, UserAuth]>; 
+    registerUser( user: User): Promise<User>; 
   }
   
