@@ -6,6 +6,10 @@ import { DataSource } from 'typeorm';
 import { Hosting } from '../../models/hosting/hosting.entity.js';
 import { User } from '../../models/usuarios/user.entity.js';
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
+import { Categorias } from '../../models/categorias/categorias.entity.js';
+import { Publisher } from '../../models/publicadores/publisher.entity.js';
+import { supportTicket } from '../../models/support-ticket/support-ticket.entity.js';
+import { Desarrollador } from '../../models/desarrolladores/desarrolladores.entity.js';
 
 // Cargar las variables de entorno desde el archivo .env
 if (process.env.NODE_ENV != 'production') {
@@ -31,7 +35,7 @@ export const AppDataSource = new DataSource({
   database:  process.env.POSTGRES_DB,
   synchronize: false, // tiene que estar en true momentaneamente se deja en false por cuestiones funcionales
   logging: false,
-  entities: [Hosting, User, UserAuth], // se deben agregar las entidades que vayan pasando a typeORM
+  entities: [Hosting, User, UserAuth, Categorias, Publisher, supportTicket, Desarrollador], // se deben agregar las entidades que vayan pasando a typeORM
   migrations: ['src/migrations/**/*.js'],
   subscribers: ['src/subscribers/**/*.js'], 
   
