@@ -1,77 +1,115 @@
 import { Request, Response, NextFunction, response } from 'express';
-import { CategoriasRepository } from '../../repositories/categorias/categorias.repository1.js';
-import { Categorias } from '../../models/categorias/categorias.entity.js';
+import { CategoriasRepository } from '../../repositories/categorias/categorias.repository.js';
+import { validationResult } from 'express-validator';
 
-const repository = new CategoriasRepository();
-
-function sanitizeCategoriaInput(req: Request, res: Response, next: NextFunction) {
-    req.body.sanitizedInput = {
-        id: req.body.id,
-        descripcion: req.body.descripcion,
-        creationtimestamp: req.body.creationtimestamp,
-        creationuser: req.body.creationuser,
-        modificationtimestamp: req.body.modificationtimestamp,
-        modificationuser: req.body.modificationuser
-    };
-
-    Object.keys(req.body.sanitizedInput).forEach((key) => {
-        if (req.body.sanitizedInput[key] === undefined) {
-            delete req.body.sanitizedInput[key];
-        }
-    })
-    next();
-}
-
-function findAll(req: Request, res: Response) {
-    res.json({ data: repository.findAll() });
-}
-
-function findOne(req: Request, res: Response) {
-    const id = req.params.id;
-    const categoria = repository.findOne({ id });
-
-    if (!categoria) {
-        return res.status(404).send({ message: 'Categoria Not Found' });
-    };
-    res.json({ data: categoria });
-}
-
-function add(req: Request, res: Response) {
-    const input = req.body.sanitizedInput
-
-    const categoriaInput = new Categorias(
-        input.id,
-        input.descripcion,
-        input.creationtimestamp,
-        input.creationuser,
-        input.modificationtimestamp,
-        input.modificationuser
-    );
-
-    const categoria = repository.add(categoriaInput);
-    return res.status(201).send({ message: 'Categoria creada', data: categoria });
-}
-
-function update(req: Request, res: Response) {
-    req.body.sanitizedInput.id = req.params.id;
-    const categoria = repository.update(req.body.sanitizedInput);
-
-    if (!categoria) {
-        return res.status(404).send({ message: 'Categoria Not Found' });
+const categoriasRepository = new CategoriasRepository();
+export const findAll = async(
+    req: Request,
+    res: Response,
+    next: NextFunction
+)=>{
+    try {
+    const categorias = await categoriasRepository.findAll();
+        if (categorias.length > 0) {
+      res.status(200).json(categorias);
     } else {
-        return res.status(200).send({ message: 'Foro Updated Successfully' });
+      res.status(404).json({ message: 'No se han encontrado categorias' });
     }
-}
-
-function remove(req: Request, res: Response) {
-    const id = req.params.id;
-    const categoria = repository.delete({ id });
-
-    if (!categoria) {
-        res.status(400).send({ message: 'Foro Not Found' });
-    } else {
-        res.status(200).send({ message: 'Foto Deleted Successfully' });
+    } catch (error) {
+        next(error)
     }
-}
+};
 
-export { sanitizeCategoriaInput, findAll, findOne, add, update, remove };
+//Obtener todas las categorias
+export const findOne = async (
+    req: Request,
+  res: Response,
+  next: NextFunction
+)=>{
+    const id = parseInt(req.params.id, 10);
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+  }
+    try {
+      const categorias = await categoriasRepository.findOne(id);
+      if (categorias) {
+        res.status(200).json(categorias);
+      } else {
+        res.status(404).json({ message: 'Categoría no encontrada' });
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //Crear una categoría
+  export const create = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const newCat = req.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+      const createdCat = await categoriasRepository.create(newCat);
+      res.status(201).json(createdCat);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //Actualizar una categoría
+  export const update = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const id = parseInt(req.params.id, 10);
+    const catUpdates = req.body;
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+  
+    try {
+      const updatedCat = await categoriasRepository.update(id, catUpdates);
+      if (updatedCat) {
+        res.status(200).json(updatedCat);
+      } else {
+        res.status(404).json({ message: 'Categoría no encontrada' });
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
+  
+  // Eliminar una categoría
+  export const remove = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const id = parseInt(req.params.id, 10);
+  
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    
+    try {
+      const deletedCategoria = await categoriasRepository.delete(id);
+      if (deletedCategoria) {
+        res.status(200).json(deletedCategoria);
+      } else {
+        res.status(404).json({ message: 'Categoría no encontrada' });
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
+  
