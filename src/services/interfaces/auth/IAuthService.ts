@@ -1,6 +1,9 @@
 import { IBaseService } from '../IBaseService.js';
 import { UserAuth } from '../../../models/usuarios/user-auth.entity.js';
 
-export interface IAuthService extends IBaseService<UserAuth> {
-  // Métodos adicionales específicos para Auth, agregar cuando los haya
+export interface IAuthService {
+  
+  login(user: string, password: string): Promise <string>;
+
+  validateUserAuthOnCreate(userAuth: UserAuth): Promise<UserAuth>
 }
