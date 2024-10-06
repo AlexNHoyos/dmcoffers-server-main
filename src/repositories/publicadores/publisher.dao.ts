@@ -14,20 +14,30 @@ export class PublisherRepository implements IBaseRepository<Publisher> {
 
   async findAll(): Promise<Publisher[]> {
     try {
-      return await this.repository.find();
+      return await this.repository.find({
+        order: {
+          id: 'ASC', // Ordena por id ascendente
+        },
+      });
     } catch (error) {
-        console.error(errorEnumPublisher.publishersNotFounded, error);
-        throw new DatabaseErrorCustom(errorEnumPublisher.publishersNotFounded, 500);
+      console.error(errorEnumPublisher.publishersNotFounded, error);
+      throw new DatabaseErrorCustom(
+        errorEnumPublisher.publishersNotFounded,
+        500
+      );
     }
   }
 
   async findOne(id: number): Promise<Publisher | undefined> {
     try {
-        const publisher = await this.repository.findOneBy({ id });
-        return publisher?? undefined;
+      const publisher = await this.repository.findOneBy({ id });
+      return publisher ?? undefined;
     } catch (error) {
-        console.error(errorEnumPublisher.publisherIndicatedNotFound, error);
-        throw new DatabaseErrorCustom(errorEnumPublisher.publisherIndicatedNotFound, 500);
+      console.error(errorEnumPublisher.publisherIndicatedNotFound, error);
+      throw new DatabaseErrorCustom(
+        errorEnumPublisher.publisherIndicatedNotFound,
+        500
+      );
     }
   }
 
@@ -35,8 +45,11 @@ export class PublisherRepository implements IBaseRepository<Publisher> {
     try {
       return await this.repository.save(publisher);
     } catch (error) {
-        console.error(errorEnumPublisher.publisherNotCreated, error);
-        throw new DatabaseErrorCustom(errorEnumPublisher.publisherNotCreated, 500);
+      console.error(errorEnumPublisher.publisherNotCreated, error);
+      throw new DatabaseErrorCustom(
+        errorEnumPublisher.publisherNotCreated,
+        500
+      );
     }
   }
 
@@ -44,13 +57,19 @@ export class PublisherRepository implements IBaseRepository<Publisher> {
     try {
       const existingpublisher = await this.repository.findOneBy({ id });
       if (!existingpublisher) {
-        throw new DatabaseErrorCustom(errorEnumPublisher.publisherIndicatedNotFound, 404);
+        throw new DatabaseErrorCustom(
+          errorEnumPublisher.publisherIndicatedNotFound,
+          404
+        );
       }
       await this.repository.update(id, publisher);
       return this.repository.findOneOrFail({ where: { id } }); // Retorna la entidad actualizada
     } catch (error) {
-        console.error(errorEnumPublisher.publisherNotUpdated, error);
-        throw new DatabaseErrorCustom(errorEnumPublisher.publisherNotUpdated, 500);
+      console.error(errorEnumPublisher.publisherNotUpdated, error);
+      throw new DatabaseErrorCustom(
+        errorEnumPublisher.publisherNotUpdated,
+        500
+      );
     }
   }
 
@@ -58,13 +77,19 @@ export class PublisherRepository implements IBaseRepository<Publisher> {
     try {
       const publisher = await this.repository.findOneBy({ id });
       if (!publisher) {
-        throw new DatabaseErrorCustom(errorEnumPublisher.publisherIndicatedNotFound, 404);
+        throw new DatabaseErrorCustom(
+          errorEnumPublisher.publisherIndicatedNotFound,
+          404
+        );
       }
       await this.repository.remove(publisher);
       return publisher;
     } catch (error) {
-        console.error(errorEnumPublisher.publisherNotDeleted, error);
-        throw new DatabaseErrorCustom(errorEnumPublisher.publisherNotDeleted, 500);
+      console.error(errorEnumPublisher.publisherNotDeleted, error);
+      throw new DatabaseErrorCustom(
+        errorEnumPublisher.publisherNotDeleted,
+        500
+      );
     }
   }
 }
