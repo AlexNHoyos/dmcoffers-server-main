@@ -1,8 +1,10 @@
 import { Router } from 'express';
-import * as publisherController from '../../controllers/publicadores/publishers.controller.js';
 import { body, param } from 'express-validator';
+import { PublisherController } from '../../controllers/publicadores/publishers.controller.js';
+import { container } from '../../config/dependency-injection/inversify.config.js';
 
 const publisherRouter = Router();
+const publisherController = container.get<PublisherController>(PublisherController);
 
 publisherRouter.get('/', publisherController.findAll);
 publisherRouter.post(

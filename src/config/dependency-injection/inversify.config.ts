@@ -14,19 +14,25 @@ import { HostingService } from '../../services/hosting/hosting.service.js';
 import { SupportTicketController } from '../../controllers/support-ticket/support-ticket.controller.js';
 import { SupportTicketService } from '../../services/support-ticket/support-ticket.service.js';
 import { ISupportTicketService } from '../../services/interfaces/support-ticket/ISupport-ticket.js';
+import { IPublisherService } from '../../services/interfaces/publisher/IPublisherService.js';
+import { PublisherService } from '../../services/publisher/publisher.service.js';
+import { PublisherController } from '../../controllers/publicadores/publishers.controller.js';
+import { PublisherRepository } from '../../repositories/publicadores/publisher.dao.js';
 
 
 // Crear un nuevo contenedor de Inversify
-const container = new Container();
+const container = new Container({ defaultScope: "Singleton" });
 
 // Controladores
 container.bind<AuthController>(AuthController).toSelf();
 container.bind<UserController>(UserController).toSelf();
 container.bind<HostingController>(HostingController).toSelf();
 container.bind<SupportTicketController>(SupportTicketController).toSelf();
+container.bind<PublisherController>(PublisherController).toSelf();
 
 // Repositorios
 container.bind<UserAuthRepository>(UserAuthRepository).toSelf();
+container.bind<PublisherRepository>(PublisherRepository).toSelf();
 
 
 // Interfaces
@@ -35,6 +41,7 @@ container.bind<IUserService>(UserService).to(UserService);
 container.bind<IPasswordService>(PasswordService).to(PasswordService);
 container.bind<IHostingService>(HostingService).to(HostingService);
 container.bind<ISupportTicketService>(SupportTicketService).to(SupportTicketService);
+container.bind<IPublisherService>(PublisherService).to(PublisherService);
 
 
 

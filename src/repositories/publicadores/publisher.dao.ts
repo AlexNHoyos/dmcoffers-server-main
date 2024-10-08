@@ -4,7 +4,9 @@ import { IBaseRepository } from '../interfaces/IBaseRepository.js';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumPublisher } from '../../middleware/errorHandler/constants/errorConstants.js';
 import { AppDataSource } from '../../config/pg-database/db.js';
+import { injectable } from 'inversify';
 
+@injectable()
 export class PublisherRepository implements IBaseRepository<Publisher> {
   private repository: Repository<Publisher>;
 
