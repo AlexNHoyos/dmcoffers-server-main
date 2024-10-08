@@ -5,7 +5,9 @@ import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError
 import { errorEnumDesarrollador } from '../../middleware/errorHandler/constants/errorConstants.js';
 import { AppDataSource } from '../../config/pg-database/db.js';
 
-export class DesarrolladoresRepository implements IBaseRepository<Desarrollador> {
+export class DesarrolladoresRepository
+  implements IBaseRepository<Desarrollador>
+{
   private repository: Repository<Desarrollador>;
 
   constructor() {
@@ -14,20 +16,33 @@ export class DesarrolladoresRepository implements IBaseRepository<Desarrollador>
 
   async findAll(): Promise<Desarrollador[]> {
     try {
-      return await this.repository.find();
+      return await this.repository.find({
+        order: {
+          id: 'ASC', // Ordenar por id ascendente
+        },
+      });
     } catch (error) {
-        console.error(errorEnumDesarrollador.desarrolladorNotFounded, error);
-        throw new DatabaseErrorCustom(errorEnumDesarrollador.desarrolladorNotFounded, 500);
+      console.error(errorEnumDesarrollador.desarrolladorNotFounded, error);
+      throw new DatabaseErrorCustom(
+        errorEnumDesarrollador.desarrolladorNotFounded,
+        500
+      );
     }
   }
 
   async findOne(id: number): Promise<Desarrollador | undefined> {
     try {
-        const hosting = await this.repository.findOneBy({ id });
-        return hosting?? undefined;
+      const hosting = await this.repository.findOneBy({ id });
+      return hosting ?? undefined;
     } catch (error) {
-        console.error(errorEnumDesarrollador.desarrolladorIndicatedNotFound, error);
-        throw new DatabaseErrorCustom( errorEnumDesarrollador.desarrolladorIndicatedNotFound, 500);
+      console.error(
+        errorEnumDesarrollador.desarrolladorIndicatedNotFound,
+        error
+      );
+      throw new DatabaseErrorCustom(
+        errorEnumDesarrollador.desarrolladorIndicatedNotFound,
+        500
+      );
     }
   }
 
@@ -35,22 +50,34 @@ export class DesarrolladoresRepository implements IBaseRepository<Desarrollador>
     try {
       return await this.repository.save(desarrollador);
     } catch (error) {
-        console.error(errorEnumDesarrollador.desarrolladorNotCreated, error);
-        throw new DatabaseErrorCustom(errorEnumDesarrollador.desarrolladorNotCreated, 500);
+      console.error(errorEnumDesarrollador.desarrolladorNotCreated, error);
+      throw new DatabaseErrorCustom(
+        errorEnumDesarrollador.desarrolladorNotCreated,
+        500
+      );
     }
   }
 
-  async update(id: number, desarrollador: Desarrollador): Promise<Desarrollador> {
+  async update(
+    id: number,
+    desarrollador: Desarrollador
+  ): Promise<Desarrollador> {
     try {
       const existingdesarrollador = await this.repository.findOneBy({ id });
       if (!existingdesarrollador) {
-        throw new DatabaseErrorCustom(errorEnumDesarrollador.desarrolladorIndicatedNotFound, 404);
+        throw new DatabaseErrorCustom(
+          errorEnumDesarrollador.desarrolladorIndicatedNotFound,
+          404
+        );
       }
       await this.repository.update(id, desarrollador);
       return this.repository.findOneOrFail({ where: { id } }); // Retorna la entidad actualizada
     } catch (error) {
-        console.error(errorEnumDesarrollador.desarrolladorNotUpdated, error);
-        throw new DatabaseErrorCustom(errorEnumDesarrollador.desarrolladorNotUpdated, 500);
+      console.error(errorEnumDesarrollador.desarrolladorNotUpdated, error);
+      throw new DatabaseErrorCustom(
+        errorEnumDesarrollador.desarrolladorNotUpdated,
+        500
+      );
     }
   }
 
@@ -58,13 +85,19 @@ export class DesarrolladoresRepository implements IBaseRepository<Desarrollador>
     try {
       const desarrollador = await this.repository.findOneBy({ id });
       if (!desarrollador) {
-        throw new DatabaseErrorCustom(errorEnumDesarrollador.desarrolladorIndicatedNotFound, 404);
+        throw new DatabaseErrorCustom(
+          errorEnumDesarrollador.desarrolladorIndicatedNotFound,
+          404
+        );
       }
       await this.repository.remove(desarrollador);
       return desarrollador;
     } catch (error) {
-        console.error(errorEnumDesarrollador.desarrolladorNotDeleted, error);
-        throw new DatabaseErrorCustom(errorEnumDesarrollador.desarrolladorNotDeleted, 500);
+      console.error(errorEnumDesarrollador.desarrolladorNotDeleted, error);
+      throw new DatabaseErrorCustom(
+        errorEnumDesarrollador.desarrolladorNotDeleted,
+        500
+      );
     }
   }
 }
