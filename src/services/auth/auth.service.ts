@@ -8,28 +8,28 @@ import { UserService } from '../user/user.service.js';
 import { generateToken } from '../../shared/Utils/jwtUtils.js';
 import { IUserService } from '../interfaces/user/IUserService.js';
 import { IAuthService } from '../interfaces/auth/IAuthService.js';
+import { inject, injectable, LazyServiceIdentifer } from 'inversify';
+import { IPasswordService } from '../interfaces/auth/IPasswordService.js';
+import { PasswordService } from './password.service.js';
+import { User } from '../../models/usuarios/user.entity.js';
 
+@injectable()
 export class AuthService implements IAuthService {
   private userAuthRepository: UserAuthRepository;
-  private userService: IUserService;
+  private passwordService: IPasswordService
+  
+  constructor(
+    @inject(UserAuthRepository) userAuthRepository: UserAuthRepository,
+    @inject(PasswordService) passwordService: IPasswordService,
 
-  constructor() {
-    this.userAuthRepository = new UserAuthRepository();
-    this.userService = new UserService();
+  ) {
+    this.userAuthRepository = userAuthRepository;
+    this.passwordService = passwordService;
   }
  
-  async login (username: string , password: string){
-
-    const user = await this.userService.findByUserName(username);
-
-    if (!user || !user.id ) {
-       throw new ValidationError('Usuario no encontrado' );
-    }
-    else if (!user.userauth?.password) {
-      throw new ValidationError('Usuario no encontrado');
-    }
-
-    const isValidPassword = await this.verifyPassword(user.userauth?.password, password);
+  async login (user: User , password: string){
+   
+    const isValidPassword = await this.passwordService.verifyPassword(user.userauth?.password!, password);
 
     if (!isValidPassword) {
       throw new ValidationError('Contraseña incorrecta' );
@@ -43,9 +43,6 @@ export class AuthService implements IAuthService {
     return this.userAuthRepository.findOne(id);
   }
 
-  async verifyPassword(hashedPassword: string, password: string): Promise<boolean> {
-    return verifyPassword(hashedPassword,password);
-  }
 
 
   async validateUserAuthOnCreate(userAuth: UserAuth): Promise<UserAuth> {
@@ -53,7 +50,7 @@ export class AuthService implements IAuthService {
   if (!userAuth.password   ) {  
        throw new ValidationError('Usuario no tiene contraseña definida', 401);
   }
-  else if (!this.isRegExPassword(userAuth.password)) {
+  else if (!this.passwordService.validatePassword(userAuth.password)) {
     throw new ValidationError('Usuario no tiene contraseña valida', 401)
   }
     userAuth.password = await hashPassword(userAuth.password);
@@ -67,22 +64,5 @@ export class AuthService implements IAuthService {
     
     return validatedUserAuth;
   }
-
-//  async update(id: number, user: UserAuth): Promise<UserAuth> {
-//    const oldUser = await this.userAuthRepository.findOne(id);
-//    if (!oldUser) {
-//      throw new ValidationError('Usuario no encontrado', 400);
-//   }
-//
-//    return this.userAuthRepository.update(id, updatedUserAuth);
-//  }
-
-
-  private isRegExPassword(password: string): boolean {
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-    if (!password) {
-      return false;
-    }
-    return passwordPattern.test(password);
-  }
+  
 }

@@ -1,12 +1,16 @@
 import { Router } from 'express';
-import * as userController from '../../controllers/usuarios/user.controller.js';
+import { UserController } from '../../controllers/usuarios/user.controller.js';
 import { body, param } from 'express-validator';
 import { authenticateToken } from '../../middleware/auth/authToken.js';
+import { container } from '../../config/dependency-injection/inversify.config.js';
 
 const userRouter = Router();
+const userController = container.get<UserController>(UserController);
 
-userRouter.get('/findall', userController.findAll);
-userRouter.get('/:id', param('id').notEmpty().isInt({ min: 1 }).withMessage('Formato de ID invalido'), userController.findOne);
+userRouter.get('/findall', userController.findAll.bind(userController));
+
+userRouter.get('/:id', param('id').notEmpty().isInt({ min: 1 }).withMessage('Formato de ID invalido'), userController.findOne.bind(userController));
+
 userRouter.post('/register',
     [
       body('realname').notEmpty().isString().withMessage('realname debe ser un string'),
@@ -16,7 +20,7 @@ userRouter.post('/register',
       body('creationuser').notEmpty().isString().withMessage('CreationUser debe ser un string'),
       body('status').isBoolean().notEmpty().withMessage('Status debe ser un booleano'),
       body('password').notEmpty().isString().withMessage('password debe ser un string'),
-    ], userController.create);
+    ], userController.create.bind(userController));
 
 userRouter.put('/:id',
     [
@@ -29,8 +33,9 @@ userRouter.put('/:id',
       body('modificationtimestamp').optional().isISO8601().withMessage('modificationuser debe ser una fecha válida'),
       body('password').optional().isString().withMessage('password debe ser un string'),
       body('status').optional().isBoolean().withMessage('Status debe ser un booleano')
-    ], userController.update);
-userRouter.delete('/:id', param('id').notEmpty().isInt({ min: 1 }).withMessage('Formato de ID invalido'), userController.remove);
+    ], userController.update.bind(userController))
+
+userRouter.delete('/:id', param('id').notEmpty().isInt({ min: 1 }).withMessage('Formato de ID invalido'), userController.remove.bind(userController));
 
 export default userRouter;
 

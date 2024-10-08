@@ -16,7 +16,7 @@ import { RolApl } from '../../models/roles/rol-apl.js';
 // Cargar las variables de entorno desde el archivo .env
 if (process.env.NODE_ENV != 'production') {
   //corresponde para que se utilice la DB de ambiente
-  dotenv.config({ path: path.resolve('src/shared/pg-database/.env') });
+  dotenv.config({ path: path.resolve('src/config/pg-database/.env') });
 }
 const { Pool } = pkg;
 

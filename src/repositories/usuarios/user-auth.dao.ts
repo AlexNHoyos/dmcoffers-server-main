@@ -2,9 +2,11 @@ import { Repository, DataSource } from 'typeorm';
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants.js';
-import { AppDataSource } from '../../shared/pg-database/db.js'; 
+import { AppDataSource } from '../../config/pg-database/db.js'; 
 import { IBaseRepository } from '../interfaces/IBaseRepository.js';
+import { injectable } from 'inversify';
 
+@injectable()
 export class UserAuthRepository implements IBaseRepository<UserAuth> {
   private repository: Repository<UserAuth>;
 

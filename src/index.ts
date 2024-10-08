@@ -1,4 +1,4 @@
-import { AppDataSource } from './shared/pg-database/db.js';
+import { AppDataSource } from './config/pg-database/db.js';
 import 'reflect-metadata';
 import app from './app.js';
 

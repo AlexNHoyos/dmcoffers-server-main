@@ -3,7 +3,7 @@ import { Hosting } from '../../models/hosting/hosting.entity.js';
 import { IBaseRepository } from '../interfaces/IBaseRepository.js';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumHosting } from '../../middleware/errorHandler/constants/errorConstants.js';
-import { AppDataSource } from '../../shared/pg-database/db.js';
+import { AppDataSource } from '../../config/pg-database/db.js';
 
 export class HostingRepository implements IBaseRepository<Hosting> {
   private repository: Repository<Hosting>;

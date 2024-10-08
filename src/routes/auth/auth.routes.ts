@@ -1,12 +1,14 @@
 import { Router } from 'express';
-import * as authController from '../../controllers/auth/auth.controller.js';
+import { AuthController} from '../../controllers/auth/auth.controller.js';
 import { body, param } from 'express-validator';
+import { container } from '../../config/dependency-injection/inversify.config.js';
 
 const authRouter = Router();
 
+const authController = container.get<AuthController>(AuthController);
+
 authRouter.post(
-  '/login',
-  [
+  '/login',  [
     body('username')
       .notEmpty()
       .isString()
@@ -16,10 +18,13 @@ authRouter.post(
       .isString()
       .withMessage('password debe ser un string'),
   ],
-  authController.login
+  authController.login.bind(authController)
 );
 
 export default authRouter;
+
+
+
 
 //--------DOCUMENTACION DEL ENDPOINT PARA SWAGGER ------------//
 

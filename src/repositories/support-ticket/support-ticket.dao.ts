@@ -3,7 +3,7 @@ import { SupportTicket } from '../../models/support-ticket/support-ticket.entity
 import { IBaseRepository } from '../interfaces/IBaseRepository.js';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumSupportTicket } from '../../middleware/errorHandler/constants/errorConstants.js';
-import { AppDataSource } from '../../shared/pg-database/db.js';
+import { AppDataSource } from '../../config/pg-database/db.js';
 
 export class SupportTicketRepository implements IBaseRepository<SupportTicket> {
   private repository: Repository<SupportTicket>;
