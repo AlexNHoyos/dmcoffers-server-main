@@ -51,10 +51,7 @@ export class HostingRepository implements IBaseRepository<Hosting> {
     try {
       const existingHosting = await this.repository.findOneBy({ id });
       if (!existingHosting) {
-        throw new DatabaseErrorCustom(
-          errorEnumHosting.hostingIndicatedNotFound,
-          404
-        );
+        throw new DatabaseErrorCustom(errorEnumHosting.hostingIndicatedNotFound,404);
       }
       await this.repository.update(id, hosting);
       return this.repository.findOneOrFail({ where: { id } }); // Retorna la entidad actualizada

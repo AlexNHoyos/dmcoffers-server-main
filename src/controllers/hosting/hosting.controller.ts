@@ -37,11 +37,6 @@ export class HostingController {
     @httpGet('/:id', validate(getHostingValidationRules))
     public async findOne(req: Request, res: Response, next: NextFunction) {
         const id = parseInt(req.params.id, 10);
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
         try {
             const hosting = await this.hostingService.findOne(id);
             if (hosting) {
@@ -57,10 +52,7 @@ export class HostingController {
     @httpPost('/create', validate(createHostingValidationRules))
     public async create(req: Request, res: Response, next: NextFunction){
         const newHosting = req.body;
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
+
         try {
             const createdHosting = await this.hostingService.create(newHosting);
             res.status(201).json(createdHosting);
@@ -74,10 +66,6 @@ export class HostingController {
         const id = parseInt(req.params.id, 10);
         const hostingUpdates = req.body;
         
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
         try {
             const updatedHosting = await this.hostingService.update(id, hostingUpdates);
             if (updatedHosting) {
@@ -94,11 +82,6 @@ export class HostingController {
     @httpDelete('/:id', validate(deleteHostingValidationRules))    
     public async remove(req: Request, res: Response, next: NextFunction){
         const id = parseInt(req.params.id, 10);
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
         try {
             const deletedHosting = await this.hostingService.delete(id);
             if (deletedHosting) {

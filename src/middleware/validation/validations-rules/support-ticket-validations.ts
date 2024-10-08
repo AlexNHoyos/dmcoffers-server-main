@@ -1,17 +1,16 @@
 import { body, param } from 'express-validator';
 
-export const getHostingValidationRules = [
-    param('id').isInt({ min: 1 }).withMessage('Formato de ID invalido')
+export const getSupportTicketValidationRules = [
+    param('id').notEmpty().isInt({ min: 1 }).withMessage('Formato de ID invalido')
 ];
 
-export const createHostingValidationRules =      [
-    body('name')
-        .isString()
-        .withMessage('Name debe ser un string'),
+export const createSupportTicketValidationRules =        [
     body('creationuser')
+        .notEmpty()
         .isString()
         .withMessage('CreationUser debe ser un string'),
     body('creationtimestamp')
+        .notEmpty()
         .isISO8601()
         .withMessage('CreationTimestamp debe ser una fecha válida'),
     body('status')
@@ -19,16 +18,13 @@ export const createHostingValidationRules =      [
         .withMessage('Status debe ser un booleano'),
   ];
 
-export const updateHostingValidationRules =   [
+export const updateSupportTicketValidationRules =     [
     param('id')
+        .notEmpty()
         .isInt({ min: 1 })
         .withMessage('Formato de ID invalido'),
-    body('name')
-        .optional()
-        .isString()
-        .withMessage('Name debe ser un string'),
     body('modificationuser')
-        .optional()
+        .notEmpty()
         .isString()
         .withMessage('modificationuser debe ser un string'),
     body('modificationtimestamp')
@@ -41,7 +37,7 @@ export const updateHostingValidationRules =   [
         .withMessage('Status debe ser un booleano'),
   ];
 
-export const deleteHostingValidationRules = [
+export const deleteSupportTicketValidationRules = [
     param('id').isInt({ min: 1 }).withMessage('Formato de ID invalido')
 ];
 

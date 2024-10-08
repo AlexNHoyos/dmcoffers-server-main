@@ -1,10 +1,13 @@
 // src/routes/supportTicketRoutes.ts
 
 import { Router } from 'express';
-import * as supportTicketController from '../../controllers/support-ticket/support-ticket.controller.js';
 import { body, param } from 'express-validator';
+import { SupportTicketController } from '../../controllers/support-ticket/support-ticket.controller.js';
+import { container } from '../../config/dependency-injection/inversify.config.js';
 
 const supportTicketRouter = Router();
+
+const supportTicketController = container.get<SupportTicketController>(SupportTicketController);
 
 supportTicketRouter.get('/findall', supportTicketController.findAll);
 supportTicketRouter.get(
