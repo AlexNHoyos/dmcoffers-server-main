@@ -1,8 +1,11 @@
 import { Router } from 'express';
 import { body, param } from 'express-validator';
-import * as hostingController from '../../controllers/hosting/hosting.controller.js';
+import {HostingController} from '../../controllers/hosting/hosting.controller.js';
+import { container } from '../../config/dependency-injection/inversify.config.js';
 
 const hostingRouter = Router();
+
+const hostingController = container.get<HostingController>(HostingController);
 
 hostingRouter.get('/findall', hostingController.findAll);
 hostingRouter.get(

@@ -14,7 +14,7 @@ const commonRouter = Router();
 commonRouter.use('/api/publishers', authenticateToken, publisherRouter);
 commonRouter.use('/api/developers', authenticateToken, desarrolladorRouter);
 commonRouter.use('/api/categories', authenticateToken, categoriaRouter);
-commonRouter.use('/api/hostings', authenticateToken, hostingRouter);
+//commonRouter.use('/api/hostings', authenticateToken, hostingRouter);
 commonRouter.use('/api/supportTicket', authenticateToken, supportTicketRouter);
 //commonRouter.use('/api/auth', authRouter);
 

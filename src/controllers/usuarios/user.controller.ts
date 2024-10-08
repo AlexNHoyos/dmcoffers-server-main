@@ -36,7 +36,7 @@ export class UserController {
     };
 
     @httpGet('/:id', validate(getUserValidationRules))
-    public async findOne  (req: Request, res: Response, next: NextFunction) {
+    public async findOne(req: Request, res: Response, next: NextFunction) {
         const id = parseInt(req.params.id, 10);
 
         try {
@@ -52,7 +52,7 @@ export class UserController {
     };
 
     @httpPost('/register', validate(createUserValidationRules))
-    public async create (req: Request, res: Response, next: NextFunction) {
+    public async create(req: Request, res: Response, next: NextFunction) {
         
         const newUser = req.body;
         
@@ -65,7 +65,7 @@ export class UserController {
     };
 
     @httpPut('/:id', authenticateToken, validate(updateUserValidationRules))
-    public async update  (req: Request, res: Response, next: NextFunction) {
+    public async update(req: Request, res: Response, next: NextFunction) {
 
         const id = parseInt(req.params.id, 10);
         const userUpdates = req.body;
@@ -83,7 +83,7 @@ export class UserController {
     };
 
     @httpDelete('/:id', authenticateToken, validate(deleteUserValidationRules))
-    public async remove  (req: Request, res: Response, next: NextFunction) {
+    public async remove(req: Request, res: Response, next: NextFunction) {
 
         const id = parseInt(req.params.id, 10);
 

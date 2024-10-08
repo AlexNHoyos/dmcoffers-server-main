@@ -3,8 +3,9 @@ import { HostingRepository } from '../../repositories/hosting/hosting.dao.js';
 import { Hosting } from '../../models/hosting/hosting.entity.js';
 import { IHostingService } from '../interfaces/hosting/IHostingService.js';
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
+import { injectable } from 'inversify';
 
-
+@injectable()
 export class HostingService implements IHostingService {
   
   private hostingRepository: HostingRepository;
