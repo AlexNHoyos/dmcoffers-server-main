@@ -31,7 +31,9 @@ const options: swaggerJSDoc.Options = {
       },
     ],
   },
-  apis: [`${path.join(__dirname, './routes/**/*.routes.js')}`],
+  apis: [
+    `${path.join(__dirname, './config/swagger-ui/*-swagger.js')}`,
+  ],
 };
 
 const swaggerSpec = swaggerJSDoc(options);

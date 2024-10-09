@@ -25,8 +25,8 @@ export class UserController {
         try {
             const users = await this.userService.findAll();
             if (users.length > 0) {
-                //res.status(200).json(users);
-                new OkNegotiatedContentResult(users);
+                res.status(200).json(users);
+                //new OkNegotiatedContentResult(users);
             } else {
                 return new JsonResult({ message: 'No se han encontrado usuarios' }, 404);
             }
