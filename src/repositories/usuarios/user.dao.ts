@@ -1,6 +1,6 @@
 // src/repositories/usuarios/user.repository.ts
 import {  Repository } from 'typeorm';
-import { AppDataSource } from '../../shared/pg-database/db.js';
+import { AppDataSource } from '../../config/pg-database/db.js';
 import { User } from '../../models/usuarios/user.entity.js';
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
 import { IUserRepository } from '../interfaces/user/IUserRepository.js';

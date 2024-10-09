@@ -1,5 +1,5 @@
 import { User } from '../../models/usuarios/user.entity.js';
-import pool from '../../shared/pg-database/db.js';
+import pool from '../../config/pg-database/db.js';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants.js';
 import { IUserRepository } from '../interfaces/user/IUserRepository.js';

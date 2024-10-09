@@ -1,92 +1,104 @@
 import { Request, Response, NextFunction } from 'express';
 import { SupportTicketRepository } from '../../repositories/support-ticket/support-ticket.dao.js';
 import { validationResult } from 'express-validator';
+import { ISupportTicketService } from '../../services/interfaces/support-ticket/ISupport-ticket.js';
+import { controller, httpDelete, httpGet, httpPost, httpPut } from 'inversify-express-utils';
+import { inject } from 'inversify';
+import { SupportTicketService } from '../../services/support-ticket/support-ticket.service.js';
+import { authenticateToken } from '../../middleware/auth/authToken.js';
+import { validate } from '../../middleware/validation/validation-middleware.js';
+import { createSupportTicketValidationRules, deleteSupportTicketValidationRules, getSupportTicketValidationRules, updateSupportTicketValidationRules } from '../../middleware/validation/validations-rules/support-ticket-validations.js';
 
 
-const supportTicketRepository = new SupportTicketRepository();
+    
+@controller('/api/supportTicket', authenticateToken)
+export class SupportTicketController {
 
-export const findAll = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const supportTicket = await supportTicketRepository.findAll();
-        if (supportTicket.length > 0) {
-            res.status(200).json(supportTicket);
-        } else {
-            res.status(404).json({ message: 'No se han hayado tickets' });
+    private supportTicketService: ISupportTicketService;
+
+    constructor(
+
+        @inject(SupportTicketService) supportTicketService: ISupportTicketService,
+
+    ){
+        this.supportTicketService = supportTicketService;
+    }
+
+    @httpGet('/findall')
+    public async findAll(req: Request, res: Response, next: NextFunction) {
+        try {
+            const supportTicket = await this.supportTicketService.findAll();
+            if (supportTicket.length > 0) {
+                res.status(200).json(supportTicket);
+            } else {
+                res.status(404).json({ message: 'No se han hayado tickets' });
+            }
+        } catch (error) {
+            next(error);
         }
-    } catch (error) {
-        next(error);
-    }
-};
+    };
 
-export const findOne = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.params.id, 10);
-    const errors = validationResult(req);
+    @httpGet('/:id', validate(getSupportTicketValidationRules))
+    public async findOne(req: Request, res: Response, next: NextFunction) {
+       
+        const id = parseInt(req.params.id, 10);
 
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-    try {
-        const supportTicket = await supportTicketRepository.findOne(id);
-        if (supportTicket) {
-            res.status(200).json(supportTicket);
-        } else {
-            res.status(404).json({ message: 'Ticket no encontrado' });
+        try {
+            const supportTicket = await this.supportTicketService.findOne(id);
+            if (supportTicket) {
+                res.status(200).json(supportTicket);
+            } else {
+                res.status(404).json({ message: 'Ticket no encontrado' });
+            }
+        } catch (error) {
+            next(error);
         }
-    } catch (error) {
-        next(error);
-    }
-};
+    };
 
-export const create = async (req: Request, res: Response, next: NextFunction) => {
-    const newsupportTicket = req.body;
-
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-    try {
-        const createdSupportTicket = await supportTicketRepository.create(newsupportTicket);
-        res.status(201).json(createdSupportTicket);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const update = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.params.id, 10);
-    const supportTicketUpdates = req.body;
+    @httpPost('/create', validate(createSupportTicketValidationRules))
+    public async create(req: Request, res: Response, next: NextFunction) {
         
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-    try {
-        const updatedSupportTicket = await supportTicketRepository.update(id, supportTicketUpdates);
-        if (updatedSupportTicket) {
-            res.status(200).json(updatedSupportTicket);
-        } else {
-            res.status(404).json({ message: 'Ticket no encontrado' });
-        }
-    } catch (error) {
-        next(error);
-    }
-};
+        const newsupportTicket = req.body;
 
-export const remove = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.params.id, 10);
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-    try {
-        const deletedSupportTicket = await supportTicketRepository.delete(id);
-        if (deletedSupportTicket) {
-            res.status(200).json(deletedSupportTicket);
-        } else {
-            res.status(404).json({ message: 'Ticket no encontrado' });
+        try {
+            const createdSupportTicket = await this.supportTicketService.create(newsupportTicket);
+            res.status(201).json(createdSupportTicket);
+        } catch (error) {
+            next(error);
         }
-    } catch (error) {
-        next(error);
-    }
+    };
+
+    @httpPut('/:id',  validate(updateSupportTicketValidationRules))
+    public async update(req: Request, res: Response, next: NextFunction) {
+        const id = parseInt(req.params.id, 10);
+        const supportTicketUpdates = req.body;
+            
+
+        try {
+            const updatedSupportTicket = await this.supportTicketService.update(id, supportTicketUpdates);
+            if (updatedSupportTicket) {
+                res.status(200).json(updatedSupportTicket);
+            } else {
+                res.status(404).json({ message: 'Ticket no encontrado' });
+            }
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    @httpDelete('/:id', validate(deleteSupportTicketValidationRules))    
+    public async remove(req: Request, res: Response, next: NextFunction) {
+        const id = parseInt(req.params.id, 10);
+
+        try {
+            const deletedSupportTicket = await this.supportTicketService.delete(id);
+            if (deletedSupportTicket) {
+                res.status(200).json(deletedSupportTicket);
+            } else {
+                res.status(404).json({ message: 'Ticket no encontrado' });
+            }
+        } catch (error) {
+            next(error);
+        }
+    };
 };
