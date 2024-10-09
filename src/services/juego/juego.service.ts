@@ -4,12 +4,15 @@ import { Juego } from '../../models/juegos/juegos.entity.js';
 import { JuegoDto } from '../../models-dto/juegos/juego-dto.entity.js';
 import { IJuegoService } from '../interfaces/juego/IJuegoService.js';
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
+import { CategoriasRepository } from '../../repositories/categorias/categorias.dao.js';
 
 export class JuegoService implements IJuegoService {
   private juegoRepository: JuegoRepository;
+  private categoriaRepository: CategoriasRepository;
 
   constructor() {
     this.juegoRepository = new JuegoRepository();
+    this.categoriaRepository = new CategoriasRepository();
   }
 
   async findAll(): Promise<Juego[]> {
@@ -45,6 +48,23 @@ export class JuegoService implements IJuegoService {
       );
     }
 
+    const categorias = await this.categoriaRepository.findByIds(
+      newJuego.categorias || []
+    );
+
+    if (!newJuego.categorias || newJuego.categorias.length === 0) {
+      throw new ValidationError(
+        'Debe proporcionar al menos una categoría',
+        400
+      );
+    }
+    if (!categorias || categorias.length === 0) {
+      throw new ValidationError(
+        'No se encontraron categorías válidas para asociar',
+        400
+      );
+    }
+
     // Agregar mas validaciones
     // const existingJuego = await this.juegoRepository.findByGameName(newJuego.gamename);
     // if (existingJuego) {
@@ -66,6 +86,7 @@ export class JuegoService implements IJuegoService {
     // Asociar el publisher y developer
     juegoToCreate.publisher = publisher;
     juegoToCreate.developer = developer;
+    juegoToCreate.categorias = categorias;
 
     // Guardar el juego en la base de datos
     const juegoCreado = await this.juegoRepository.create(juegoToCreate);
@@ -80,6 +101,9 @@ export class JuegoService implements IJuegoService {
       creationtimestamp: juegoCreado.creationtimestamp,
       id_publisher: juegoCreado.publisher?.id,
       id_developer: juegoCreado.developer?.id,
+      categorias: juegoCreado.categorias
+        ? juegoCreado.categorias.map((c) => c.id)
+        : [],
     };
 
     return juegoOutput;

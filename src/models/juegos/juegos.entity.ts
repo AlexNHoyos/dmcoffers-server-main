@@ -3,14 +3,17 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  ManyToMany,
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  JoinTable,
   JoinColumn,
 } from 'typeorm';
 
 import { Publisher } from '../publicadores/publisher.entity.js';
 import { Desarrollador } from '../desarrolladores/desarrolladores.entity.js';
+import { Categorias } from '../categorias/categorias.entity.js';
 
 @Entity('pub_game')
 export class Juego {
@@ -51,6 +54,17 @@ export class Juego {
   })
   @JoinColumn({ name: 'id_developer' })
   public developer: Desarrollador | undefined;
+
+  @ManyToMany(() => Categorias, (categoria) => categoria.juego, {
+    nullable: false,
+    eager: true,
+  })
+  @JoinTable({
+    name: 'pub_game_category', // Nombre de la tabla intermedia
+    joinColumn: { name: 'id_game', referencedColumnName: 'id' }, // Referencia a Juego
+    inverseJoinColumn: { name: 'id_category', referencedColumnName: 'id' }, // Referencia a Categoria
+  })
+  public categorias: Categorias[] | undefined;
 
   constructor(
     id?: number,

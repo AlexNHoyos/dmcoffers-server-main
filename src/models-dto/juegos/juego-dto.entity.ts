@@ -5,9 +5,9 @@ export class JuegoDto {
   publishment_date?: Date | undefined;
   creationtimestamp: Date | undefined;
   creationuser: string | undefined;
-
   id_publisher: number | undefined;
   id_developer: number | undefined;
+  categorias: number[] | undefined;
 
   constructor(
     gamename: string,

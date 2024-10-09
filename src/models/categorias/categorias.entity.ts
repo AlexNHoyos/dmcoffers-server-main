@@ -2,10 +2,13 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  ManyToMany,
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
+
+import { Juego } from '../juegos/juegos.entity.js';
 
 @Entity('pub_category') // El nombre de la tabla en la base de datos
 export class Categorias {
@@ -26,6 +29,9 @@ export class Categorias {
 
   @Column()
   public modificationuser: String;
+
+  @ManyToMany(() => Juego, (juego) => juego.categorias)
+  public juego: Juego[] | undefined;
 
   constructor(
     id: number,

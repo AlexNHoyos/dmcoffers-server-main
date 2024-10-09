@@ -6,6 +6,7 @@ import { IBaseRepository } from '../interfaces/IBaseRepository.js';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumJuego } from '../../middleware/errorHandler/constants/errorConstants.js';
 import { AppDataSource } from '../../shared/pg-database/db.js';
+import { Categorias } from '../../models/categorias/categorias.entity.js';
 
 export class JuegoRepository implements IBaseRepository<Juego> {
   private repository: Repository<Juego>;

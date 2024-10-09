@@ -32,6 +32,9 @@ juegoRouter.post(
     body('id_developer')
       .isInt({ min: 1 })
       .withMessage('id_developer debe ser un entero positivo'),
+    body('categorias')
+      .isArray()
+      .withMessage('categorias debe ser un array de IDs de categorías'),
   ],
   juegoController.create
 );
@@ -234,12 +237,18 @@ export default juegoRouter;
  *         id_developer:
  *           type: integer
  *           description: ID del Developer asociado al juego
+ *         categorias:
+ *           type: array
+ *           items:
+ *            type: integer
+ *           description: Lista de IDs de las categorías asociadas al juego
  *       required:
  *         - gamename
  *         - creationuser
  *         - creationtimestamp
  *         - id_publisher
  *         - id_developer
+ *         - categorias
  */
 
 /**
@@ -256,6 +265,11 @@ export default juegoRouter;
  *           type: string
  *           format: date
  *           description: Fecha de lanzamiento
+ *         categorias:
+ *           type: array
+ *           items:
+ *           type: integer
+ *           description: Lista de IDs de las categorías asociadas al juego
  *       required:
  *         - gamename
  */
