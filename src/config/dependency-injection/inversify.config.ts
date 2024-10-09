@@ -18,6 +18,10 @@ import { IPublisherService } from '../../services/interfaces/publisher/IPublishe
 import { PublisherService } from '../../services/publisher/publisher.service.js';
 import { PublisherController } from '../../controllers/publicadores/publishers.controller.js';
 import { PublisherRepository } from '../../repositories/publicadores/publisher.dao.js';
+import { CategoriasController } from '../../controllers/categorias/categorias.controller.js';
+import { ICategoriasService } from '../../services/interfaces/categorias/ICategoriasService.js';
+import { CategoriasService } from '../../services/categorias/categorias.service.js';
+import { CategoriasRepository } from '../../repositories/categorias/categorias.dao.js';
 
 
 // Crear un nuevo contenedor de Inversify
@@ -29,11 +33,12 @@ container.bind<UserController>(UserController).toSelf();
 container.bind<HostingController>(HostingController).toSelf();
 container.bind<SupportTicketController>(SupportTicketController).toSelf();
 container.bind<PublisherController>(PublisherController).toSelf();
+container.bind<CategoriasController>(CategoriasController).toSelf();
 
 // Repositorios
 container.bind<UserAuthRepository>(UserAuthRepository).toSelf();
 container.bind<PublisherRepository>(PublisherRepository).toSelf();
-
+container.bind<CategoriasRepository>(CategoriasRepository).toSelf();
 
 // Interfaces
 container.bind<IAuthService>(AuthService).to(AuthService);
@@ -42,7 +47,7 @@ container.bind<IPasswordService>(PasswordService).to(PasswordService);
 container.bind<IHostingService>(HostingService).to(HostingService);
 container.bind<ISupportTicketService>(SupportTicketService).to(SupportTicketService);
 container.bind<IPublisherService>(PublisherService).to(PublisherService);
-
+container.bind<ICategoriasService>(CategoriasService).to(CategoriasService);
 
 
 export { container };

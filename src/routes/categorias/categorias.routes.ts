@@ -1,8 +1,11 @@
 import { Router } from 'express';
 import { body, param } from 'express-validator';
-import * as categoriasController from '../../controllers/categorias/categorias.controller.js';
+import { container } from '../../config/dependency-injection/inversify.config.js';
+import { CategoriasController } from '../../controllers/categorias/categorias.controller.js';
 
 const categoriaRouter = Router();
+
+const categoriasController = container.get<CategoriasController>(CategoriasController);
 
 categoriaRouter.get('/', categoriasController.findAll);
 categoriaRouter.post(
