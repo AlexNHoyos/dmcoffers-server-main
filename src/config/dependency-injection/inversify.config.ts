@@ -22,6 +22,7 @@ import { CategoriasController } from '../../controllers/categorias/categorias.co
 import { ICategoriasService } from '../../services/interfaces/categorias/ICategoriasService.js';
 import { CategoriasService } from '../../services/categorias/categorias.service.js';
 import { CategoriasRepository } from '../../repositories/categorias/categorias.dao.js';
+import { HostingRepository } from '../../repositories/hosting/hosting.dao.js';
 
 
 // Crear un nuevo contenedor de Inversify
@@ -39,6 +40,7 @@ container.bind<CategoriasController>(CategoriasController).toSelf();
 container.bind<UserAuthRepository>(UserAuthRepository).toSelf();
 container.bind<PublisherRepository>(PublisherRepository).toSelf();
 container.bind<CategoriasRepository>(CategoriasRepository).toSelf();
+container.bind<HostingRepository>(HostingRepository).toSelf();
 
 // Interfaces
 container.bind<IAuthService>(AuthService).to(AuthService);
