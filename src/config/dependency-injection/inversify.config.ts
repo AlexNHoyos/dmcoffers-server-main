@@ -23,6 +23,10 @@ import { ICategoriasService } from '../../services/interfaces/categorias/ICatego
 import { CategoriasService } from '../../services/categorias/categorias.service.js';
 import { CategoriasRepository } from '../../repositories/categorias/categorias.dao.js';
 import { HostingRepository } from '../../repositories/hosting/hosting.dao.js';
+import { JuegoRepository } from '../../repositories/juego/juego.dao.js';
+import { JuegoController } from '../../controllers/juegos/juego.controller.js';
+import { IJuegoService } from '../../services/interfaces/juego/IJuegoService.js';
+import { JuegoService } from '../../services/juego/juego.service.js';
 
 
 // Crear un nuevo contenedor de Inversify
@@ -35,12 +39,15 @@ container.bind<HostingController>(HostingController).toSelf();
 container.bind<SupportTicketController>(SupportTicketController).toSelf();
 container.bind<PublisherController>(PublisherController).toSelf();
 container.bind<CategoriasController>(CategoriasController).toSelf();
+container.bind<JuegoController>(JuegoController).toSelf();
+
 
 // Repositorios
 container.bind<UserAuthRepository>(UserAuthRepository).toSelf();
 container.bind<PublisherRepository>(PublisherRepository).toSelf();
 container.bind<CategoriasRepository>(CategoriasRepository).toSelf();
 container.bind<HostingRepository>(HostingRepository).toSelf();
+container.bind<JuegoRepository>(JuegoRepository).toSelf();
 
 // Interfaces
 container.bind<IAuthService>(AuthService).to(AuthService);
@@ -50,6 +57,7 @@ container.bind<IHostingService>(HostingService).to(HostingService);
 container.bind<ISupportTicketService>(SupportTicketService).to(SupportTicketService);
 container.bind<IPublisherService>(PublisherService).to(PublisherService);
 container.bind<ICategoriasService>(CategoriasService).to(CategoriasService);
+container.bind<IJuegoService>(JuegoService).to(JuegoService);
 
 
 export { container };

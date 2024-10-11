@@ -5,14 +5,18 @@ import { JuegoDto } from '../../models-dto/juegos/juego-dto.entity.js';
 import { IJuegoService } from '../interfaces/juego/IJuegoService.js';
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
 import { CategoriasRepository } from '../../repositories/categorias/categorias.dao.js';
+import { inject } from 'inversify';
 
 export class JuegoService implements IJuegoService {
   private juegoRepository: JuegoRepository;
   private categoriaRepository: CategoriasRepository;
 
-  constructor() {
-    this.juegoRepository = new JuegoRepository();
-    this.categoriaRepository = new CategoriasRepository();
+  constructor(
+    @inject(JuegoRepository) juegoRepository : JuegoRepository,
+    @inject(CategoriasRepository) categoriaRepository : CategoriasRepository,
+  ) {
+    this.juegoRepository = juegoRepository;
+    this.categoriaRepository = categoriaRepository;
   }
 
   async findAll(): Promise<Juego[]> {

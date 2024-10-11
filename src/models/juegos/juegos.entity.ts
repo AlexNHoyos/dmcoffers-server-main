@@ -49,7 +49,7 @@ export class Juego {
   public publisher: Publisher | undefined;
 
   @ManyToOne(() => Desarrollador, (desarrollador) => desarrollador.juegos, {
-    nullable: true,
+    nullable: false,
     eager: true,
   })
   @JoinColumn({ name: 'id_developer' })
@@ -57,14 +57,14 @@ export class Juego {
 
   @ManyToMany(() => Categorias, (categoria) => categoria.juego, {
     nullable: false,
-    eager: true,
+    lazy: true,
   })
   @JoinTable({
     name: 'pub_game_category', // Nombre de la tabla intermedia
     joinColumn: { name: 'id_game', referencedColumnName: 'id' }, // Referencia a Juego
     inverseJoinColumn: { name: 'id_category', referencedColumnName: 'id' }, // Referencia a Categoria
   })
-  public categorias: Categorias[] | undefined;
+  public categorias?: Promise<Categorias>;
 
   constructor(
     id?: number,

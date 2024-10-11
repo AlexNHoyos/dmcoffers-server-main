@@ -12,6 +12,7 @@ import { SupportTicket } from '../../models/support-ticket/support-ticket.entity
 import { Desarrollador } from '../../models/desarrolladores/desarrolladores.entity.js';
 import { UserRolApl } from '../../models/usuarios/user-rol-apl.js';
 import { RolApl } from '../../models/roles/rol-apl.js';
+import { Juego } from '../../models/juegos/juegos.entity.js';
 
 // Cargar las variables de entorno desde el archivo .env
 if (process.env.NODE_ENV != 'production') {
@@ -37,7 +38,7 @@ export const AppDataSource = new DataSource({
   database:  process.env.POSTGRES_DB,
   synchronize: false, // tiene que estar en true momentaneamente se deja en false por cuestiones funcionales
   logging: false,
-  entities: [Hosting, User, UserAuth, Categorias, Publisher, SupportTicket, Desarrollador,UserRolApl, RolApl], // se deben agregar las entidades que vayan pasando a typeORM
+  entities: [Hosting, User, UserAuth, Categorias, Publisher, SupportTicket, Desarrollador,UserRolApl, RolApl, Juego], // se deben agregar las entidades que vayan pasando a typeORM
   migrations: ['src/migrations/**/*.js'],
   subscribers: ['src/subscribers/**/*.js'], 
   

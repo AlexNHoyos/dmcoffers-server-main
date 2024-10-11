@@ -20,6 +20,6 @@ commonRouter.use('/api/developers', authenticateToken, desarrolladorRouter);
 //commonRouter.use('/api/hostings', authenticateToken, hostingRouter);
 //commonRouter.use('/api/supportTicket', authenticateToken, supportTicketRouter);
 //commonRouter.use('/api/auth', authRouter);
-commonRouter.use('/api/juegos', juegoRouter);
+//commonRouter.use('/api/juegos', juegoRouter);
 
 export default commonRouter;

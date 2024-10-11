@@ -1,8 +1,12 @@
 import { Router } from 'express';
 import { body, param } from 'express-validator';
-import * as juegoController from '../../controllers/juegos/juego.controller.js';
+import  {JuegoController} from '../../controllers/juegos/juego.controller.js';
+import { container } from '../../config/dependency-injection/inversify.config.js';
+import { Juego } from '../../models/juegos/juegos.entity.js';
 
 const juegoRouter = Router();
+
+const juegoController = container.get<JuegoController>(JuegoController);
 
 juegoRouter.get('/findall', juegoController.findAll);
 juegoRouter.get(
