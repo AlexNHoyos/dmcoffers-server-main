@@ -1,48 +1,49 @@
 // src/controllers/auth.controller.ts
 import { NextFunction, Request, Response } from 'express';
-import { UserService } from '../../services/user/user.service.js'; 
 import { AuthService } from '../../services/auth/auth.service.js'; 
+
+import { controller, httpGet, httpPost } from 'inversify-express-utils';
+import { inject, injectable, LazyServiceIdentifer } from 'inversify';
+import { IAuthService } from '../../services/interfaces/auth/IAuthService.js';
+import { ValidationError } from '../../middleware/errorHandler/validationError.js';
+import { UserService } from '../../services/user/user.service.js';
 import { IUserService } from '../../services/interfaces/user/IUserService.js';
-import { generateToken } from '../../shared/Utils/jwtUtils.js';
-import { validationResult } from 'express-validator';
+import { validate } from '../../middleware/validation/validation-middleware.js';
+import { loginValidationRules } from '../../middleware/validation/validations-rules/auth-validations.js';
 
-const userService: IUserService = new UserService();
-const authService = new AuthService();
+@controller('/api/auth')
+export class AuthController {
 
-export const login = async (req: Request, res: Response, next: NextFunction) => {
+  private authService: IAuthService;
+  private userService: IUserService;
 
-  const { username, password } = req.body;
-  
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+  constructor(
+    @inject(AuthService) authService: IAuthService,
+    @inject(UserService) userService: IUserService,
+  ) 
+  {
+    this.authService = authService;
+    this.userService = userService;
   }
-  
 
-  try {
-    const user = await userService.findByUserName(username);
-    if (!user || !user.id ) {
-      return res.status(400).json({ message: 'Usuario no encontrado' });
-    }
+  @httpPost('/login',validate(loginValidationRules))
+  public async login(req: Request, res: Response, next: NextFunction) {
     
-    const authUser = await authService.findOne(user.userauth?.id!);
+    const { username, password } = req.body;
 
+    try {
+      const user = await this.userService.findByUserName(username);
 
-    if (!authUser) {
-      return res.status(400).json({ message: 'Usuario no encontrado' });
+      if (!user || !user.id ) {
+         throw new ValidationError('Usuario no encontrado' );
+      }
+      else if (!user.userauth?.password) {
+        throw new ValidationError('Usuario no encontrado');
+      }
+      const accessToken = await this.authService.login(user, password);
+      res.json({ accessToken });
+    } catch (error) {
+      next(error);
     }
-
-    const isValidPassword = await authService.verifyPassword(authUser.password, password);
-    if (!isValidPassword) {
-      return res.status(400).json({ message: 'Contraseña incorrecta' });
-    }
-
-    const accessToken = generateToken({ username: user.username, id: user.id});
-
-    res.json({ accessToken });
-  } catch (error) {
-    next(error);
   }
-};
-
+}

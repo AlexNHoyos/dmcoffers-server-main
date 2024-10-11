@@ -2,7 +2,7 @@
 import { Categorias } from '../../models/categorias/categorias.entity.js';
 
 // Importamos el cliente de PostgreSQL
-import pool from '../../shared/pg-database/db.js';
+import pool from '../../config/pg-database/db.js';
 
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumCategories } from '../../middleware/errorHandler/constants/errorConstants.js';

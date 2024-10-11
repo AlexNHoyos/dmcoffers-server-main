@@ -3,7 +3,7 @@ import { Desarrollador } from '../../models/desarrolladores/desarrolladores.enti
 import { IBaseRepository } from '../interfaces/IBaseRepository.js';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumDesarrollador } from '../../middleware/errorHandler/constants/errorConstants.js';
-import { AppDataSource } from '../../shared/pg-database/db.js';
+import { AppDataSource } from '../../config/pg-database/db.js';
 
 export class DesarrolladoresRepository
   implements IBaseRepository<Desarrollador>

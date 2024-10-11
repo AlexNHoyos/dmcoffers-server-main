@@ -3,8 +3,10 @@ import { Hosting } from '../../models/hosting/hosting.entity.js';
 import { IBaseRepository } from '../interfaces/IBaseRepository.js';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumHosting } from '../../middleware/errorHandler/constants/errorConstants.js';
-import { AppDataSource } from '../../shared/pg-database/db.js';
+import { AppDataSource } from '../../config/pg-database/db.js';
+import { injectable } from 'inversify';
 
+@injectable()
 export class HostingRepository implements IBaseRepository<Hosting> {
   private repository: Repository<Hosting>;
 
@@ -51,10 +53,7 @@ export class HostingRepository implements IBaseRepository<Hosting> {
     try {
       const existingHosting = await this.repository.findOneBy({ id });
       if (!existingHosting) {
-        throw new DatabaseErrorCustom(
-          errorEnumHosting.hostingIndicatedNotFound,
-          404
-        );
+        throw new DatabaseErrorCustom(errorEnumHosting.hostingIndicatedNotFound,404);
       }
       await this.repository.update(id, hosting);
       return this.repository.findOneOrFail({ where: { id } }); // Retorna la entidad actualizada

@@ -1,113 +1,109 @@
 // pubGamePublisherController.js
 import { Request, Response, NextFunction } from 'express';
-import { PublisherRepository } from '../../repositories/publicadores/publisher.dao.js';
-import { validationResult } from 'express-validator';
+import { authenticateToken } from '../../middleware/auth/authToken.js';
+import { controller, httpDelete, httpGet, httpPost, httpPut } from 'inversify-express-utils';
+import { inject } from 'inversify';
+import { IPublisherService } from '../../services/interfaces/publisher/IPublisherService.js';
+import { PublisherService } from '../../services/publisher/publisher.service.js';
+import { validate } from '../../middleware/validation/validation-middleware.js';
+import { createPublisherValidationRules, deletePublisherValidationRules, getPublisherValidationRules, updatePublisherValidationRules } from '../../middleware/validation/validations-rules/publisher-validations.js';
 
-const publisherRepository = new PublisherRepository();
 
-export const findAll = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const publishers = await publisherRepository.findAll();
-    if (publishers.length > 0) {
-      res.status(200).json(publishers);
-    } else {
-      res.status(404).json({ message: 'No se han encontrado publishers' });
+@controller('/api/publishers', authenticateToken)
+export class PublisherController {
+
+  private publisherService: IPublisherService;
+
+  constructor(
+    @inject(PublisherService) publisherService: IPublisherService,
+  ) 
+  {
+    this.publisherService = publisherService;
+  }
+
+
+  @httpGet('/')
+  public async findAll( req: Request, res: Response, next: NextFunction) {
+    
+    try {
+      const publishers = await this.publisherService.findAll();
+      if (publishers.length > 0) {
+        res.status(200).json(publishers);
+      } else {
+        res.status(404).json({ message: 'No se han encontrado publishers' });
+      }
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
-  }
-};
+  };
 
-export const findOne = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const id = parseInt(req.params.id, 10);
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-  try {
-    const publisher = await publisherRepository.findOne(id);
-    if (publisher) {
-      res.status(200).json(publisher);
-    } else {
-      res.status(404).json({ message: 'Publisher no encontrado' });
+
+  @httpGet('/:id', validate(getPublisherValidationRules))
+  public async findOne(req: Request, res: Response, next: NextFunction) {
+    
+    const id = parseInt(req.params.id, 10);
+
+    try {
+      const publisher = await this.publisherService.findOne(id);
+      if (publisher) {
+        res.status(200).json(publisher);
+      } else {
+        res.status(404).json({ message: 'Publisher no encontrado' });
+      }
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
-  }
-};
+  };
 
-export const create = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const newPub = req.body;
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-  try {
-    const createdPub = await publisherRepository.create(newPub);
-    res.status(201).json(createdPub);
-  } catch (error) {
-    next(error);
-  }
-};
 
-export const update = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const id = parseInt(req.params.id, 10);
-  const pubUpdates = req.body;
+  @httpPost('/create', validate(createPublisherValidationRules))
+  public async create(req: Request, res: Response, next: NextFunction) {
+    
+    const newPub = req.body;
 
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
-  try {
-    const updatedPub = await publisherRepository.update(id, pubUpdates);
-    if (updatedPub) {
-      res.status(200).json(updatedPub);
-    } else {
-      res.status(404).json({ message: 'Publisher no encontrado' });
+    try {
+      const createdPub = await this.publisherService.create(newPub);
+      res.status(201).json(createdPub);
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
-  }
-};
+  };
 
-// Eliminar un publicador
-export const remove = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const id = parseInt(req.params.id, 10);
 
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+  @httpPut('/:id',  validate(updatePublisherValidationRules))
+  public async update(req: Request, res: Response,  next: NextFunction) {
 
-  try {
-    const deletedPublisher = await publisherRepository.delete(id);
-    if (deletedPublisher) {
-      res.status(200).json(deletedPublisher);
-    } else {
-      res.status(404).json({ message: 'Publisher no encontrado' });
+    const id = parseInt(req.params.id, 10);
+    const pubUpdates = req.body;
+
+
+    try {
+      const updatedPub = await this.publisherService.update(id, pubUpdates);
+      if (updatedPub) {
+        res.status(200).json(updatedPub);
+      } else {
+        res.status(404).json({ message: 'Publisher no encontrado' });
+      }
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
-  }
+  };
+
+  // Eliminar un publicador
+  @httpDelete('/:id', validate(deletePublisherValidationRules))    
+  public async remove(req: Request, res: Response, next: NextFunction) {
+    
+    const id = parseInt(req.params.id, 10);
+
+    try {
+      const deletedPublisher = await this.publisherService.delete(id);
+      if (deletedPublisher) {
+        res.status(200).json(deletedPublisher);
+      } else {
+        res.status(404).json({ message: 'Publisher no encontrado' });
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
 };

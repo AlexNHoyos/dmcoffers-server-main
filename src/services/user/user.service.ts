@@ -4,19 +4,31 @@ import { User } from '../../models/usuarios/user.entity.js';
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
 import { IUserService } from '../interfaces/user/IUserService.js';
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
-import { AuthService } from '../auth/auth.service.js';
-import { UserAuthRepository } from '../../repositories/usuarios/user-auth.repository.js';
+import { UserAuthRepository } from '../../repositories/usuarios/user-auth.dao.js';
 import { AuthenticationError } from '../../middleware/errorHandler/authenticationError.js';
 import { UserDto } from '../../models-dto/usuarios/user-dto.entity.js';
+import { inject, injectable, LazyServiceIdentifer } from 'inversify';
+import { IAuthService } from '../interfaces/auth/IAuthService.js';
+import { AuthService } from '../auth/auth.service.js';
+import { PasswordService } from '../auth/password.service.js';
+import { IPasswordService } from '../interfaces/auth/IPasswordService.js';
 
+@injectable()
 export class UserService implements IUserService {
-  private authService: AuthService = new AuthService;
+  private authService: IAuthService;
   private userRepository: UserRepository;
   private userAuthRepository: UserAuthRepository;
+  private passwordService: IPasswordService;
 
-  constructor() {
+  constructor(
+    @inject(new LazyServiceIdentifer(() => AuthService)) authService: IAuthService,
+    @inject(UserAuthRepository) userAuthRepository: UserAuthRepository,
+    @inject(PasswordService) passwordService: IPasswordService,
+  ) {
+    this.authService = authService;
     this.userRepository = new UserRepository();
     this.userAuthRepository = new UserAuthRepository();
+    this.passwordService = passwordService;
   }
 
 
@@ -39,7 +51,6 @@ export class UserService implements IUserService {
       throw new AuthenticationError('El Usuario ya existe', 404);
     }
 
-
     const userToCreate = await this.initializeUser(newUser);
 
     const userCreated = await this.userRepository.registerUser(userToCreate);
@@ -59,8 +70,7 @@ export class UserService implements IUserService {
       modificationuser: undefined,
       modificationtimestamp: undefined,
     }
-      
- 
+       
     return userOutput;
   }
 
@@ -71,8 +81,6 @@ export class UserService implements IUserService {
     if (!oldUser) {
       throw new ValidationError('Usuario no encontrado', 400);
    }
-
-
    
     const updatedUser: User = {
       id: oldUser.id, 
@@ -126,9 +134,7 @@ export class UserService implements IUserService {
       userToCreate.modificationuser= newUser.modificationuser;
       userToCreate.modificationtimestamp= newUser.modificationtimestamp;
       userToCreate.userauth= userAuthValidated?? undefined;
-  
-    
-    
+        
     return userToCreate;
 
   }

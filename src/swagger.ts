@@ -1,7 +1,7 @@
 import swaggerJSDoc from 'swagger-jsdoc';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { Express } from 'express';
+import { Application, Express } from 'express';
 import swaggerUi from 'swagger-ui-express';
 
 // Define __dirname
@@ -31,12 +31,14 @@ const options: swaggerJSDoc.Options = {
       },
     ],
   },
-  apis: [`${path.join(__dirname, './routes/**/*.routes.js')}`],
+  apis: [
+    `${path.join(__dirname, './config/swagger-ui/*-swagger.js')}`,
+  ],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
 
-function swaggerDocs(app: Express) {
+function swaggerDocs(app: Application) {
   app.use('/api/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
   app.get('/swagger.json', (req, res) => {

@@ -10,11 +10,13 @@ import { Categorias } from '../../models/categorias/categorias.entity.js';
 import { Publisher } from '../../models/publicadores/publisher.entity.js';
 import { SupportTicket } from '../../models/support-ticket/support-ticket.entity.js';
 import { Desarrollador } from '../../models/desarrolladores/desarrolladores.entity.js';
+import { UserRolApl } from '../../models/usuarios/user-rol-apl.js';
+import { RolApl } from '../../models/roles/rol-apl.js';
 
 // Cargar las variables de entorno desde el archivo .env
 if (process.env.NODE_ENV != 'production') {
   //corresponde para que se utilice la DB de ambiente
-  dotenv.config({ path: path.resolve('src/shared/pg-database/.env') });
+  dotenv.config({ path: path.resolve('src/config/pg-database/.env') });
 }
 const { Pool } = pkg;
 
@@ -35,7 +37,7 @@ export const AppDataSource = new DataSource({
   database:  process.env.POSTGRES_DB,
   synchronize: false, // tiene que estar en true momentaneamente se deja en false por cuestiones funcionales
   logging: false,
-  entities: [Hosting, User, UserAuth, Categorias, Publisher, SupportTicket, Desarrollador], // se deben agregar las entidades que vayan pasando a typeORM
+  entities: [Hosting, User, UserAuth, Categorias, Publisher, SupportTicket, Desarrollador,UserRolApl, RolApl], // se deben agregar las entidades que vayan pasando a typeORM
   migrations: ['src/migrations/**/*.js'],
   subscribers: ['src/subscribers/**/*.js'], 
   

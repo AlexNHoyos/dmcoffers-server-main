@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, DeleteDateColumn,Relation } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, DeleteDateColumn,Relation, OneToMany } from 'typeorm';
 import { UserAuth } from './user-auth.entity.js';
+import { UserRolApl } from './user-rol-apl.js';
 
 @Entity('swe_usrapl') // El nombre de la tabla en la base de datos
 
@@ -39,6 +40,9 @@ export class User {
 
     @OneToOne(() => UserAuth, (userauth) => userauth.user, { cascade: true, eager: true }) // Unidireccional: Solo User tiene la referencia
     public userauth?: Relation<UserAuth>;
+
+    @OneToMany(() => UserRolApl, (userRolApl) => userRolApl.user)
+    public userRolApl?: Relation<UserRolApl>;
 
     constructor(
         id?: number,

@@ -1,97 +1,101 @@
 import { Request, Response, NextFunction } from 'express';
-import { validationResult } from 'express-validator';
 import { UserService } from '../../services/user/user.service.js';
 import { IUserService } from '../../services/interfaces/user/IUserService.js';
+import { inject } from 'inversify';
+import { controller, httpDelete, httpGet, httpPost, httpPut } from 'inversify-express-utils';
+import { validate } from '../../middleware/validation/validation-middleware.js';
+import { createUserValidationRules, deleteUserValidationRules, getUserValidationRules, updateUserValidationRules } from '../../middleware/validation/validations-rules/user-validations.js';
+import { authenticateToken } from '../../middleware/auth/authToken.js';
+import { OkNegotiatedContentResult } from 'inversify-express-utils/lib/results/OkNegotiatedContentResult.js';
+import { JsonResult } from 'inversify-express-utils/lib/results/JsonResult.js';
 
-const userService: IUserService = new UserService();
+@controller('/api/users')
+export class UserController {
+  private userService: IUserService;
 
-export const findAll = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const users = await userService.findAll();
-        if (users.length > 0) {
-            res.status(200).json(users);
-        } else {
-            res.status(404).json({ message: 'No se han encontrado usuarios' });
+  constructor(
+    @inject(UserService) userService: IUserService,
+  ) 
+  {
+    this.userService = userService;
+  }
+
+    @httpGet('/findall')
+    public async findAll(req: Request, res: Response, next: NextFunction){
+        try {
+            const users = await this.userService.findAll();
+            if (users.length > 0) {
+                res.status(200).json(users);
+                //new OkNegotiatedContentResult(users);
+            } else {
+                return new JsonResult({ message: 'No se han encontrado usuarios' }, 404);
+            }
+        } catch (error) {
+            next(error);
         }
-    } catch (error) {
-        next(error);
-    }
-};
+    };
 
-export const findOne = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.params.id, 10);
-    const errors = validationResult(req);
+    @httpGet('/:id', validate(getUserValidationRules))
+    public async findOne(req: Request, res: Response, next: NextFunction) {
+        const id = parseInt(req.params.id, 10);
 
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-    try {
-        const user = await userService.findOne(id);
-        if (user) {
-            res.status(200).json(user);
-        } else {
-            res.status(404).json({ message: 'Usuario no encontrado' });
+        try {
+            const user = await this.userService.findOne(id);
+            if (user) {
+                res.status(200).json(user);
+            } else {
+                res.status(404).json({ message: 'Usuario no encontrado' });
+            }
+        } catch (error) {
+            next(error);
         }
-    } catch (error) {
-        next(error);
-    }
-};
+    };
 
-export const create = async (req: Request, res: Response, next: NextFunction) => {
-    
-    const newUser = req.body;
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-    
-    try {
-        const createdUser = await userService.create(newUser);
-        res.status(201).json(createdUser);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const update = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.params.id, 10);
-    const userUpdates = req.body;
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-
-    try {
-        const updatedUser = await userService.update(id, userUpdates);
-        if (updatedUser) {
-            res.status(200).json(updatedUser);
-        } else {
-            res.status(404).json({ message: 'Usuario no encontrado' });
+    @httpPost('/register', validate(createUserValidationRules))
+    public async create(req: Request, res: Response, next: NextFunction) {
+        
+        const newUser = req.body;
+        
+        try {
+            const createdUser = await this.userService.create(newUser);
+            res.status(201).json(createdUser);
+        } catch (error) {
+            next(error);
         }
-    } catch (error) {
-        next(error);
-    }
-};
+    };
 
-export const remove = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.params.id, 10);
+    @httpPut('/:id', authenticateToken, validate(updateUserValidationRules))
+    public async update(req: Request, res: Response, next: NextFunction) {
 
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-
-    try {
-        const deletedUser = await userService.delete(id);
-        if (deletedUser) {
-            res.status(200).json(deletedUser);
-        } else {
-            res.status(404).json({ message: 'Usuario no encontrado' });
+        const id = parseInt(req.params.id, 10);
+        const userUpdates = req.body;
+  
+        try {
+            const updatedUser = await this.userService.update(id, userUpdates);
+            if (updatedUser) {
+                res.status(200).json(updatedUser);
+            } else {
+                res.status(404).json({ message: 'Usuario no encontrado' });
+            }
+        } catch (error) {
+            next(error);
         }
-    } catch (error) {
-        next(error);
-    }
-};
+    };
+
+    @httpDelete('/:id', authenticateToken, validate(deleteUserValidationRules))
+    public async remove(req: Request, res: Response, next: NextFunction) {
+
+        const id = parseInt(req.params.id, 10);
+
+        try {
+            const deletedUser = await this.userService.delete(id);
+            if (deletedUser) {
+                res.status(200).json(deletedUser);
+            } else {
+                res.status(404).json({ message: 'Usuario no encontrado' });
+            }
+        } catch (error) {
+            next(error);
+        }
+    };
+}
