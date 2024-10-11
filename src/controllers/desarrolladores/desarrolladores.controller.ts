@@ -1,113 +1,110 @@
 import { Request, Response, NextFunction } from 'express';
-import { DesarrolladoresRepository } from '../../repositories/desarrolladores/desarrolladores.dao.js';
-import { validationResult } from 'express-validator';
+import { authenticateToken } from '../../middleware/auth/authToken.js';
+import {
+  controller,
+  httpDelete,
+  httpGet,
+  httpPost,
+  httpPut,
+} from 'inversify-express-utils';
+import { IDesarrolladoresService } from '../../services/interfaces/desarrolladores/IDesarrolladoresService.js';
+import { DesarrolladoresService } from '../../services/desarrolladores/desarrolladores.service.js';
+import { inject } from 'inversify';
+import { validate } from '../../middleware/validation/validation-middleware.js';
+import {
+  createDesarrolladoresValidationRules,
+  deleteDesarrolladoresValidationRules,
+  getDesarrolladoresValidationRules,
+  updateDesarrolladoresValidationRules,
+} from '../../middleware/validation/validations-rules/desarrolladores-validations.js';
 
-const desarrolladorRepository = new DesarrolladoresRepository();
+@controller('/api/developers', authenticateToken)
+export class DesarrolladoresController {
+  private desarrollaresService: IDesarrolladoresService;
 
-export const findAll = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+  constructor(
+    @inject(DesarrolladoresService)
+    desarrollaresService: IDesarrolladoresService
+  ) {
+    this.desarrollaresService = desarrollaresService;
+  }
+
+  @httpGet('/')
+  public async findAll(req: Request, res: Response, next: NextFunction) {
     try {
-        const desarrollador = await desarrolladorRepository.findAll();
-        if (desarrollador.length > 0) {
-            res.status(200).json(desarrollador);
-        } else {
-            res.status(404).json({ message: 'No se han encontrado desarrolladores' });
-        }
+      const desarrollador = await this.desarrollaresService.findAll();
+      if (desarrollador.length > 0) {
+        res.status(200).json(desarrollador);
+      } else {
+        res
+          .status(404)
+          .json({ message: 'No se han encontrado desarrolladores' });
+      }
     } catch (error) {
-        next(error);
+      next(error);
     }
-};
+  }
 
-// Obtener todos los publicadores de juegos
-export const findOne = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+  @httpGet('/:id', validate(getDesarrolladoresValidationRules))
+  // Obtener todos los publicadores de juegos
+  public async findOne(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-    try {
-        const desarrollador = await desarrolladorRepository.findOne(id);
-        if (desarrollador) {
-            res.status(200).json(desarrollador);
-        } else {
-            res.status(404).json({ message: 'Desarrollador no encontrado' });
-        }
-    } catch (error) {
-        next(error);
-    }
-};
 
-export const create = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+    try {
+      const desarrollador = await this.desarrollaresService.findOne(id);
+      if (desarrollador) {
+        res.status(200).json(desarrollador);
+      } else {
+        res.status(404).json({ message: 'Desarrollador no encontrado' });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @httpPost('/', validate(createDesarrolladoresValidationRules))
+  public async create(req: Request, res: Response, next: NextFunction) {
     const newDev = req.body;
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-    try {
-        const createdDev = await desarrolladorRepository.create(newDev);
-        res.status(201).json(createdDev);
-    } catch (error) {
-        next(error);
-    }
-};
 
-export const update = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+    try {
+      const createdDev = await this.desarrollaresService.create(newDev);
+      res.status(201).json(createdDev);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @httpPut('/:id', validate(updateDesarrolladoresValidationRules))
+  public async update(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
     const devUpdates = req.body;
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-
     try {
-        const updatedDev = await desarrolladorRepository.update(id, devUpdates);
-        if (updatedDev) {
-            res.status(200).json(updatedDev);
-        } else {
-            res.status(404).json({ message: 'Desarrollador no encontrado' });
-        }
+      const updatedDev = await this.desarrollaresService.update(id, devUpdates);
+      if (updatedDev) {
+        res.status(200).json(updatedDev);
+      } else {
+        res.status(404).json({ message: 'Desarrollador no encontrado' });
+      }
     } catch (error) {
-        next(error);
+      next(error);
     }
-};
+  }
 
-// Eliminar un desarrollador
-export const remove = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+  @httpDelete('/:id', validate(deleteDesarrolladoresValidationRules))
+  // Eliminar un desarrollador
+  public async remove(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-
     try {
-        const deletedDesarrollador = await desarrolladorRepository.delete(id);
-        if (deletedDesarrollador) {
-            res.status(200).json(deletedDesarrollador);
-        } else {
-            res.status(404).json({ message: 'Desarrollador no encontrado' });
-        }
+      const deletedDesarrollador = await this.desarrollaresService.delete(id);
+      if (deletedDesarrollador) {
+        res.status(200).json(deletedDesarrollador);
+      } else {
+        res.status(404).json({ message: 'Desarrollador no encontrado' });
+      }
     } catch (error) {
-        next(error);
+      next(error);
     }
-};
+  }
+}

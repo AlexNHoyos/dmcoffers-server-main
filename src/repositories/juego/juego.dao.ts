@@ -12,18 +12,15 @@ import { injectable } from 'inversify';
 @injectable()
 export class JuegoRepository implements IBaseRepository<Juego> {
   private repository: Repository<Juego>;
-  private publisherRepository: Repository<Publisher>;
-  private developerRepository: Repository<Desarrollador>;
 
   constructor() {
     this.repository = AppDataSource.getRepository(Juego);
-    this.publisherRepository = AppDataSource.getRepository(Publisher);
-    this.developerRepository = AppDataSource.getRepository(Desarrollador);
   }
 
   async findAll(): Promise<Juego[]> {
     try {
       return await this.repository.find({
+        relations: ['publisher', 'developer', 'categorias'],
         order: {
           id: 'ASC', // Ordena por id ascendente
         },
@@ -36,8 +33,11 @@ export class JuegoRepository implements IBaseRepository<Juego> {
 
   async findOne(id: number): Promise<Juego | undefined> {
     try {
-      const Juego = await this.repository.findOneBy({ id });
-      return Juego ?? undefined;
+      const juego = await this.repository.findOne({
+        where: { id },
+        relations: ['publisher', 'developer', 'categorias'],
+      });
+      return juego ?? undefined;
     } catch (error) {
       console.error(errorEnumJuego.juegoIndicatedNotFound, error);
       throw new DatabaseErrorCustom(errorEnumJuego.juegoIndicatedNotFound, 500);
@@ -51,18 +51,6 @@ export class JuegoRepository implements IBaseRepository<Juego> {
       console.error(errorEnumJuego.juegoNotCreated, error);
       throw new DatabaseErrorCustom(errorEnumJuego.juegoNotCreated, 500);
     }
-  }
-
-  async findPublisherById(id: number | undefined): Promise<Publisher | null> {
-    const publisher = await this.publisherRepository.findOne({ where: { id } });
-    return publisher || null;
-  }
-
-  async findDeveloperById(
-    id: number | undefined
-  ): Promise<Desarrollador | null> {
-    const developer = await this.developerRepository.findOne({ where: { id } });
-    return developer || null;
   }
 
   async update(id: number, juego: Juego): Promise<Juego> {

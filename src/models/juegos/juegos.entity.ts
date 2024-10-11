@@ -42,7 +42,7 @@ export class Juego {
   public modificationuser: string | undefined;
 
   @ManyToOne(() => Publisher, (publisher) => publisher.juegos, {
-    nullable: true,
+    nullable: false,
     eager: true,
   })
   @JoinColumn({ name: 'id_publisher' })
@@ -64,7 +64,7 @@ export class Juego {
     joinColumn: { name: 'id_game', referencedColumnName: 'id' }, // Referencia a Juego
     inverseJoinColumn: { name: 'id_category', referencedColumnName: 'id' }, // Referencia a Categoria
   })
-  public categorias?: Promise<Categorias>;
+  public categorias?: Promise<Categorias[]>;
 
   constructor(
     id?: number,

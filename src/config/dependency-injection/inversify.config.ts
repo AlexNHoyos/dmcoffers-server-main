@@ -27,10 +27,13 @@ import { JuegoRepository } from '../../repositories/juego/juego.dao.js';
 import { JuegoController } from '../../controllers/juegos/juego.controller.js';
 import { IJuegoService } from '../../services/interfaces/juego/IJuegoService.js';
 import { JuegoService } from '../../services/juego/juego.service.js';
-
+import { DesarrolladoresRepository } from '../../repositories/desarrolladores/desarrolladores.dao.js';
+import { IDesarrolladoresService } from '../../services/interfaces/desarrolladores/IDesarrolladoresService.js';
+import { DesarrolladoresService } from '../../services/desarrolladores/desarrolladores.service.js';
+import { DesarrolladoresController } from '../../controllers/desarrolladores/desarrolladores.controller.js';
 
 // Crear un nuevo contenedor de Inversify
-const container = new Container({ defaultScope: "Singleton" });
+const container = new Container({ defaultScope: 'Singleton' });
 
 // Controladores
 container.bind<AuthController>(AuthController).toSelf();
@@ -40,7 +43,7 @@ container.bind<SupportTicketController>(SupportTicketController).toSelf();
 container.bind<PublisherController>(PublisherController).toSelf();
 container.bind<CategoriasController>(CategoriasController).toSelf();
 container.bind<JuegoController>(JuegoController).toSelf();
-
+container.bind<DesarrolladoresController>(DesarrolladoresController).toSelf();
 
 // Repositorios
 container.bind<UserAuthRepository>(UserAuthRepository).toSelf();
@@ -48,16 +51,21 @@ container.bind<PublisherRepository>(PublisherRepository).toSelf();
 container.bind<CategoriasRepository>(CategoriasRepository).toSelf();
 container.bind<HostingRepository>(HostingRepository).toSelf();
 container.bind<JuegoRepository>(JuegoRepository).toSelf();
+container.bind<DesarrolladoresRepository>(DesarrolladoresRepository).toSelf();
 
 // Interfaces
 container.bind<IAuthService>(AuthService).to(AuthService);
 container.bind<IUserService>(UserService).to(UserService);
 container.bind<IPasswordService>(PasswordService).to(PasswordService);
 container.bind<IHostingService>(HostingService).to(HostingService);
-container.bind<ISupportTicketService>(SupportTicketService).to(SupportTicketService);
+container
+  .bind<ISupportTicketService>(SupportTicketService)
+  .to(SupportTicketService);
 container.bind<IPublisherService>(PublisherService).to(PublisherService);
 container.bind<ICategoriasService>(CategoriasService).to(CategoriasService);
 container.bind<IJuegoService>(JuegoService).to(JuegoService);
-
+container
+  .bind<IDesarrolladoresService>(DesarrolladoresService)
+  .to(DesarrolladoresService);
 
 export { container };

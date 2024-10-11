@@ -1,8 +1,12 @@
 import { Router } from 'express';
-import * as desarrolladorController from '../../controllers/desarrolladores/desarrolladores.controller.js';
 import { body, param } from 'express-validator';
+import { container } from '../../config/dependency-injection/inversify.config.js';
+import { DesarrolladoresController } from '../../controllers/desarrolladores/desarrolladores.controller.js';
 
 const desarrolladorRouter = Router();
+const desarrolladorController = container.get<DesarrolladoresController>(
+  DesarrolladoresController
+);
 
 desarrolladorRouter.get('/', desarrolladorController.findAll);
 desarrolladorRouter.post(

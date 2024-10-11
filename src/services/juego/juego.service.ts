@@ -5,18 +5,27 @@ import { JuegoDto } from '../../models-dto/juegos/juego-dto.entity.js';
 import { IJuegoService } from '../interfaces/juego/IJuegoService.js';
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
 import { CategoriasRepository } from '../../repositories/categorias/categorias.dao.js';
-import { inject } from 'inversify';
+import { inject, injectable } from 'inversify';
+import { PublisherService } from '../publisher/publisher.service.js';
+import { DesarrolladoresService } from '../desarrolladores/desarrolladores.service.js';
 
+@injectable()
 export class JuegoService implements IJuegoService {
   private juegoRepository: JuegoRepository;
   private categoriaRepository: CategoriasRepository;
+  private publisherService: PublisherService;
+  private desarrolladoresService: DesarrolladoresService;
 
   constructor(
-    @inject(JuegoRepository) juegoRepository : JuegoRepository,
-    @inject(CategoriasRepository) categoriaRepository : CategoriasRepository,
+    @inject(JuegoRepository) juegoRepository: JuegoRepository,
+    @inject(CategoriasRepository) categoriaRepository: CategoriasRepository,
+    @inject(PublisherService) publisherService: PublisherService,
+    @inject(DesarrolladoresService) desarrolladorService: DesarrolladoresService
   ) {
     this.juegoRepository = juegoRepository;
     this.categoriaRepository = categoriaRepository;
+    this.publisherService = publisherService;
+    this.desarrolladoresService = desarrolladorService;
   }
 
   async findAll(): Promise<Juego[]> {
@@ -32,7 +41,13 @@ export class JuegoService implements IJuegoService {
       throw new ValidationError('El juego debe tener un nombre', 404);
     }
 
-    const publisher = await this.juegoRepository.findPublisherById(
+    if (newJuego.id_publisher === undefined) {
+      throw new ValidationError(
+        'El juego debe tener un publisher asociado',
+        400
+      );
+    }
+    const publisher = await this.publisherService.findOne(
       newJuego.id_publisher
     );
     if (!publisher) {
@@ -42,7 +57,13 @@ export class JuegoService implements IJuegoService {
       );
     }
 
-    const developer = await this.juegoRepository.findDeveloperById(
+    if (newJuego.id_developer === undefined) {
+      throw new ValidationError(
+        'El juego debe tener un developer asociado',
+        400
+      );
+    }
+    const developer = await this.desarrolladoresService.findOne(
       newJuego.id_developer
     );
     if (!developer) {
@@ -90,7 +111,7 @@ export class JuegoService implements IJuegoService {
     // Asociar el publisher y developer
     juegoToCreate.publisher = publisher;
     juegoToCreate.developer = developer;
-    juegoToCreate.categorias = categorias;
+    juegoToCreate.categorias = Promise.resolve(categorias);
 
     // Guardar el juego en la base de datos
     const juegoCreado = await this.juegoRepository.create(juegoToCreate);
@@ -105,9 +126,7 @@ export class JuegoService implements IJuegoService {
       creationtimestamp: juegoCreado.creationtimestamp,
       id_publisher: juegoCreado.publisher?.id,
       id_developer: juegoCreado.developer?.id,
-      categorias: juegoCreado.categorias
-        ? juegoCreado.categorias.map((c) => c.id)
-        : [],
+      categorias: (await juegoCreado.categorias)?.map((c) => c.id) || [],
     };
 
     return juegoOutput;
