@@ -13,6 +13,8 @@ import { Desarrollador } from '../../models/desarrolladores/desarrolladores.enti
 import { UserRolApl } from '../../models/usuarios/user-rol-apl.js';
 import { RolApl } from '../../models/roles/rol-apl.js';
 import { Juego } from '../../models/juegos/juegos.entity.js';
+import { Precio } from '../../models/precios/precios.entity.js';
+import { Oferta } from '../../models/ofertas/ofertas.entity.js';
 
 // Cargar las variables de entorno desde el archivo .env
 if (process.env.NODE_ENV != 'production') {
@@ -49,6 +51,8 @@ export const AppDataSource = new DataSource({
     UserRolApl,
     RolApl,
     Juego,
+    Precio,
+    Oferta,
   ], // se deben agregar las entidades que vayan pasando a typeORM
   migrations: ['src/migrations/**/*.js'],
   subscribers: ['src/subscribers/**/*.js'],

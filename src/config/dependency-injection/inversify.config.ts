@@ -31,6 +31,10 @@ import { DesarrolladoresRepository } from '../../repositories/desarrolladores/de
 import { IDesarrolladoresService } from '../../services/interfaces/desarrolladores/IDesarrolladoresService.js';
 import { DesarrolladoresService } from '../../services/desarrolladores/desarrolladores.service.js';
 import { DesarrolladoresController } from '../../controllers/desarrolladores/desarrolladores.controller.js';
+import { PrecioController } from '../../controllers/precios/precios.controller.js';
+import { PrecioRepository } from '../../repositories/precios/precios.dao.js';
+import { PrecioService } from '../../services/precios/precios.service.js';
+import { IPrecioService } from '../../services/interfaces/precios/IPrecioService.js';
 
 // Crear un nuevo contenedor de Inversify
 const container = new Container({ defaultScope: 'Singleton' });
@@ -44,6 +48,7 @@ container.bind<PublisherController>(PublisherController).toSelf();
 container.bind<CategoriasController>(CategoriasController).toSelf();
 container.bind<JuegoController>(JuegoController).toSelf();
 container.bind<DesarrolladoresController>(DesarrolladoresController).toSelf();
+container.bind<PrecioController>(PrecioController).toSelf();
 
 // Repositorios
 container.bind<UserAuthRepository>(UserAuthRepository).toSelf();
@@ -52,6 +57,7 @@ container.bind<CategoriasRepository>(CategoriasRepository).toSelf();
 container.bind<HostingRepository>(HostingRepository).toSelf();
 container.bind<JuegoRepository>(JuegoRepository).toSelf();
 container.bind<DesarrolladoresRepository>(DesarrolladoresRepository).toSelf();
+container.bind<PrecioRepository>(PrecioRepository).toSelf();
 
 // Interfaces
 container.bind<IAuthService>(AuthService).to(AuthService);
@@ -67,5 +73,7 @@ container.bind<IJuegoService>(JuegoService).to(JuegoService);
 container
   .bind<IDesarrolladoresService>(DesarrolladoresService)
   .to(DesarrolladoresService);
+
+container.bind<IPrecioService>(PrecioService).to(PrecioService);
 
 export { container };

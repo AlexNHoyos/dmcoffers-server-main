@@ -53,3 +53,19 @@ export enum errorEnumJuego {
   juegoNotUpdated = 'Error al actualizar el juego',
   juegoNotDeleted = 'Error al borrar el juego',
 }
+
+export enum errorEnumPrecio {
+  precioNotCreated = 'Error al crear el precio',
+  precioIndicatedNotFound = 'Error al obtener el precio indicado',
+  preciosNotFounded = 'Error al obtener los precios',
+  precioNotUpdated = 'Error al actualizar el precio',
+  precioNotDeleted = 'Error al borrar el precio',
+}
+
+export enum errorEnumOferta {
+  ofertaNotCreated = 'Error al crear la oferta',
+  ofertaIndicatedNotFound = 'Error al obtener la oferta indicada',
+  ofertasNotFounded = 'Error al obtener las ofertas',
+  ofertaNotUpdated = 'Error al actualizar la oferta',
+  ofertaNotDeleted = 'Error al borrar la oferta',
+}

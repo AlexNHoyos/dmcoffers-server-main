@@ -9,11 +9,14 @@ import {
   DeleteDateColumn,
   JoinTable,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 
 import { Publisher } from '../publicadores/publisher.entity.js';
 import { Desarrollador } from '../desarrolladores/desarrolladores.entity.js';
 import { Categorias } from '../categorias/categorias.entity.js';
+import { Precio } from '../precios/precios.entity.js';
+import { Oferta } from '../ofertas/ofertas.entity.js';
 
 @Entity('pub_game')
 export class Juego {
@@ -65,6 +68,12 @@ export class Juego {
     inverseJoinColumn: { name: 'id_category', referencedColumnName: 'id' }, // Referencia a Categoria
   })
   public categorias?: Promise<Categorias[]>;
+
+  @OneToMany(() => Precio, (precio) => precio.juego)
+  precios?: Precio[];
+
+  @OneToMany(() => Oferta, (oferta) => oferta.juego)
+  ofertas?: Oferta[];
 
   constructor(
     id?: number,
