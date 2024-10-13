@@ -6,6 +6,9 @@ coverage
 #env variables file 
 *.env
 
+#cryptoConfig
+src/middleware/auth/criptoConfig
+
 # dependency directory
 node_modules
 

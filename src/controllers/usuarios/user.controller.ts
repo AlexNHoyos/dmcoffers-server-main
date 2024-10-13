@@ -2,8 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import { UserService } from '../../services/user/user.service.js';
 import { IUserService } from '../../services/interfaces/user/IUserService.js';
+import { AuthCryptography } from '../../middleware/auth/authCryptography.js';
 
 const userService: IUserService = new UserService();
+const authCryptography: AuthCryptography = new AuthCryptography();
 
 export const findAll = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -38,14 +40,17 @@ export const findOne = async (req: Request, res: Response, next: NextFunction) =
 };
 
 export const create = async (req: Request, res: Response, next: NextFunction) => {
-    
+
+    console.log(req.body);
+
     const newUser = req.body;
+    newUser.password = authCryptography.decrypt(newUser.password);
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-    
+
     try {
         const createdUser = await userService.create(newUser);
         res.status(201).json(createdUser);
