@@ -1,7 +1,6 @@
 // auth.service.ts
 import { UserAuthRepository } from '../../repositories/usuarios/user-auth.dao.js';
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
-import { hashPassword }  from '../../middleware/auth/authHash.js'
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
 import {verifyPassword} from '../../middleware/auth/authHash.js';
 import { UserService } from '../user/user.service.js';
@@ -52,25 +51,5 @@ export class AuthService implements IAuthService {
     return this._userAuthRepository.findOne(id);
   }
 
-
-  async validateUserAuthOnCreate(userAuth: UserAuth): Promise<UserAuth> {
-
-  if (!userAuth.password   ) {  
-       throw new ValidationError('Usuario no tiene contraseña definida', 401);
-  }
-  else if (!this._passwordService.validatePassword(userAuth.password)) {
-    throw new ValidationError('Usuario no tiene contraseña valida', 401)
-  }
-    userAuth.password = await hashPassword(userAuth.password);
-   
-    const validatedUserAuth : UserAuth = new UserAuth( 
-      userAuth.password,
-      userAuth.creationuser,
-      userAuth.creationtimestamp,
-
-    );  
-    
-    return validatedUserAuth;
-  }
   
 }

@@ -1,10 +1,19 @@
-import { injectable } from "inversify";
-import { RolApl } from "../../models/roles/rol-apl.entity";
-import { UserRolApl } from "../../models/usuarios/user-rol-apl.entity";
-import { IUserRolAplService } from "../interfaces/user/IUserRolAplService";
+import { inject, injectable } from "inversify";
+import { RolApl } from "../../models/roles/rol-apl.entity.js";
+import { UserRolApl } from "../../models/usuarios/user-rol-apl.entity.js";
+import { IUserRolAplService } from "../interfaces/user/IUserRolAplService.js";
+import { UserRolRepository } from "../../repositories/usuarios/user-rol-apl.repository.js";
 
 @injectable()
 export class UserRolAplService implements IUserRolAplService {
+
+    private _userRolRepository: UserRolRepository;
+
+    constructor(
+     @inject(UserRolRepository) userRolAplService: UserRolRepository,
+    ){
+        this._userRolRepository = userRolAplService;
+    }
 
     async SearchUserCurrentRol(userRolAplList: UserRolApl[]): Promise<RolApl | undefined>{
         
@@ -19,8 +28,15 @@ export class UserRolAplService implements IUserRolAplService {
             return undefined;
         }
 
-        return await latestUserRol.rolApl
+        return await latestUserRol.rolApl;
     }
 
-    
+    async AsignRolUser(userRolApl: UserRolApl): Promise<RolApl | undefined>{
+
+        const userRolAsigned = this._userRolRepository.create(userRolApl);
+        
+        const currentRol = (await userRolAsigned).rolApl;
+        
+        return currentRol;
+    }
 }

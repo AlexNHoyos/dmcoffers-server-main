@@ -33,9 +33,9 @@ export class UserRolApl {
     public rolApl?: Promise<RolApl>;
 
     constructor(   
-        id: number,
-        idRolapl: number,
-        idUsrapl: number,
+        id?: number,
+        idRolapl?: number,
+        idUsrapl?: number,
         creationuser?: string,
         creationtimestamp?: Date,
         status?: boolean,

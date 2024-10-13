@@ -1,7 +1,7 @@
 
 export interface IPasswordService {
   
-    validatePassword(password: string): Promise<void> 
+    validatePassword(password: string): Promise<Boolean> 
     
     hashPassword(password: string): Promise<string> 
     

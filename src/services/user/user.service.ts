@@ -4,26 +4,30 @@ import { User } from '../../models/usuarios/user.entity.js';
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
 import { IUserService } from '../interfaces/user/IUserService.js';
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
-import { UserAuthRepository } from '../../repositories/usuarios/user-auth.dao.js';
 import { AuthenticationError } from '../../middleware/errorHandler/authenticationError.js';
 import { UserDto } from '../../models-dto/usuarios/user-dto.entity.js';
 import { inject, injectable, LazyServiceIdentifer } from 'inversify';
-import { IAuthService } from '../interfaces/auth/IAuthService.js';
-import { AuthService } from '../auth/auth.service.js';
-import { PasswordService } from '../auth/password.service.js';
 import { IPasswordService } from '../interfaces/auth/IPasswordService.js';
+import { PasswordService } from '../auth/password.service.js';
+import { UserRolApl } from '../../models/usuarios/user-rol-apl.entity.js';
+import { userRolIdCons } from '../../shared/constants/general-constants.js';
+import { UserRolAplService } from './user-rol-apl.service.js';
+import { IUserRolAplService } from '../interfaces/user/IUserRolAplService.js';
 
 @injectable()
 export class UserService implements IUserService {
-  private _authService: IAuthService;
   private _userRepository: UserRepository;
+  private _passwordService: IPasswordService;
+  private _userRolAplService: IUserRolAplService;
 
   constructor(
-    @inject(AuthService) authService: IAuthService,
     @inject(UserRepository) userRepository: UserRepository,
+    @inject(PasswordService) passwordService: IPasswordService,
+    @inject(UserRolAplService) userRolAplService: IUserRolAplService,
   ) {
-    this._authService = authService;
     this._userRepository = userRepository;
+    this._passwordService = passwordService;
+    this._userRolAplService = userRolAplService;
 
   }
 
@@ -48,11 +52,23 @@ export class UserService implements IUserService {
 
     const userToCreate = await this.initializeUser(newUser);
 
+    
+
     const userCreated = await this._userRepository.registerUser(userToCreate);
-           
+
+    const newUserRol: UserRolApl = new UserRolApl()
+    newUserRol.id = undefined;
+    newUserRol.idRolapl = userRolIdCons.usuarioTienda;
+    newUserRol.idUsrapl = userCreated.id;
+    newUserRol.creationuser = userCreated.creationuser;
+    newUserRol.creationtimestamp = newUser.creationtimestamp;
+    newUserRol.status = true;
+
+    const rolAsigned = await this._userRolAplService.AsignRolUser(newUserRol);
+             
     const userOutput : UserDto = {
       idUser: userCreated.id,
-      idUserAuth: userCreated.userauth?.id,
+      rolDesc: rolAsigned?.description,
       realname: userCreated.realname,
       surname: userCreated.surname,
       username: userCreated.username,
@@ -107,14 +123,18 @@ export class UserService implements IUserService {
 
     newUser.creationtimestamp = new Date();
 
-    const userToValidate: UserAuth = new UserAuth(
+    newUser.password = await this._passwordService.validatePassword(newUser.password!)
+                        ? await this._passwordService.hashPassword(newUser.password!)
+                        : (() => { throw new ValidationError('La Contraseña es inválida'); })();
+
+
+    const newUserAuth: UserAuth = new UserAuth(
       newUser.password!,
       newUser.creationuser!,
       newUser.creationtimestamp,
 
     );
 
-    const userAuthValidated = await this._authService.validateUserAuthOnCreate(userToValidate);
 
     const userToCreate: User = new User ();
       userToCreate.id= undefined;
@@ -128,7 +148,7 @@ export class UserService implements IUserService {
       userToCreate.creationtimestamp= newUser.creationtimestamp;
       userToCreate.modificationuser= newUser.modificationuser;
       userToCreate.modificationtimestamp= newUser.modificationtimestamp;
-      userToCreate.userauth= userAuthValidated?? undefined;
+      userToCreate.userauth= newUserAuth;
         
     return userToCreate;
 
