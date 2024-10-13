@@ -23,6 +23,8 @@ import { ICategoriasService } from '../../services/interfaces/categorias/ICatego
 import { CategoriasService } from '../../services/categorias/categorias.service.js';
 import { CategoriasRepository } from '../../repositories/categorias/categorias.dao.js';
 import { HostingRepository } from '../../repositories/hosting/hosting.dao.js';
+import { IUserRolAplService } from '../../services/interfaces/user/IUserRolAplService.js';
+import { UserRolAplService } from '../../services/user/user-rol-apl.service.js';
 
 
 // Crear un nuevo contenedor de Inversify
@@ -50,6 +52,7 @@ container.bind<IHostingService>(HostingService).to(HostingService);
 container.bind<ISupportTicketService>(SupportTicketService).to(SupportTicketService);
 container.bind<IPublisherService>(PublisherService).to(PublisherService);
 container.bind<ICategoriasService>(CategoriasService).to(CategoriasService);
+container.bind<IUserRolAplService>(UserRolAplService).to(UserRolAplService);
 
 
 export { container };

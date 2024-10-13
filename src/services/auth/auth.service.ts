@@ -12,19 +12,24 @@ import { inject, injectable, LazyServiceIdentifer } from 'inversify';
 import { IPasswordService } from '../interfaces/auth/IPasswordService.js';
 import { PasswordService } from './password.service.js';
 import { User } from '../../models/usuarios/user.entity.js';
+import { UserRolAplService } from '../user/user-rol-apl.service.js';
+import { IUserRolAplService } from '../interfaces/user/IUserRolAplService.js';
 
 @injectable()
 export class AuthService implements IAuthService {
   private userAuthRepository: UserAuthRepository;
-  private passwordService: IPasswordService
+  private passwordService: IPasswordService;
+  private userRolAplService: IUserRolAplService;
   
   constructor(
     @inject(UserAuthRepository) userAuthRepository: UserAuthRepository,
     @inject(PasswordService) passwordService: IPasswordService,
+    @inject(UserRolAplService) userRolAplService: IUserRolAplService,
 
   ) {
     this.userAuthRepository = userAuthRepository;
     this.passwordService = passwordService;
+    this.userRolAplService = userRolAplService;
   }
  
   async login (user: User , password: string){
@@ -35,14 +40,17 @@ export class AuthService implements IAuthService {
       throw new ValidationError('Contraseña incorrecta' );
     }
 
-    return generateToken({ username: user.username, id: user.id, rol: user.userRolApl?.id_rolapl});
+    let userRolAplList  =  (await user.userRolApl)?.map(c => c);
+
+    user.currentRol = await this.userRolAplService.SearchUserCurrentRol(userRolAplList!);
+
+    return generateToken({ username: user.username, id: user.id, rol: user.currentRol?.description});
 
   }
 
   async findOne(id: number): Promise<UserAuth | undefined> {
     return this.userAuthRepository.findOne(id);
   }
-
 
 
   async validateUserAuthOnCreate(userAuth: UserAuth): Promise<UserAuth> {
