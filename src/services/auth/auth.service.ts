@@ -17,9 +17,9 @@ import { IUserRolAplService } from '../interfaces/user/IUserRolAplService.js';
 
 @injectable()
 export class AuthService implements IAuthService {
-  private userAuthRepository: UserAuthRepository;
-  private passwordService: IPasswordService;
-  private userRolAplService: IUserRolAplService;
+  private _userAuthRepository: UserAuthRepository;
+  private _passwordService: IPasswordService;
+  private _userRolAplService: IUserRolAplService;
   
   constructor(
     @inject(UserAuthRepository) userAuthRepository: UserAuthRepository,
@@ -27,14 +27,14 @@ export class AuthService implements IAuthService {
     @inject(UserRolAplService) userRolAplService: IUserRolAplService,
 
   ) {
-    this.userAuthRepository = userAuthRepository;
-    this.passwordService = passwordService;
-    this.userRolAplService = userRolAplService;
+    this._userAuthRepository = userAuthRepository;
+    this._passwordService = passwordService;
+    this._userRolAplService = userRolAplService;
   }
  
   async login (user: User , password: string){
    
-    const isValidPassword = await this.passwordService.verifyPassword(user.userauth?.password!, password);
+    const isValidPassword = await this._passwordService.verifyPassword(user.userauth?.password!, password);
 
     if (!isValidPassword) {
       throw new ValidationError('Contraseña incorrecta' );
@@ -42,14 +42,14 @@ export class AuthService implements IAuthService {
 
     let userRolAplList  =  (await user.userRolApl)?.map(c => c);
 
-    user.currentRol = await this.userRolAplService.SearchUserCurrentRol(userRolAplList!);
+    user.currentRol = await this._userRolAplService.SearchUserCurrentRol(userRolAplList!);
 
     return generateToken({ username: user.username, id: user.id, rol: user.currentRol?.description});
 
   }
 
   async findOne(id: number): Promise<UserAuth | undefined> {
-    return this.userAuthRepository.findOne(id);
+    return this._userAuthRepository.findOne(id);
   }
 
 
@@ -58,7 +58,7 @@ export class AuthService implements IAuthService {
   if (!userAuth.password   ) {  
        throw new ValidationError('Usuario no tiene contraseña definida', 401);
   }
-  else if (!this.passwordService.validatePassword(userAuth.password)) {
+  else if (!this._passwordService.validatePassword(userAuth.password)) {
     throw new ValidationError('Usuario no tiene contraseña valida', 401)
   }
     userAuth.password = await hashPassword(userAuth.password);

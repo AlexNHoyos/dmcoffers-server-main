@@ -15,29 +15,24 @@ import { IPasswordService } from '../interfaces/auth/IPasswordService.js';
 
 @injectable()
 export class UserService implements IUserService {
-  private authService: IAuthService;
-  private userRepository: UserRepository;
-  private userAuthRepository: UserAuthRepository;
-  private passwordService: IPasswordService;
+  private _authService: IAuthService;
+  private _userRepository: UserRepository;
 
   constructor(
-    @inject(new LazyServiceIdentifer(() => AuthService)) authService: IAuthService,
-    @inject(UserAuthRepository) userAuthRepository: UserAuthRepository,
-    @inject(PasswordService) passwordService: IPasswordService,
+    @inject(AuthService) authService: IAuthService,
+    @inject(UserRepository) userRepository: UserRepository,
   ) {
-    this.authService = authService;
-    this.userRepository = new UserRepository();
-    this.userAuthRepository = new UserAuthRepository();
-    this.passwordService = passwordService;
+    this._authService = authService;
+    this._userRepository = userRepository;
+
   }
 
-
   async findAll(): Promise<User[]> {
-    return this.userRepository.findAll();
+    return this._userRepository.findAll();
   }
 
   async findOne(id: number): Promise<User | undefined> {
-    return this.userRepository.findOne(id);
+    return this._userRepository.findOne(id);
   }
 
   async create(newUser: UserDto): Promise<UserDto> {
@@ -53,7 +48,7 @@ export class UserService implements IUserService {
 
     const userToCreate = await this.initializeUser(newUser);
 
-    const userCreated = await this.userRepository.registerUser(userToCreate);
+    const userCreated = await this._userRepository.registerUser(userToCreate);
            
     const userOutput : UserDto = {
       idUser: userCreated.id,
@@ -77,7 +72,7 @@ export class UserService implements IUserService {
 
 
   async update(id: number, user: User): Promise<User> {
-    const oldUser = await this.userRepository.findOne(id);
+    const oldUser = await this._userRepository.findOne(id);
     if (!oldUser) {
       throw new ValidationError('Usuario no encontrado', 400);
    }
@@ -96,15 +91,15 @@ export class UserService implements IUserService {
       modificationtimestamp: user.modificationtimestamp ?? new Date(), // Fecha de modificación actual
   };
 
-    return this.userRepository.update(id, updatedUser);
+    return this._userRepository.update(id, updatedUser);
   }
 
   async delete(id: number): Promise<User | undefined> {
-    return this.userRepository.delete(id);
+    return this._userRepository.delete(id);
   }
 
   async findByUserName(userName: string):  Promise<User | undefined> {
-    return this.userRepository.findByUserName(userName);
+    return this._userRepository.findByUserName(userName);
   }
 
 
@@ -119,7 +114,7 @@ export class UserService implements IUserService {
 
     );
 
-    const userAuthValidated = await this.authService.validateUserAuthOnCreate(userToValidate);
+    const userAuthValidated = await this._authService.validateUserAuthOnCreate(userToValidate);
 
     const userToCreate: User = new User ();
       userToCreate.id= undefined;
