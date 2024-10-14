@@ -6,7 +6,9 @@ import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
 import { IUserRepository } from '../interfaces/user/IUserRepository.js';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants.js';
+import { injectable } from 'inversify';
 
+@injectable()
 export class UserRepository implements IUserRepository {
   private userRepo: Repository<User>;
   private userAuthRepo: Repository<UserAuth>;

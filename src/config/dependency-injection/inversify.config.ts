@@ -23,6 +23,11 @@ import { ICategoriasService } from '../../services/interfaces/categorias/ICatego
 import { CategoriasService } from '../../services/categorias/categorias.service.js';
 import { CategoriasRepository } from '../../repositories/categorias/categorias.dao.js';
 import { HostingRepository } from '../../repositories/hosting/hosting.dao.js';
+import { IUserRolAplService } from '../../services/interfaces/user/IUserRolAplService.js';
+import { UserRolAplService } from '../../services/user/user-rol-apl.service.js';
+import { UserRepository } from '../../repositories/usuarios/user.dao.js';
+import { SupportTicketRepository } from '../../repositories/support-ticket/support-ticket.dao.js';
+import { UserRolRepository } from '../../repositories/usuarios/user-rol-apl.dao.js';
 
 
 // Crear un nuevo contenedor de Inversify
@@ -41,6 +46,9 @@ container.bind<UserAuthRepository>(UserAuthRepository).toSelf();
 container.bind<PublisherRepository>(PublisherRepository).toSelf();
 container.bind<CategoriasRepository>(CategoriasRepository).toSelf();
 container.bind<HostingRepository>(HostingRepository).toSelf();
+container.bind<UserRepository>(UserRepository).toSelf();
+container.bind<SupportTicketRepository>(SupportTicketRepository).toSelf();
+container.bind<UserRolRepository>(UserRolRepository).toSelf();
 
 // Interfaces
 container.bind<IAuthService>(AuthService).to(AuthService);
@@ -50,6 +58,7 @@ container.bind<IHostingService>(HostingService).to(HostingService);
 container.bind<ISupportTicketService>(SupportTicketService).to(SupportTicketService);
 container.bind<IPublisherService>(PublisherService).to(PublisherService);
 container.bind<ICategoriasService>(CategoriasService).to(CategoriasService);
+container.bind<IUserRolAplService>(UserRolAplService).to(UserRolAplService);
 
 
 export { container };

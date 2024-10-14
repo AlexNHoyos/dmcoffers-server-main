@@ -11,19 +11,19 @@ import { createHostingValidationRules, deleteHostingValidationRules, getHostingV
 
 @controller('/api/hostings', authenticateToken)
 export class HostingController {
-  private hostingService: IHostingService;
+  private _hostingService: IHostingService;
 
   constructor(
     @inject(HostingService) hostingService: IHostingService,
   ) 
   {
-    this.hostingService = hostingService;
+    this._hostingService = hostingService;
   }
 
     @httpGet('/findall')
     public async findAll(req: Request, res: Response, next: NextFunction) {
         try {
-            const hostings = await this.hostingService.findAll();
+            const hostings = await this._hostingService.findAll();
             if (hostings.length > 0) {
                 res.status(200).json(hostings);
             } else {
@@ -38,7 +38,7 @@ export class HostingController {
     public async findOne(req: Request, res: Response, next: NextFunction) {
         const id = parseInt(req.params.id, 10);
         try {
-            const hosting = await this.hostingService.findOne(id);
+            const hosting = await this._hostingService.findOne(id);
             if (hosting) {
                 res.status(200).json(hosting);
             } else {
@@ -54,7 +54,7 @@ export class HostingController {
         const newHosting = req.body;
 
         try {
-            const createdHosting = await this.hostingService.create(newHosting);
+            const createdHosting = await this._hostingService.create(newHosting);
             res.status(201).json(createdHosting);
         } catch (error) {
             next(error);
@@ -67,7 +67,7 @@ export class HostingController {
         const hostingUpdates = req.body;
         
         try {
-            const updatedHosting = await this.hostingService.update(id, hostingUpdates);
+            const updatedHosting = await this._hostingService.update(id, hostingUpdates);
             if (updatedHosting) {
                 res.status(200).json(updatedHosting);
             } else {
@@ -83,7 +83,7 @@ export class HostingController {
     public async remove(req: Request, res: Response, next: NextFunction){
         const id = parseInt(req.params.id, 10);
         try {
-            const deletedHosting = await this.hostingService.delete(id);
+            const deletedHosting = await this._hostingService.delete(id);
             if (deletedHosting) {
                 res.status(200).json(deletedHosting);
             } else {

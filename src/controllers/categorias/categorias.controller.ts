@@ -11,13 +11,13 @@ import { createCategoriesValidationRules, deleteCategoriesValidationRules, getCa
 @controller('/api/categories', authenticateToken)
 export class CategoriasController {
   
-  private categoriasService: ICategoriasService;
+  private _categoriasService: ICategoriasService;
 
   constructor(
     @inject(CategoriasService) categoriasService: ICategoriasService,
   ) 
   {
-    this.categoriasService = categoriasService;
+    this._categoriasService = categoriasService;
   }
 
   
@@ -25,7 +25,7 @@ export class CategoriasController {
   public async findAll(req: Request, res: Response, next: NextFunction) {
     
     try {
-      const categorias = await this.categoriasService.findAll();
+      const categorias = await this._categoriasService.findAll();
       if (categorias.length > 0) {
         res.status(200).json(categorias);
       } else {
@@ -43,7 +43,7 @@ export class CategoriasController {
     const id = parseInt(req.params.id, 10);
 
     try {
-      const categoria = await this.categoriasService.findOne(id);
+      const categoria = await this._categoriasService.findOne(id);
       if (categoria) {
         res.status(200).json(categoria);
       } else {
@@ -61,7 +61,7 @@ export class CategoriasController {
     const newCat = req.body;
 
     try {
-      const createdCat = await this.categoriasService.create(newCat);
+      const createdCat = await this._categoriasService.create(newCat);
       res.status(201).json(createdCat);
     } catch (error) {
       next(error);
@@ -77,7 +77,7 @@ export class CategoriasController {
     const catUpdate = req.body;
 
     try {
-      const updatedCat = await this.categoriasService.update(id, catUpdate);
+      const updatedCat = await this._categoriasService.update(id, catUpdate);
       if (updatedCat) {
         res.status(200).json(updatedCat);
       } else {
@@ -96,7 +96,7 @@ export class CategoriasController {
     const id = parseInt(req.params.id, 10);
 
     try {
-      const deletedCategory = await this.categoriasService.delete(id);
+      const deletedCategory = await this._categoriasService.delete(id);
       if (deletedCategory) {
         res.status(200).json(deletedCategory);
       } else {
