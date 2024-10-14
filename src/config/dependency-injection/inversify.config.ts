@@ -27,7 +27,7 @@ import { IUserRolAplService } from '../../services/interfaces/user/IUserRolAplSe
 import { UserRolAplService } from '../../services/user/user-rol-apl.service.js';
 import { UserRepository } from '../../repositories/usuarios/user.dao.js';
 import { SupportTicketRepository } from '../../repositories/support-ticket/support-ticket.dao.js';
-import { UserRolRepository } from '../../repositories/usuarios/user-rol-apl.repository.js';
+import { UserRolRepository } from '../../repositories/usuarios/user-rol-apl.dao.js';
 
 
 // Crear un nuevo contenedor de Inversify

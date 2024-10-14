@@ -2,7 +2,9 @@ import { inject, injectable } from "inversify";
 import { RolApl } from "../../models/roles/rol-apl.entity.js";
 import { UserRolApl } from "../../models/usuarios/user-rol-apl.entity.js";
 import { IUserRolAplService } from "../interfaces/user/IUserRolAplService.js";
-import { UserRolRepository } from "../../repositories/usuarios/user-rol-apl.repository.js";
+import { UserRolRepository } from "../../repositories/usuarios/user-rol-apl.dao.js";
+import { User } from "../../models/usuarios/user.entity.js";
+import { userRolIdCons } from "../../shared/constants/general-constants.js";
 
 @injectable()
 export class UserRolAplService implements IUserRolAplService {
@@ -24,16 +26,24 @@ export class UserRolAplService implements IUserRolAplService {
             return latestDate > currentDate ? latest : current;
         }, userRolAplList[0]);
 
-        if (!latestUserRol) {
+        if (!latestUserRol || latestUserRol.status == false) {
             return undefined;
         }
 
         return await latestUserRol.rolApl;
     }
 
-    async AsignRolUser(userRolApl: UserRolApl): Promise<RolApl | undefined>{
+    async AsignRolUser(user: User): Promise<RolApl | undefined>{
 
-        const userRolAsigned = this._userRolRepository.create(userRolApl);
+        const newUserRol: UserRolApl = new UserRolApl()
+        newUserRol.id = undefined;
+        newUserRol.idRolapl = userRolIdCons.usuarioTienda;
+        newUserRol.idUsrapl = user.id;
+        newUserRol.creationuser = user.creationuser;
+        newUserRol.creationtimestamp = user.creationtimestamp;
+        newUserRol.status = true;
+
+        const userRolAsigned = this._userRolRepository.create(newUserRol);
         
         const currentRol = (await userRolAsigned).rolApl;
         

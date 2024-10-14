@@ -41,7 +41,9 @@ export class AuthService implements IAuthService {
 
     let userRolAplList  =  (await user.userRolApl)?.map(c => c);
 
-    user.currentRol = await this._userRolAplService.SearchUserCurrentRol(userRolAplList!);
+    let currentRol = await this._userRolAplService.SearchUserCurrentRol(userRolAplList!);
+
+    user.currentRol = currentRol != undefined ? currentRol : await this._userRolAplService.AsignRolUser(user);
 
     return generateToken({ username: user.username, id: user.id, rol: user.currentRol?.description});
 

@@ -56,15 +56,7 @@ export class UserService implements IUserService {
 
     const userCreated = await this._userRepository.registerUser(userToCreate);
 
-    const newUserRol: UserRolApl = new UserRolApl()
-    newUserRol.id = undefined;
-    newUserRol.idRolapl = userRolIdCons.usuarioTienda;
-    newUserRol.idUsrapl = userCreated.id;
-    newUserRol.creationuser = userCreated.creationuser;
-    newUserRol.creationtimestamp = newUser.creationtimestamp;
-    newUserRol.status = true;
-
-    const rolAsigned = await this._userRolAplService.AsignRolUser(newUserRol);
+    const rolAsigned = await this._userRolAplService.AsignRolUser(userCreated);
              
     const userOutput : UserDto = {
       idUser: userCreated.id,
