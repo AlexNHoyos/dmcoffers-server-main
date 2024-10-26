@@ -11,19 +11,19 @@ import { JsonResult } from 'inversify-express-utils/lib/results/JsonResult.js';
 
 @controller('/api/users')
 export class UserController {
-  private userService: IUserService;
+  private _userService: IUserService;
 
   constructor(
     @inject(UserService) userService: IUserService,
   ) 
   {
-    this.userService = userService;
+    this._userService = userService;
   }
 
     @httpGet('/findall')
     public async findAll(req: Request, res: Response, next: NextFunction){
         try {
-            const users = await this.userService.findAll();
+            const users = await this._userService.findAll();
             if (users.length > 0) {
                 res.status(200).json(users);
                 //new OkNegotiatedContentResult(users);
@@ -40,7 +40,7 @@ export class UserController {
         const id = parseInt(req.params.id, 10);
 
         try {
-            const user = await this.userService.findOne(id);
+            const user = await this._userService.findOne(id);
             if (user) {
                 res.status(200).json(user);
             } else {
@@ -57,7 +57,7 @@ export class UserController {
         const newUser = req.body;
         
         try {
-            const createdUser = await this.userService.create(newUser);
+            const createdUser = await this._userService.create(newUser);
             res.status(201).json(createdUser);
         } catch (error) {
             next(error);
@@ -71,7 +71,7 @@ export class UserController {
         const userUpdates = req.body;
   
         try {
-            const updatedUser = await this.userService.update(id, userUpdates);
+            const updatedUser = await this._userService.update(id, userUpdates);
             if (updatedUser) {
                 res.status(200).json(updatedUser);
             } else {
@@ -88,7 +88,7 @@ export class UserController {
         const id = parseInt(req.params.id, 10);
 
         try {
-            const deletedUser = await this.userService.delete(id);
+            const deletedUser = await this._userService.delete(id);
             if (deletedUser) {
                 res.status(200).json(deletedUser);
             } else {

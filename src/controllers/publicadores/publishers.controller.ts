@@ -12,13 +12,13 @@ import { createPublisherValidationRules, deletePublisherValidationRules, getPubl
 @controller('/api/publishers', authenticateToken)
 export class PublisherController {
 
-  private publisherService: IPublisherService;
+  private _publisherService: IPublisherService;
 
   constructor(
     @inject(PublisherService) publisherService: IPublisherService,
   ) 
   {
-    this.publisherService = publisherService;
+    this._publisherService = publisherService;
   }
 
 
@@ -26,7 +26,7 @@ export class PublisherController {
   public async findAll( req: Request, res: Response, next: NextFunction) {
     
     try {
-      const publishers = await this.publisherService.findAll();
+      const publishers = await this._publisherService.findAll();
       if (publishers.length > 0) {
         res.status(200).json(publishers);
       } else {
@@ -44,7 +44,7 @@ export class PublisherController {
     const id = parseInt(req.params.id, 10);
 
     try {
-      const publisher = await this.publisherService.findOne(id);
+      const publisher = await this._publisherService.findOne(id);
       if (publisher) {
         res.status(200).json(publisher);
       } else {
@@ -62,7 +62,7 @@ export class PublisherController {
     const newPub = req.body;
 
     try {
-      const createdPub = await this.publisherService.create(newPub);
+      const createdPub = await this._publisherService.create(newPub);
       res.status(201).json(createdPub);
     } catch (error) {
       next(error);
@@ -78,7 +78,7 @@ export class PublisherController {
 
 
     try {
-      const updatedPub = await this.publisherService.update(id, pubUpdates);
+      const updatedPub = await this._publisherService.update(id, pubUpdates);
       if (updatedPub) {
         res.status(200).json(updatedPub);
       } else {
@@ -96,7 +96,7 @@ export class PublisherController {
     const id = parseInt(req.params.id, 10);
 
     try {
-      const deletedPublisher = await this.publisherService.delete(id);
+      const deletedPublisher = await this._publisherService.delete(id);
       if (deletedPublisher) {
         res.status(200).json(deletedPublisher);
       } else {

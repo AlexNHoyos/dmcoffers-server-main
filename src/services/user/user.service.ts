@@ -4,40 +4,39 @@ import { User } from '../../models/usuarios/user.entity.js';
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
 import { IUserService } from '../interfaces/user/IUserService.js';
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
-import { UserAuthRepository } from '../../repositories/usuarios/user-auth.dao.js';
 import { AuthenticationError } from '../../middleware/errorHandler/authenticationError.js';
 import { UserDto } from '../../models-dto/usuarios/user-dto.entity.js';
 import { inject, injectable, LazyServiceIdentifer } from 'inversify';
-import { IAuthService } from '../interfaces/auth/IAuthService.js';
-import { AuthService } from '../auth/auth.service.js';
-import { PasswordService } from '../auth/password.service.js';
 import { IPasswordService } from '../interfaces/auth/IPasswordService.js';
+import { PasswordService } from '../auth/password.service.js';
+import { UserRolApl } from '../../models/usuarios/user-rol-apl.entity.js';
+import { userRolIdCons } from '../../shared/constants/general-constants.js';
+import { UserRolAplService } from './user-rol-apl.service.js';
+import { IUserRolAplService } from '../interfaces/user/IUserRolAplService.js';
 
 @injectable()
 export class UserService implements IUserService {
-  private authService: IAuthService;
-  private userRepository: UserRepository;
-  private userAuthRepository: UserAuthRepository;
-  private passwordService: IPasswordService;
+  private _userRepository: UserRepository;
+  private _passwordService: IPasswordService;
+  private _userRolAplService: IUserRolAplService;
 
   constructor(
-    @inject(new LazyServiceIdentifer(() => AuthService)) authService: IAuthService,
-    @inject(UserAuthRepository) userAuthRepository: UserAuthRepository,
+    @inject(UserRepository) userRepository: UserRepository,
     @inject(PasswordService) passwordService: IPasswordService,
+    @inject(UserRolAplService) userRolAplService: IUserRolAplService,
   ) {
-    this.authService = authService;
-    this.userRepository = new UserRepository();
-    this.userAuthRepository = new UserAuthRepository();
-    this.passwordService = passwordService;
+    this._userRepository = userRepository;
+    this._passwordService = passwordService;
+    this._userRolAplService = userRolAplService;
+
   }
 
-
   async findAll(): Promise<User[]> {
-    return this.userRepository.findAll();
+    return this._userRepository.findAll();
   }
 
   async findOne(id: number): Promise<User | undefined> {
-    return this.userRepository.findOne(id);
+    return this._userRepository.findOne(id);
   }
 
   async create(newUser: UserDto): Promise<UserDto> {
@@ -53,11 +52,15 @@ export class UserService implements IUserService {
 
     const userToCreate = await this.initializeUser(newUser);
 
-    const userCreated = await this.userRepository.registerUser(userToCreate);
-           
+    
+
+    const userCreated = await this._userRepository.registerUser(userToCreate);
+
+    const rolAsigned = await this._userRolAplService.AsignRolUser(userCreated);
+             
     const userOutput : UserDto = {
       idUser: userCreated.id,
-      idUserAuth: userCreated.userauth?.id,
+      rolDesc: rolAsigned?.description,
       realname: userCreated.realname,
       surname: userCreated.surname,
       username: userCreated.username,
@@ -77,7 +80,7 @@ export class UserService implements IUserService {
 
 
   async update(id: number, user: User): Promise<User> {
-    const oldUser = await this.userRepository.findOne(id);
+    const oldUser = await this._userRepository.findOne(id);
     if (!oldUser) {
       throw new ValidationError('Usuario no encontrado', 400);
    }
@@ -96,15 +99,15 @@ export class UserService implements IUserService {
       modificationtimestamp: user.modificationtimestamp ?? new Date(), // Fecha de modificación actual
   };
 
-    return this.userRepository.update(id, updatedUser);
+    return this._userRepository.update(id, updatedUser);
   }
 
   async delete(id: number): Promise<User | undefined> {
-    return this.userRepository.delete(id);
+    return this._userRepository.delete(id);
   }
 
   async findByUserName(userName: string):  Promise<User | undefined> {
-    return this.userRepository.findByUserName(userName);
+    return this._userRepository.findByUserName(userName);
   }
 
 
@@ -112,14 +115,18 @@ export class UserService implements IUserService {
 
     newUser.creationtimestamp = new Date();
 
-    const userToValidate: UserAuth = new UserAuth(
+    newUser.password = await this._passwordService.validatePassword(newUser.password!)
+                        ? await this._passwordService.hashPassword(newUser.password!)
+                        : (() => { throw new ValidationError('La Contraseña es inválida'); })();
+
+
+    const newUserAuth: UserAuth = new UserAuth(
       newUser.password!,
       newUser.creationuser!,
       newUser.creationtimestamp,
 
     );
 
-    const userAuthValidated = await this.authService.validateUserAuthOnCreate(userToValidate);
 
     const userToCreate: User = new User ();
       userToCreate.id= undefined;
@@ -133,7 +140,7 @@ export class UserService implements IUserService {
       userToCreate.creationtimestamp= newUser.creationtimestamp;
       userToCreate.modificationuser= newUser.modificationuser;
       userToCreate.modificationtimestamp= newUser.modificationtimestamp;
-      userToCreate.userauth= userAuthValidated?? undefined;
+      userToCreate.userauth= newUserAuth;
         
     return userToCreate;
 
