@@ -32,8 +32,8 @@ import { IDesarrolladoresService } from '../../services/interfaces/desarrollador
 import { DesarrolladoresService } from '../../services/desarrolladores/desarrolladores.service.js';
 import { DesarrolladoresController } from '../../controllers/desarrolladores/desarrolladores.controller.js';
 import { PrecioController } from '../../controllers/precios/precios.controller.js';
-import { PrecioRepository } from '../../repositories/precios/precios.dao.js';
-import { PrecioService } from '../../services/precios/precios.service.js';
+import { PrecioRepository } from '../../repositories/juego/precios.dao.js';
+import { PrecioService } from '../../services/juego/precios.service.js';
 import { IPrecioService } from '../../services/interfaces/precios/IPrecioService.js';
 
 // Crear un nuevo contenedor de Inversify
@@ -73,7 +73,6 @@ container.bind<IJuegoService>(JuegoService).to(JuegoService);
 container
   .bind<IDesarrolladoresService>(DesarrolladoresService)
   .to(DesarrolladoresService);
-
 container.bind<IPrecioService>(PrecioService).to(PrecioService);
 
 export { container };

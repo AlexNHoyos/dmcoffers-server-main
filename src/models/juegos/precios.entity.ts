@@ -7,7 +7,7 @@ export class Precio {
   public id_game: number | undefined;
 
   @PrimaryColumn({ type: 'timestamp' })
-  public valid_until_date: Date | undefined;
+  public valid_from: Date | undefined;
 
   @Column({ type: 'float' })
   public price: number | undefined;
@@ -29,7 +29,7 @@ export class Precio {
 
   constructor(
     id_game: number,
-    valid_until_date: Date,
+    valid_from: Date,
     price?: number,
     creationtimestamp?: Date,
     creationuser?: string,
@@ -38,7 +38,7 @@ export class Precio {
   ) {
     this.id_game = id_game;
 
-    this.valid_until_date = valid_until_date;
+    this.valid_from = valid_from;
     this.price = price;
     this.creationtimestamp = creationtimestamp;
     this.creationuser = creationuser;

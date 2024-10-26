@@ -3,8 +3,8 @@ import { IBaseRepository } from '../interfaces/IBaseRepository.js';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { AppDataSource } from '../../config/pg-database/db.js';
 import { injectable } from 'inversify';
-import { Precio } from '../../models/precios/precios.entity.js';
 import { errorEnumPrecio } from '../../middleware/errorHandler/constants/errorConstants.js';
+import { Precio } from '../../models/juegos/precios.entity.js';
 
 @injectable()
 export class PrecioRepository {

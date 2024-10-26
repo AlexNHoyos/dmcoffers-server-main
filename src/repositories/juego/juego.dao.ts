@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { Repository, FindOneOptions } from 'typeorm';
 import { Juego } from '../../models/juegos/juegos.entity.js';
 import { Publisher } from '../../models/publicadores/publisher.entity.js';
 import { Desarrollador } from '../../models/desarrolladores/desarrolladores.entity.js';
@@ -8,9 +8,10 @@ import { errorEnumJuego } from '../../middleware/errorHandler/constants/errorCon
 import { AppDataSource } from '../../config/pg-database/db.js';
 import { Categorias } from '../../models/categorias/categorias.entity.js';
 import { injectable } from 'inversify';
+import { IJuegoRepository } from '../interfaces/juegos/IJuegoRepository.js';
 
 @injectable()
-export class JuegoRepository implements IBaseRepository<Juego> {
+export class JuegoRepository implements IJuegoRepository {
   private repository: Repository<Juego>;
 
   constructor() {
@@ -31,17 +32,31 @@ export class JuegoRepository implements IBaseRepository<Juego> {
     }
   }
 
-  async findOne(id: number): Promise<Juego | undefined> {
+  // Metodo actualizado para buscar por id o por nombre
+  async findOne(
+    optionsOrId: number | FindOneOptions<Juego>
+  ): Promise<Juego | undefined> {
     try {
-      const juego = await this.repository.findOne({
-        where: { id },
-        relations: ['publisher', 'developer', 'categorias'],
-      });
+      const juego =
+        typeof optionsOrId === 'number'
+          ? await this.repository.findOne({
+              where: { id: optionsOrId },
+              relations: ['publisher', 'developer', 'categorias'],
+            })
+          : await this.repository.findOne({
+              ...optionsOrId,
+              relations: ['publisher', 'developer', 'categorias'],
+            });
+
       return juego ?? undefined;
     } catch (error) {
       console.error(errorEnumJuego.juegoIndicatedNotFound, error);
       throw new DatabaseErrorCustom(errorEnumJuego.juegoIndicatedNotFound, 500);
     }
+  }
+
+  async findByName(gamename: string): Promise<Juego | undefined> {
+    return this.findOne({ where: { gamename } });
   }
 
   async create(juego: Juego): Promise<Juego> {
@@ -68,6 +83,20 @@ export class JuegoRepository implements IBaseRepository<Juego> {
       console.error(errorEnumJuego.juegoNotUpdated, error);
       throw new DatabaseErrorCustom(errorEnumJuego.juegoNotUpdated, 500);
     }
+  }
+
+  async updateGameDetails(id: number, juego: Partial<Juego>): Promise<void> {
+    const existingGame = await this.repository.findOne({ where: { id } });
+
+    if (!existingGame) {
+      throw new Error('El juego no existe');
+    }
+
+    // Mezclamos las propiedades del juego recibido con el juego existente
+    const updatedGame = this.repository.merge(existingGame, juego);
+
+    // Guardamos el juego actualizado
+    await this.repository.save(updatedGame);
   }
 
   async delete(id: number): Promise<Juego | undefined> {

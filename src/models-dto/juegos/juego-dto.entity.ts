@@ -1,13 +1,14 @@
 export class JuegoDto {
-  id?: number | undefined;
-  gamename: string | undefined;
+  id: number | undefined;
+  gamename?: string | undefined;
   release_date: Date | undefined;
   publishment_date?: Date | undefined;
-  creationtimestamp: Date | undefined;
-  creationuser: string | undefined;
+  creationtimestamp?: Date | undefined;
+  creationuser?: string | undefined;
   id_publisher: number | undefined;
   id_developer: number | undefined;
   categorias: number[] | undefined;
+  initial_price?: number | undefined;
 
   constructor(
     gamename: string,

@@ -15,8 +15,8 @@ import {
 import { Publisher } from '../publicadores/publisher.entity.js';
 import { Desarrollador } from '../desarrolladores/desarrolladores.entity.js';
 import { Categorias } from '../categorias/categorias.entity.js';
-import { Precio } from '../precios/precios.entity.js';
 import { Oferta } from '../ofertas/ofertas.entity.js';
+import { Precio } from './precios.entity.js';
 
 @Entity('pub_game')
 export class Juego {

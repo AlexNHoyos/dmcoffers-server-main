@@ -10,7 +10,7 @@ import {
 import { inject } from 'inversify';
 import { validate } from '../../middleware/validation/validation-middleware.js';
 import { IPrecioService } from '../../services/interfaces/precios/IPrecioService.js';
-import { PrecioService } from '../../services/precios/precios.service.js';
+import { PrecioService } from '../../services/juego/precios.service.js';
 import {
   createPrecioValidationRules,
   deletePrecioValidationRules,

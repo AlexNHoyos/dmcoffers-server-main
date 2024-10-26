@@ -1,8 +1,9 @@
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
 import { inject, injectable } from 'inversify';
 import { IPrecioService } from '../interfaces/precios/IPrecioService.js';
-import { Precio } from '../../models/precios/precios.entity.js';
-import { PrecioRepository } from '../../repositories/precios/precios.dao.js';
+import { PrecioRepository } from '../../repositories/juego/precios.dao.js';
+import { Repository } from 'typeorm';
+import { Precio } from '../../models/juegos/precios.entity.js';
 
 @injectable()
 export class PrecioService implements IPrecioService {
@@ -22,6 +23,7 @@ export class PrecioService implements IPrecioService {
   ): Promise<Precio | undefined> {
     return this.precioRepository.findOne(id_game, valid_until_date);
   }
+
   async create(newPrecio: Precio): Promise<Precio> {
     return this.precioRepository.create(newPrecio);
   }

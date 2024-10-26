@@ -76,7 +76,38 @@
  * @swagger
  * /api/juegos/{id}:
  *    put:
- *      summary: Modificar un juego creado mediante ID
+ *      summary: Modificar los datos de un juego mediante ID
+ *      security:
+ *        - apiAuth: []
+ *      tags:
+ *        - Juegos
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          required: true
+ *          description: ID del juego a modificar
+ *          schema:
+ *            type: number
+ *      requestBody:
+ *        description: Esquema de actualización del juego
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/juegoUpdateSchema'
+ *      responses:
+ *        200:
+ *          description: Juego actualizado con éxito
+ *        404:
+ *          description: Juego no encontrado
+ *        500:
+ *          description: Error interno del servidor
+ */
+/**
+ * @swagger
+ * /api/juegos/{id}/precio:
+ *    patch:
+ *      summary: Actualizar el precio de un juego mediante ID
  *      security:
  *        - apiAuth: []
  *      tags:
@@ -89,21 +120,24 @@
  *          schema:
  *            type: number
  *      requestBody:
- *          description: Esquema de Creacion de juego
- *          required: true
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/juegoUpdateSchema'
+ *        description: Nuevo precio del juego
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                nuevoPrecio:
+ *                  type: number
+ *                  description: Nuevo precio del juego
+ *                  example: 59.99
  *      responses:
  *        200:
- *          description: juego obtenido con éxito
- *        401:
- *          description: No autorizado (NOT AUTHORIZED)
+ *          description: Precio actualizado con éxito
  *        404:
- *          description: No se encontró juego
+ *          description: Juego no encontrado
  *        500:
- *          description: Error Interno del Servidor
+ *          description: Error interno del servidor
  */
 
 /**
