@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, ManyToOne, Column } from 'typeorm';
+import { Entity, PrimaryColumn, ManyToOne, Column, JoinColumn } from 'typeorm';
 import { Juego } from '../juegos/juegos.entity.js';
 
 @Entity('pub_game_price')
@@ -6,7 +6,7 @@ export class Precio {
   @PrimaryColumn({ type: 'bigint' })
   public id_game: number | undefined;
 
-  @PrimaryColumn({ type: 'timestamp' })
+  @PrimaryColumn({ type: 'timestamp', name: 'valid_until_date' })
   public valid_from: Date | undefined;
 
   @Column({ type: 'float' })
@@ -25,6 +25,7 @@ export class Precio {
   public modificationuser: string | undefined;
 
   @ManyToOne(() => Juego, (juego) => juego.precios)
+  @JoinColumn({ name: 'id_game' })
   public juego: Juego | undefined;
 
   constructor(

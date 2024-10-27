@@ -47,7 +47,7 @@
 
 /**
  * @swagger
- * /api/juegos/create:
+ * /api/juegos/:
  *    post:
  *      summary: Crear un juego
  *      security:
@@ -203,6 +203,10 @@
  *           items:
  *            type: integer
  *           description: Lista de IDs de las categorías asociadas al juego
+ *         initial_price:
+ *           type: number
+ *           description: Precio inicial del juego
+ *           example: 49.99
  *       required:
  *         - gamename
  *         - creationuser
@@ -210,6 +214,7 @@
  *         - id_publisher
  *         - id_developer
  *         - categorias
+ *         - initial_price
  */
 
 /**

@@ -85,20 +85,6 @@ export class JuegoRepository implements IJuegoRepository {
     }
   }
 
-  async updateGameDetails(id: number, juego: Partial<Juego>): Promise<void> {
-    const existingGame = await this.repository.findOne({ where: { id } });
-
-    if (!existingGame) {
-      throw new Error('El juego no existe');
-    }
-
-    // Mezclamos las propiedades del juego recibido con el juego existente
-    const updatedGame = this.repository.merge(existingGame, juego);
-
-    // Guardamos el juego actualizado
-    await this.repository.save(updatedGame);
-  }
-
   async delete(id: number): Promise<Juego | undefined> {
     try {
       const juego = await this.repository.findOneBy({ id });

@@ -1,4 +1,4 @@
-import { Precio } from '../../../models/precios/precios.entity.js';
+import { Precio } from '../../../models/juegos/precios.entity.js';
 import { IBaseService } from '../IBaseService.js';
 
 export interface IPrecioService {

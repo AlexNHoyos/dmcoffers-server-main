@@ -86,64 +86,8 @@ export class JuegoService implements IJuegoService {
     return this.convertToDto(juegoCreado, newJuego.initial_price);
   }
 
-  async update(id: number, juego: Partial<JuegoDto>): Promise<JuegoDto> {
-    const existingJuego = await this.juegoRepository.findOne(id);
-    if (!existingJuego) {
-      throw new ValidationError('El juego indicado no existe', 404);
-    }
-
-    await this.juegoRepository.updateGameDetails(id, juego);
-
-    const juegoActualizado = await this.juegoRepository.findOne(id);
-    return this.convertToDto(juegoActualizado!);
-  }
-
-  async updateJuego(
-    id: number,
-    juegoDto: Partial<JuegoDto>
-  ): Promise<JuegoDto> {
-    const existingJuego = await this.juegoRepository.findOne(id);
-    if (!existingJuego) {
-      throw new ValidationError('El juego indicado no existe', 404);
-    }
-
-    // Si hay categorías en el DTO, recuperamos las entidades correspondientes
-    let categorias: Categorias[] | undefined = undefined;
-    if (juegoDto.categorias && juegoDto.categorias.length > 0) {
-      categorias = await this.categoriaRepository.findByIds(
-        juegoDto.categorias
-      );
-    }
-
-    // Construimos un objeto parcial del tipo Juego
-    const updatedJuego: Partial<Juego> = {
-      ...juegoDto,
-      categorias: categorias ? Promise.resolve(categorias) : undefined,
-    };
-
-    // Actualizamos el juego usando el DAO
-    await this.juegoRepository.update(id, updatedJuego);
-
-    // Recuperamos el juego actualizado
-    const juegoActualizado = await this.juegoRepository.findOne(id);
-
-    if (!juegoActualizado) {
-      throw new ValidationError('Error al recuperar el juego actualizado', 500);
-    }
-
-    // Convertimos el juego actualizado a DTO para el retorno
-    return await this.convertToDto(juegoActualizado);
-  }
-
-  async updatePrecio(idJuego: number, nuevoPrecio: number): Promise<Precio> {
-    const precioActual = new Precio(
-      idJuego,
-      new Date(),
-      nuevoPrecio,
-      new Date(),
-      'system-user'
-    );
-    return this.precioService.create(precioActual); // Guardamos el nuevo precio como un registro histórico
+  async update(id: number, juego: Juego): Promise<Juego> {
+    return this.juegoRepository.update(id, juego);
   }
 
   async delete(id: number): Promise<Juego | undefined> {

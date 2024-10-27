@@ -19,7 +19,7 @@ export class PrecioRepository {
       return await this.repository.find({
         order: {
           id_game: 'ASC', // Ordena por id ascendente
-          valid_until_date: 'ASC',
+          valid_from: 'ASC',
         },
       });
     } catch (error) {
@@ -30,12 +30,12 @@ export class PrecioRepository {
 
   async findOne(
     id_game: number,
-    valid_until_date: Date
+    valid_from: Date
   ): Promise<Precio | undefined> {
     try {
       const precio = await this.repository.findOneBy({
         id_game,
-        valid_until_date,
+        valid_from,
       });
       return precio ?? undefined;
     } catch (error) {
@@ -58,13 +58,13 @@ export class PrecioRepository {
 
   async update(
     id_game: number,
-    valid_until_date: Date,
+    valid_from: Date,
     precio: Precio
   ): Promise<Precio> {
     try {
       const existingPrecio = await this.repository.findOneBy({
         id_game,
-        valid_until_date,
+        valid_from,
       });
       if (!existingPrecio) {
         throw new DatabaseErrorCustom(
@@ -72,9 +72,9 @@ export class PrecioRepository {
           404
         );
       }
-      await this.repository.update({ id_game, valid_until_date }, precio);
+      await this.repository.update({ id_game, valid_from }, precio);
       return this.repository.findOneOrFail({
-        where: { id_game, valid_until_date },
+        where: { id_game, valid_from },
       }); // Retorna la entidad actualizada
     } catch (error) {
       console.error(errorEnumPrecio.precioNotUpdated, error);
@@ -82,14 +82,11 @@ export class PrecioRepository {
     }
   }
 
-  async delete(
-    id_game: number,
-    valid_until_date: Date
-  ): Promise<Precio | undefined> {
+  async delete(id_game: number, valid_from: Date): Promise<Precio | undefined> {
     try {
       const precio = await this.repository.findOneBy({
         id_game,
-        valid_until_date,
+        valid_from,
       });
       if (!precio) {
         throw new DatabaseErrorCustom(

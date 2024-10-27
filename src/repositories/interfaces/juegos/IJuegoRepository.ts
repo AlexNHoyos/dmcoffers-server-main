@@ -3,5 +3,4 @@ import { IBaseRepository } from '../IBaseRepository.js';
 
 export interface IJuegoRepository extends IBaseRepository<Juego> {
   findByName(gamename: string): Promise<Juego | undefined>;
-  updateGameDetails(id: number, juego: Partial<Juego>): Promise<void>;
 }
