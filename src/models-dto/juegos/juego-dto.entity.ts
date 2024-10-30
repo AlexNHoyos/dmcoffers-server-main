@@ -8,7 +8,7 @@ export class JuegoDto {
   id_publisher: number | undefined;
   id_developer: number | undefined;
   categorias: number[] | undefined;
-  initial_price?: number | undefined;
+  price?: number | undefined;
 
   constructor(
     gamename: string,

@@ -75,7 +75,7 @@
 /**
  * @swagger
  * /api/juegos/{id}:
- *    put:
+ *    patch:
  *      summary: Modificar los datos de un juego mediante ID
  *      security:
  *        - apiAuth: []
@@ -89,7 +89,7 @@
  *          schema:
  *            type: number
  *      requestBody:
- *        description: Esquema de actualización del juego
+ *        description: Esquema de actualización [PARCIAL] del juego
  *        required: true
  *        content:
  *          application/json:
@@ -236,6 +236,17 @@
  *           items:
  *            type: integer
  *           description: Lista de IDs de las categorías asociadas al juego
+ *         id_publisher:
+ *           type: integer
+ *           description: ID del Publisher asociado al juego (opcional)
+ *         id_developer:
+ *           type: integer
+ *           description: ID del Developer asociado al juego (opcional)
+ *         price:
+ *           type: number
+ *           description: Nuevo precio del juego
+ *           example: 59.99
  *       required:
  *         - gamename
+ *
  */

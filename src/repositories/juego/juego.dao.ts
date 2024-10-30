@@ -21,7 +21,7 @@ export class JuegoRepository implements IJuegoRepository {
   async findAll(): Promise<Juego[]> {
     try {
       return await this.repository.find({
-        relations: ['publisher', 'developer', 'categorias'],
+        relations: ['publisher', 'developer', 'categorias', 'precios'],
         order: {
           id: 'ASC', // Ordena por id ascendente
         },
@@ -41,11 +41,11 @@ export class JuegoRepository implements IJuegoRepository {
         typeof optionsOrId === 'number'
           ? await this.repository.findOne({
               where: { id: optionsOrId },
-              relations: ['publisher', 'developer', 'categorias'],
+              relations: ['publisher', 'developer', 'categorias', 'precios'],
             })
           : await this.repository.findOne({
               ...optionsOrId,
-              relations: ['publisher', 'developer', 'categorias'],
+              relations: ['publisher', 'developer', 'categorias', 'precios'],
             });
 
       return juego ?? undefined;
@@ -68,17 +68,33 @@ export class JuegoRepository implements IJuegoRepository {
     }
   }
 
-  async update(id: number, juego: Juego): Promise<Juego> {
+  async update(id: number, juego: Partial<Juego>): Promise<Juego> {
     try {
-      const existingJuego = await this.repository.findOneBy({ id });
+      const existingJuego = await this.repository.findOne({
+        where: { id },
+        relations: ['categorias'],
+      });
+
       if (!existingJuego) {
         throw new DatabaseErrorCustom(
           errorEnumJuego.juegoIndicatedNotFound,
           404
         );
       }
-      await this.repository.update(id, juego);
-      return this.repository.findOneOrFail({ where: { id } }); // Retorna la entidad actualizada
+
+      // Merge para aplicar actualizaciones parciales
+      this.repository.merge(existingJuego, juego);
+
+      console.log(juego);
+
+      // Actualizar categorías solo si se insertan en el patch
+      if (juego.categorias) {
+        existingJuego.categorias = Promise.resolve([]); // Elimino categorías actuales asignando array vacío
+        await this.repository.save(existingJuego); // Guardo las nuevas relaciones vacias (categorias-juegos)
+        existingJuego.categorias = juego.categorias; // Asigna las nuevas categorías
+      }
+
+      return this.repository.save(existingJuego); // Retorna la entidad actualizada
     } catch (error) {
       console.error(errorEnumJuego.juegoNotUpdated, error);
       throw new DatabaseErrorCustom(errorEnumJuego.juegoNotUpdated, 500);

@@ -75,7 +75,7 @@ export class JuegoService implements IJuegoService {
     const precio = new Precio(
       juegoCreado.id!,
       new Date(),
-      newJuego.initial_price,
+      newJuego.price,
       new Date(),
       newJuego.creationuser
     );
@@ -83,11 +83,73 @@ export class JuegoService implements IJuegoService {
     // Guardar el precio en la base de datos
     await this.precioService.create(precio);
 
-    return this.convertToDto(juegoCreado, newJuego.initial_price);
+    return this.convertToDto(juegoCreado, newJuego.price);
   }
 
-  async update(id: number, juego: Juego): Promise<Juego> {
-    return this.juegoRepository.update(id, juego);
+  async update(id: number, juegoDto: Partial<JuegoDto>): Promise<JuegoDto> {
+    // Recuperar el juego existente con ese id, y sus relaciones
+    const existingJuego = await this.juegoRepository.findOne({
+      where: { id },
+      relations: ['categorias', 'publisher', 'developer', 'precios'],
+    });
+
+    if (!existingJuego) {
+      throw new ValidationError('El juego no existe', 404);
+    }
+
+    // Actualizar propiedades solo si están presentes en el DTO
+    existingJuego.gamename = juegoDto.gamename ?? existingJuego.gamename;
+    existingJuego.release_date =
+      juegoDto.release_date ?? existingJuego.release_date;
+    existingJuego.publishment_date =
+      juegoDto.publishment_date ?? existingJuego.publishment_date;
+    existingJuego.modificationtimestamp = new Date();
+    existingJuego.modificationuser = juegoDto.creationuser;
+
+    // Si id_publisher o id_developer cambian, obtener los nuevos y asignarlos
+    if (
+      juegoDto.id_publisher &&
+      juegoDto.id_publisher !== existingJuego.publisher?.id
+    ) {
+      existingJuego.publisher = await this.publisherService.findOne(
+        juegoDto.id_publisher
+      );
+    }
+    if (
+      juegoDto.id_developer &&
+      juegoDto.id_developer !== existingJuego.developer?.id
+    ) {
+      existingJuego.developer = await this.desarrolladoresService.findOne(
+        juegoDto.id_developer
+      );
+    }
+
+    // Actualización de categorías (N:M)
+    if (juegoDto.categorias && Array.isArray(juegoDto.categorias)) {
+      const nuevasCategorias = await this.categoriaRepository.findByIds(
+        juegoDto.categorias
+      );
+
+      existingJuego.categorias = Promise.resolve(nuevasCategorias);
+    }
+
+    // Registrar nuevo precio solo si el precio cambia
+    if (juegoDto.price) {
+      const precio = new Precio(
+        existingJuego.id!,
+        new Date(),
+        juegoDto.price,
+        new Date(),
+        existingJuego.creationuser
+      );
+      await this.precioService.create(precio);
+    }
+
+    // Guardar el juego actualizado
+    await this.juegoRepository.update(id, existingJuego);
+
+    // Retornar el DTO actualizado
+    return this.convertToDto(existingJuego, juegoDto.price);
   }
 
   async delete(id: number): Promise<Juego | undefined> {
@@ -99,7 +161,21 @@ export class JuegoService implements IJuegoService {
   // if (existingJuego) {
   //   throw new ValidationError('El juego ya existe', 400);
   // }
-  private validacionField(newJuego: JuegoDto): void {
+  private validacionField(newJuego: Partial<JuegoDto>): void {
+    // Validar que al menos uno de los campos obligatorios esté presente
+    if (
+      !newJuego ||
+      (!newJuego.gamename &&
+        !newJuego.id_publisher &&
+        !newJuego.id_developer &&
+        !newJuego.categorias)
+    ) {
+      throw new ValidationError(
+        'Se deben proporcionar al menos un nombre, publisher, developer o categoría para la actualización',
+        400
+      );
+    }
+
     if (!newJuego || !newJuego.gamename) {
       throw new ValidationError('El juego debe tener un nombre', 404);
     }
@@ -123,10 +199,7 @@ export class JuegoService implements IJuegoService {
     }
   }
 
-  private async convertToDto(
-    juego: Juego,
-    initial_price?: number
-  ): Promise<JuegoDto> {
+  private async convertToDto(juego: Juego, price?: number): Promise<JuegoDto> {
     return {
       id: juego.id,
       gamename: juego.gamename,
@@ -139,7 +212,7 @@ export class JuegoService implements IJuegoService {
       categorias: juego.categorias
         ? (await juego.categorias).map((c) => c.id)
         : [],
-      initial_price,
+      price,
     };
   }
 }
