@@ -47,6 +47,22 @@ export class PrecioRepository {
     }
   }
 
+  async findLatestPrice(id_game: number): Promise<Precio | undefined> {
+    try {
+      const latestPrice = await this.repository.findOne({
+        where: { id_game },
+        order: { valid_from: 'DESC' },
+      });
+      return latestPrice ?? undefined;
+    } catch (error) {
+      console.error(errorEnumPrecio.precioIndicatedNotFound, error);
+      throw new DatabaseErrorCustom(
+        errorEnumPrecio.precioIndicatedNotFound,
+        500
+      );
+    }
+  }
+
   async create(precio: Precio): Promise<Precio> {
     try {
       return await this.repository.save(precio);

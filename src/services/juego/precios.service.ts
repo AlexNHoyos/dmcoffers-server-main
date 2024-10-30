@@ -24,6 +24,15 @@ export class PrecioService implements IPrecioService {
     return this.precioRepository.findOne(id_game, valid_until_date);
   }
 
+  async getLastPrice(id_game: number): Promise<Precio | undefined> {
+    try {
+      return await this.precioRepository.findLatestPrice(id_game);
+    } catch (error) {
+      console.error('Error al obtener el precio más reciente:', error);
+      throw error;
+    }
+  }
+
   async create(newPrecio: Precio): Promise<Precio> {
     return this.precioRepository.create(newPrecio);
   }

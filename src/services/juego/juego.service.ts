@@ -35,12 +35,30 @@ export class JuegoService implements IJuegoService {
     this.precioService = precioService;
   }
 
-  async findAll(): Promise<Juego[]> {
-    return this.juegoRepository.findAll();
+  async findAll(): Promise<JuegoDto[]> {
+    const juegos = await this.juegoRepository.findAll();
+    const juegosDto: JuegoDto[] = await Promise.all(
+      juegos.map(async (juego) => {
+        const lastPrice =
+          juego.id !== undefined
+            ? await this.precioService.getLastPrice(juego.id)
+            : null;
+        return this.convertToDto(juego, lastPrice?.price);
+      })
+    );
+    return juegosDto;
   }
 
-  async findOne(id: number): Promise<Juego | undefined> {
-    return this.juegoRepository.findOne(id);
+  async findOne(id: number): Promise<JuegoDto | undefined> {
+    const juego = await this.juegoRepository.findOne(id);
+    if (!juego) return undefined;
+
+    // Verifica que juego.id no sea undefined
+    const lastPrice =
+      juego.id !== undefined
+        ? await this.precioService.getLastPrice(juego.id)
+        : null;
+    return this.convertToDto(juego, lastPrice?.price);
   }
 
   async create(newJuego: JuegoDto): Promise<JuegoDto> {

@@ -11,4 +11,5 @@ export interface IPrecioService {
     entity: Partial<Precio>
   ): Promise<Precio>;
   delete(id_game: number, valid_until_date: Date): Promise<Precio | undefined>;
+  getLastPrice(id_game: number): Promise<Precio | undefined>;
 }
