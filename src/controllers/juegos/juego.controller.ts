@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import { JuegoService } from '../../services/juego/juego.service.js';
+
 import {
   controller,
   httpDelete,
@@ -16,11 +17,12 @@ import { validate } from '../../middleware/validation/validation-middleware.js';
 import {
   createJuegoValidationRules,
   deleteJuegoValidationRules,
+  getJuegoByNameValidationRules,
   getJuegoValidationRules,
   updateJuegoValidationRules,
 } from '../../middleware/validation/validations-rules/juego-validations.js';
 
-@controller('/api/juegos', authenticateToken)
+@controller('/api/juegos')
 export class JuegoController {
   private juegoService: IJuegoService;
 
@@ -32,12 +34,34 @@ export class JuegoController {
   public async findAll(req: Request, res: Response, next: NextFunction) {
     try {
       const juegos = await this.juegoService.findAll();
-      console.log(juegos);
       if (juegos.length > 0) {
         res.status(200).json(juegos);
       } else {
         res.status(404).json({ message: 'No se han hayado juegos' });
       }
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @httpGet('/search', validate(getJuegoByNameValidationRules))
+  public async findByName(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    console.log('Ruta llamada:', req.path);
+    console.log('Query parameters:', req.query);
+    const { gamename } = req.query;
+    console.log(gamename);
+    if (!gamename) {
+      res.status(400).json({ message: 'Nombre del juego es requerido' });
+      return;
+    }
+
+    try {
+      const juegos = await this.juegoService.findByName(String(gamename));
+      res.json(juegos);
     } catch (error) {
       next(error);
     }

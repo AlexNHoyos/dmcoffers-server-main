@@ -10,6 +10,9 @@ export class JuegoDto {
   categorias: number[] | undefined;
   price?: number | undefined;
 
+  publisherName?: string; // Agregado para devolver los nombres en los gets
+  developerName?: string;
+  categoriasNames?: string[];
   constructor(
     gamename: string,
     release_date: Date,

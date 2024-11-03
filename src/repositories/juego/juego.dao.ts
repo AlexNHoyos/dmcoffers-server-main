@@ -1,4 +1,4 @@
-import { Repository, FindOneOptions } from 'typeorm';
+import { Repository, FindOneOptions, ILike } from 'typeorm';
 import { Juego } from '../../models/juegos/juegos.entity.js';
 import { Publisher } from '../../models/publicadores/publisher.entity.js';
 import { Desarrollador } from '../../models/desarrolladores/desarrolladores.entity.js';
@@ -55,8 +55,17 @@ export class JuegoRepository implements IJuegoRepository {
     }
   }
 
-  async findByName(gamename: string): Promise<Juego | undefined> {
-    return this.findOne({ where: { gamename } });
+  async findByName(gamename: string): Promise<Juego[] | undefined> {
+    try {
+      console.log(gamename);
+      return await this.repository.find({
+        where: { gamename: ILike(`%${gamename}%`) },
+        relations: ['publisher', 'developer', 'categorias', 'precios'],
+      });
+    } catch (error) {
+      console.error('Error buscando juegos por nombre:', error);
+      throw new DatabaseErrorCustom(errorEnumJuego.juegoIndicatedNotFound, 500);
+    }
   }
 
   async create(juego: Juego): Promise<Juego> {
@@ -84,8 +93,6 @@ export class JuegoRepository implements IJuegoRepository {
 
       // Merge para aplicar actualizaciones parciales
       this.repository.merge(existingJuego, juego);
-
-      console.log(juego);
 
       // Actualizar categorías solo si se insertan en el patch
       if (juego.categorias) {

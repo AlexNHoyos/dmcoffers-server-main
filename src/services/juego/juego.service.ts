@@ -61,6 +61,18 @@ export class JuegoService implements IJuegoService {
     return this.convertToDto(juego, lastPrice?.price);
   }
 
+  async findByName(gamename: string): Promise<JuegoDto[]> {
+    const juegos = await this.juegoRepository.findByName(gamename);
+    if (!juegos) return [];
+
+    return await Promise.all(
+      juegos.map(async (juego) => {
+        const lastPrice = await this.precioService.getLastPrice(juego.id!);
+        return this.convertToDto(juego, lastPrice?.price);
+      })
+    );
+  }
+
   async create(newJuego: JuegoDto): Promise<JuegoDto> {
     this.validacionField(newJuego);
 
@@ -170,8 +182,28 @@ export class JuegoService implements IJuegoService {
     return this.convertToDto(existingJuego, juegoDto.price);
   }
 
-  async delete(id: number): Promise<Juego | undefined> {
-    return this.juegoRepository.delete(id);
+  async delete(id: number): Promise<JuegoDto | undefined> {
+    const juego = await this.juegoRepository.delete(id);
+
+    // Si el juego no existe, devolvemos undefined
+    if (!juego) return undefined;
+
+    const categorias = await juego.categorias;
+    return {
+      id: juego.id,
+      gamename: juego.gamename,
+      release_date: juego.release_date,
+      publishment_date: juego.publishment_date,
+      creationuser: juego.creationuser,
+      creationtimestamp: juego.creationtimestamp,
+      id_publisher: juego.publisher?.id,
+      id_developer: juego.developer?.id,
+      categorias: categorias ? categorias.map((c) => c.id) : [],
+      price: undefined,
+      publisherName: juego.publisher?.publishername,
+      developerName: juego.developer?.developername,
+      categoriasNames: categorias?.map((categoria) => categoria.description),
+    };
   }
 
   // Agregar mas validaciones
@@ -218,6 +250,7 @@ export class JuegoService implements IJuegoService {
   }
 
   private async convertToDto(juego: Juego, price?: number): Promise<JuegoDto> {
+    const categorias = await juego.categorias;
     return {
       id: juego.id,
       gamename: juego.gamename,
@@ -231,6 +264,9 @@ export class JuegoService implements IJuegoService {
         ? (await juego.categorias).map((c) => c.id)
         : [],
       price,
+      publisherName: juego.publisher?.publishername,
+      developerName: juego.developer?.developername,
+      categoriasNames: categorias?.map((categoria) => categoria.description),
     };
   }
 }
