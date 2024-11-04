@@ -12,7 +12,7 @@ export const createDesarrolladoresValidationRules = [
     .isISO8601()
     .withMessage('foundation date debe ser una fecha válida'),
   body('dissolution_date')
-    .optional()
+    .optional({ nullable: true })
     .isISO8601()
     .withMessage('dissolution date debe ser una fecha válida'),
   body('status').isBoolean().withMessage('Status debe ser un booleano'),
@@ -31,7 +31,7 @@ export const updateDesarrolladoresValidationRules = [
     .isString()
     .withMessage('developer name debe ser un string'),
   body('dissolution_date')
-    .optional()
+    .optional({ nullable: true })
     .isISO8601()
     .withMessage('dissolution date debe ser una fecha válida'),
   body('status')

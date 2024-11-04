@@ -24,10 +24,10 @@ export class Categorias {
   @Column()
   public creationuser: String;
 
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamp', nullable: true })
   public modificationtimestamp: Date;
 
-  @Column()
+  @Column({ nullable: true })
   public modificationuser: String;
 
   @ManyToMany(() => Juego, (juego) => juego.categorias)

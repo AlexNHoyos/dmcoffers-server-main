@@ -50,8 +50,6 @@ export class JuegoController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    console.log('Ruta llamada:', req.path);
-    console.log('Query parameters:', req.query);
     const { gamename } = req.query;
     console.log(gamename);
     if (!gamename) {

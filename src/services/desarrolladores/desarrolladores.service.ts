@@ -31,6 +31,13 @@ export class DesarrolladoresService implements IDesarrolladoresService {
     id: number,
     desarrolladores: Desarrollador
   ): Promise<Desarrollador> {
+    if (
+      desarrolladores.dissolution_date &&
+      new Date(desarrolladores.dissolution_date) <= new Date()
+    ) {
+      desarrolladores.status = false;
+    }
+
     return this.desarrolladoresRepository.update(id, desarrolladores);
   }
 

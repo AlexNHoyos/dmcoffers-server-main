@@ -64,6 +64,7 @@ export class PublisherRepository implements IBaseRepository<Publisher> {
           404
         );
       }
+
       await this.repository.update(id, publisher);
       return this.repository.findOneOrFail({ where: { id } }); // Retorna la entidad actualizada
     } catch (error) {
