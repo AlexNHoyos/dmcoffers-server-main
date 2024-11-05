@@ -24,7 +24,9 @@ export class Precio {
   @Column({ type: 'varchar', length: 25, nullable: true })
   public modificationuser: string | undefined;
 
-  @ManyToOne(() => Juego, (juego) => juego.precios)
+  @ManyToOne(() => Juego, (juego) => juego.precios, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'id_game' })
   public juego: Juego | undefined;
 

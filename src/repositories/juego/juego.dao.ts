@@ -81,7 +81,7 @@ export class JuegoRepository implements IJuegoRepository {
     try {
       const existingJuego = await this.repository.findOne({
         where: { id },
-        relations: ['categorias'],
+        relations: ['categorias', 'publisher', 'developer', 'precios'],
       });
 
       if (!existingJuego) {

@@ -5,6 +5,8 @@ export class JuegoDto {
   publishment_date?: Date | undefined;
   creationtimestamp?: Date | undefined;
   creationuser?: string | undefined;
+  modificationtimestamp?: Date | undefined;
+  modificationuser?: string | undefined;
   id_publisher: number | undefined;
   id_developer: number | undefined;
   categorias: number[] | undefined;

@@ -10,7 +10,6 @@ import { PublisherService } from '../publisher/publisher.service.js';
 import { DesarrolladoresService } from '../desarrolladores/desarrolladores.service.js';
 import { PrecioService } from './precios.service.js';
 import { Precio } from '../../models/juegos/precios.entity.js';
-import { Categorias } from '../../models/categorias/categorias.entity.js';
 
 @injectable()
 export class JuegoService implements IJuegoService {
@@ -87,7 +86,7 @@ export class JuegoService implements IJuegoService {
       undefined, // id será generado automáticamente por TypeORM
       newJuego.gamename,
       newJuego.release_date,
-      newJuego.publishment_date || new Date(),
+      new Date(), // publishmentdate
       new Date(), // creationtimestamp
       newJuego.creationuser,
       undefined, // modificationtimestamp
@@ -131,10 +130,8 @@ export class JuegoService implements IJuegoService {
     existingJuego.gamename = juegoDto.gamename ?? existingJuego.gamename;
     existingJuego.release_date =
       juegoDto.release_date ?? existingJuego.release_date;
-    existingJuego.publishment_date =
-      juegoDto.publishment_date ?? existingJuego.publishment_date;
     existingJuego.modificationtimestamp = new Date();
-    existingJuego.modificationuser = juegoDto.creationuser;
+    existingJuego.modificationuser = juegoDto.modificationuser;
 
     // Si id_publisher o id_developer cambian, obtener los nuevos y asignarlos
     if (
@@ -163,18 +160,14 @@ export class JuegoService implements IJuegoService {
       existingJuego.categorias = Promise.resolve(nuevasCategorias);
     }
 
-    // Registrar nuevo precio solo si el precio cambia
     if (juegoDto.price) {
-      const precio = new Precio(
-        existingJuego.id!,
-        new Date(),
-        juegoDto.price,
-        new Date(),
-        existingJuego.creationuser
-      );
-      await this.precioService.create(precio);
+      await this.precioService
+        .createPriceIfChanged(id, juegoDto.price, juegoDto.modificationuser!)
+        .catch((error) => {
+          console.error('Error al registrar nuevo precio:', error);
+          // Manejar el error si es necesario, pero no lanzar una excepción para continuar la actualización del juego
+        });
     }
-
     // Guardar el juego actualizado
     await this.juegoRepository.update(id, existingJuego);
 
@@ -258,6 +251,8 @@ export class JuegoService implements IJuegoService {
       publishment_date: juego.publishment_date,
       creationuser: juego.creationuser,
       creationtimestamp: juego.creationtimestamp,
+      modificationuser: juego.modificationuser,
+      modificationtimestamp: juego.modificationtimestamp,
       id_publisher: juego.publisher?.id,
       id_developer: juego.developer?.id,
       categorias: juego.categorias

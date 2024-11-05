@@ -69,7 +69,10 @@ export class Juego {
   })
   public categorias?: Promise<Categorias[]>;
 
-  @OneToMany(() => Precio, (precio) => precio.juego)
+  @OneToMany(() => Precio, (precio) => precio.juego, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   precios?: Precio[];
 
   @OneToMany(() => Oferta, (oferta) => oferta.juego)

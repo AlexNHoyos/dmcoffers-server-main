@@ -81,7 +81,7 @@ export class JuegoController {
     }
   }
 
-  @httpPost('/', validate(createJuegoValidationRules))
+  @httpPost('/', authenticateToken, validate(createJuegoValidationRules))
   public async create(req: Request, res: Response, next: NextFunction) {
     const newJuego = req.body;
 
@@ -93,7 +93,7 @@ export class JuegoController {
     }
   }
 
-  @httpPatch('/:id', validate(updateJuegoValidationRules))
+  @httpPatch('/:id', authenticateToken, validate(updateJuegoValidationRules))
   public async update(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
     const juegoUpdates = req.body;
@@ -110,7 +110,7 @@ export class JuegoController {
     }
   }
 
-  @httpDelete('/:id', validate(deleteJuegoValidationRules))
+  @httpDelete('/:id', authenticateToken, validate(deleteJuegoValidationRules))
   public async remove(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
 

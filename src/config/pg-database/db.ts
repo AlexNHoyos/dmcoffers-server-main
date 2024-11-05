@@ -39,7 +39,7 @@ export const AppDataSource = new DataSource({
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
   synchronize: false, // tiene que estar en true momentaneamente se deja en false por cuestiones funcionales
-  logging: true,
+  //logging: true,
   entities: [
     process.env.NODE_ENV === 'development'
       ? 'src/models/**/*.ts' // en desarrollo
