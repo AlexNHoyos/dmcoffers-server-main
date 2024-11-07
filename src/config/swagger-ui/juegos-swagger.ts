@@ -167,6 +167,60 @@
  *          description: Error Interno del Servidor
  */
 
+/**
+ * @swagger
+ * /api/juegos/wishlist/{juegoId}:
+ *    post:
+ *      summary: Agregar un juego a la wishlist
+ *      security:
+ *        - apiAuth: []
+ *      tags:
+ *        - Juegos
+ *      parameters:
+ *        - in: path
+ *          name: juegoId
+ *          required: true
+ *          description: ID del juego a agregar a la wishlist
+ *          schema:
+ *            type: number
+ *      responses:
+ *        201:
+ *          description: Juego agregado a la wishlist con éxito
+ *        401:
+ *          description: No autorizado (NOT AUTHORIZED)
+ *        404:
+ *          description: No se encontró el juego
+ *        500:
+ *          description: Error Interno del Servidor
+ */
+
+/**
+ * @swagger
+ * /api/juegos/wishlist/{juegoId}:
+ *    delete:
+ *      summary: Quitar un juego de la wishlist
+ *      security:
+ *        - apiAuth: []
+ *      tags:
+ *        - Juegos
+ *      parameters:
+ *        - in: path
+ *          name: juegoId
+ *          required: true
+ *          description: ID del juego a quitar de la wishlist
+ *          schema:
+ *            type: number
+ *      responses:
+ *        200:
+ *          description: Juego eliminado de la wishlist con éxito
+ *        401:
+ *          description: No autorizado (NOT AUTHORIZED)
+ *        404:
+ *          description: No se encontró el juego
+ *        500:
+ *          description: Error Interno del Servidor
+ */
+
 //
 
 //----SCHEMAS----//
@@ -248,5 +302,7 @@
  *           example: 59.99
  *       required:
  *         - gamename
+ *
+ *
  *
  */
