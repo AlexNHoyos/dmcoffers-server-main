@@ -72,6 +72,26 @@ export class JuegoService implements IJuegoService {
     );
   }
 
+  public async findWishlistGames(userId: number): Promise<JuegoDto[]> {
+    try {
+      // Llamar al repositorio para obtener los juegos en la wishlist del usuario
+      const wishlistGames = await this.juegoRepository.findWishlistGames(
+        userId
+      );
+
+      // Devolver los juegos en formato DTO
+      return await Promise.all(
+        wishlistGames.map(async (juego) => {
+          const lastPrice = await this.precioService.getLastPrice(juego.id!);
+          return this.convertToDto(juego, lastPrice?.price);
+        })
+      );
+    } catch (error) {
+      console.error('Error al obtener los juegos de la wishlist:', error);
+      throw new Error('Failed to fetch wishlist games');
+    }
+  }
+
   async create(newJuego: JuegoDto): Promise<JuegoDto> {
     this.validacionField(newJuego);
 
@@ -165,7 +185,6 @@ export class JuegoService implements IJuegoService {
         .createPriceIfChanged(id, juegoDto.price, juegoDto.modificationuser!)
         .catch((error) => {
           console.error('Error al registrar nuevo precio:', error);
-          // Manejar el error si es necesario, pero no lanzar una excepción para continuar la actualización del juego
         });
     }
     // Guardar el juego actualizado
@@ -199,11 +218,6 @@ export class JuegoService implements IJuegoService {
     };
   }
 
-  // Agregar mas validaciones
-  // const existingJuego = await this.juegoRepository.findByGameName(newJuego.gamename);
-  // if (existingJuego) {
-  //   throw new ValidationError('El juego ya existe', 400);
-  // }
   private validacionField(newJuego: Partial<JuegoDto>): void {
     // Validar que al menos uno de los campos obligatorios esté presente
     if (

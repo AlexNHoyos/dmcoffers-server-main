@@ -66,7 +66,6 @@ export class WishlistRepository {
     }
   }
 
-  // Comprobar si un juego está en la wishlist
   async isInWishlist(userId: number, juegoId: number): Promise<boolean> {
     try {
       const user = await this.userRepository.findOne({
@@ -81,6 +80,25 @@ export class WishlistRepository {
     } catch (error) {
       console.error('Error checking wishlist:', error);
       throw new DatabaseErrorCustom('Failed to check wishlist', 500);
+    }
+  }
+
+  async getWishlistByUserId(userId: number): Promise<Juego[]> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+        relations: ['wishlist'],
+      });
+
+      if (user && user.wishlist) {
+        console.log('Wishlist fetched successfully:', user.wishlist);
+        return user.wishlist;
+      } else {
+        throw new Error('Lista de deseos no encontrada para usuario');
+      }
+    } catch (error) {
+      console.error('Problema al buscar wishlist:', error);
+      throw new DatabaseErrorCustom('Problema al buscar wishlist', 500);
     }
   }
 }

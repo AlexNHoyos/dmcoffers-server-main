@@ -221,6 +221,32 @@
  *          description: Error Interno del Servidor
  */
 
+/**
+ * @swagger
+ * /api/juegos/wishlist:
+ *    get:
+ *      summary: Obtener la wishlist de un usuario logeado
+ *      security:
+ *        - apiAuth: []  # Aquí se usa el token de autenticación
+ *      tags:
+ *        - Juegos
+ *      responses:
+ *        200:
+ *          description: Wishlist obtenida con éxito
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/juegoSchema'  # Aquí se hace referencia al esquema del juego
+ *        404:
+ *          description: No se encontraron juegos en la wishlist
+ *        401:
+ *          description: No autorizado (token inválido o expirado)
+ *        500:
+ *          description: Error interno del servidor
+ */
+
 //
 
 //----SCHEMAS----//
@@ -305,4 +331,38 @@
  *
  *
  *
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     juegoSchema:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: number
+ *           description: ID del juego
+ *         gamename:
+ *           type: string
+ *           description: Nombre del juego
+ *         release_date:
+ *           type: string
+ *           format: date
+ *           description: Fecha de lanzamiento del juego
+ *         price:
+ *           type: number
+ *           description: Precio actual del juego
+ *         publisher:
+ *           type: string
+ *           description: Nombre del Publisher del juego
+ *         developer:
+ *           type: string
+ *           description: Nombre del Developer del juego
+ *       required:
+ *         - id
+ *         - gamename
+ *         - price
+ *         - publisher
+ *         - developer
  */

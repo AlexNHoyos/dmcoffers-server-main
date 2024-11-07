@@ -70,6 +70,29 @@ export class JuegoController {
     }
   }
 
+  // Ruta para obtener la wishlist del usuario logeado
+  @httpGet('/wishlist', authenticateToken)
+  public async getWishList(req: Request, res: Response, next: NextFunction) {
+    const userId = res.locals.userId; // Tomamos el userId del middleware authenticateToken
+
+    try {
+      const wishlist = await this.juegoService.findWishlistGames(userId);
+
+      if (wishlist.length === 0) {
+        res
+          .status(404)
+          .json({
+            message: 'Este usuario no tiene juegos en su lista de deseados.',
+          });
+      } else {
+        res.status(200).json(wishlist);
+      }
+    } catch (error) {
+      console.error('Error al obtener la wishlist:', error);
+      next(error);
+    }
+  }
+
   @httpGet('/:id', validate(getJuegoValidationRules))
   public async findOne(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
@@ -79,7 +102,7 @@ export class JuegoController {
       if (juego) {
         res.status(200).json(juego);
       } else {
-        res.status(404).json({ message: 'juego no encontrado' });
+        res.status(404).json({ message: 'Juego no encontrado' });
       }
     } catch (error) {
       next(error);
@@ -131,6 +154,28 @@ export class JuegoController {
     }
   }
 
+  // Otros endpoints relacionados a la wishlist
+  // Ruta para verificar si un juego está en la wishlist
+  @httpGet('/wishlist/:juegoId', authenticateToken)
+  public async checkIfInWishlist(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const userId = res.locals.userId;
+    const juegoId = parseInt(req.params.juegoId, 10);
+
+    try {
+      const isInWishlist = await this.wishlistService.isInWishlist(
+        userId,
+        juegoId
+      );
+      res.status(200).json({ isInWishlist });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // Ruta para agregar un juego a la wishlist
   @httpPost('/wishlist/:juegoId', authenticateToken)
   public async addToWishlist(req: Request, res: Response, next: NextFunction) {
@@ -152,33 +197,12 @@ export class JuegoController {
     res: Response,
     next: NextFunction
   ) {
-    const userId = res.locals.userId; // Extrae el ID del usuario de req.user
+    const userId = res.locals.userId;
     const juegoId = parseInt(req.params.juegoId, 10);
 
     try {
       await this.wishlistService.removeFromWishlist(userId, juegoId);
       res.status(200).json({ message: 'Juego eliminado de la wishlist' });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  // Ruta para verificar si un juego está en la wishlist
-  @httpGet('/wishlist/:juegoId', authenticateToken)
-  public async checkIfInWishlist(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    const userId = res.locals.userId; // Extrae el ID del usuario de req.user
-    const juegoId = parseInt(req.params.juegoId, 10);
-
-    try {
-      const isInWishlist = await this.wishlistService.isInWishlist(
-        userId,
-        juegoId
-      );
-      res.status(200).json({ isInWishlist });
     } catch (error) {
       next(error);
     }
