@@ -8,10 +8,10 @@ export class UserDto {
     delete_date: Date | undefined;
     creationuser: string | undefined;
     creationtimestamp: Date | undefined;
-    modificationuser: string | undefined;
-    modificationtimestamp: Date | undefined;
     password: string | undefined;
     status: boolean | undefined;
+    modificationuser?: string | undefined;
+    modificationtimestamp?: Date | undefined;
 
     constructor(
         idUser?: number,

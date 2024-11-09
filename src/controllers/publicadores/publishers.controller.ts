@@ -5,7 +5,7 @@ import { controller, httpDelete, httpGet, httpPost, httpPut } from 'inversify-ex
 import { inject } from 'inversify';
 import { IPublisherService } from '../../services/interfaces/publisher/IPublisherService.js';
 import { PublisherService } from '../../services/publisher/publisher.service.js';
-import { validate } from '../../middleware/validation/validation-middleware.js';
+import { validateInputData } from '../../middleware/validation/validation-middleware.js';
 import { createPublisherValidationRules, deletePublisherValidationRules, getPublisherValidationRules, updatePublisherValidationRules } from '../../middleware/validation/validations-rules/publisher-validations.js';
 
 
@@ -38,7 +38,7 @@ export class PublisherController {
   };
 
 
-  @httpGet('/:id', validate(getPublisherValidationRules))
+  @httpGet('/:id', validateInputData(getPublisherValidationRules))
   public async findOne(req: Request, res: Response, next: NextFunction) {
     
     const id = parseInt(req.params.id, 10);
@@ -56,7 +56,7 @@ export class PublisherController {
   };
 
 
-  @httpPost('/create', validate(createPublisherValidationRules))
+  @httpPost('/create', validateInputData(createPublisherValidationRules))
   public async create(req: Request, res: Response, next: NextFunction) {
     
     const newPub = req.body;
@@ -70,7 +70,7 @@ export class PublisherController {
   };
 
 
-  @httpPut('/:id',  validate(updatePublisherValidationRules))
+  @httpPut('/:id',  validateInputData(updatePublisherValidationRules))
   public async update(req: Request, res: Response,  next: NextFunction) {
 
     const id = parseInt(req.params.id, 10);
@@ -90,7 +90,7 @@ export class PublisherController {
   };
 
   // Eliminar un publicador
-  @httpDelete('/:id', validate(deletePublisherValidationRules))    
+  @httpDelete('/:id', validateInputData(deletePublisherValidationRules))    
   public async remove(req: Request, res: Response, next: NextFunction) {
     
     const id = parseInt(req.params.id, 10);

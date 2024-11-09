@@ -6,12 +6,11 @@ import { IPublisherService } from '../interfaces/publisher/IPublisherService.js'
 
 @injectable()
 export class PublisherService implements IPublisherService {
-  
   private _publisherRepository: PublisherRepository;
 
   constructor(
-    @inject(PublisherRepository) publisherRepository: PublisherRepository,
-  ){    
+    @inject(PublisherRepository) publisherRepository: PublisherRepository
+  ) {
     this._publisherRepository = publisherRepository;
   }
 
@@ -24,20 +23,26 @@ export class PublisherService implements IPublisherService {
   }
 
   async create(newpublisher: Publisher): Promise<Publisher> {
-
-   return this._publisherRepository.create(newpublisher);
+    if (
+      newpublisher.dissolution_date &&
+      new Date(newpublisher.dissolution_date) <= new Date()
+    ) {
+      newpublisher.status = false;
+    }
+    return this._publisherRepository.create(newpublisher);
   }
 
-
   async update(id: number, publisher: Publisher): Promise<Publisher> {
-
+    if (
+      publisher.dissolution_date &&
+      new Date(publisher.dissolution_date) <= new Date()
+    ) {
+      publisher.status = false;
+    }
     return this._publisherRepository.update(id, publisher);
   }
 
   async delete(id: number): Promise<Publisher | undefined> {
     return this._publisherRepository.delete(id);
   }
-
 }
-
-

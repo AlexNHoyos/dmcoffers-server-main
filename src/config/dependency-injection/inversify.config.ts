@@ -29,9 +29,25 @@ import { UserRepository } from '../../repositories/usuarios/user.dao.js';
 import { SupportTicketRepository } from '../../repositories/support-ticket/support-ticket.dao.js';
 import { UserRolRepository } from '../../repositories/usuarios/user-rol-apl.dao.js';
 
+import { JuegoRepository } from '../../repositories/juego/juego.dao.js';
+import { JuegoController } from '../../controllers/juegos/juego.controller.js';
+import { IJuegoService } from '../../services/interfaces/juego/IJuegoService.js';
+import { JuegoService } from '../../services/juego/juego.service.js';
+import { DesarrolladoresRepository } from '../../repositories/desarrolladores/desarrolladores.dao.js';
+import { IDesarrolladoresService } from '../../services/interfaces/desarrolladores/IDesarrolladoresService.js';
+import { DesarrolladoresService } from '../../services/desarrolladores/desarrolladores.service.js';
+import { DesarrolladoresController } from '../../controllers/desarrolladores/desarrolladores.controller.js';
+import { PrecioController } from '../../controllers/precios/precios.controller.js';
+import { PrecioRepository } from '../../repositories/juego/precios.dao.js';
+import { PrecioService } from '../../services/juego/precios.service.js';
+import { IPrecioService } from '../../services/interfaces/precios/IPrecioService.js';
+import { WishlistRepository } from '../../repositories/juego/whislist.dao.js';
+import { WishlistService } from '../../services/juego/wishlist.service.js';
+import { IWishlistService } from '../../services/interfaces/wishlist/IWishlistService.js';
+import { RolAplRepository } from '../../repositories/rol/rol-apl.dao.js';
 
 // Crear un nuevo contenedor de Inversify
-const container = new Container({ defaultScope: "Singleton" });
+const container = new Container({ defaultScope: 'Singleton' });
 
 // Controladores
 container.bind<AuthController>(AuthController).toSelf();
@@ -40,6 +56,9 @@ container.bind<HostingController>(HostingController).toSelf();
 container.bind<SupportTicketController>(SupportTicketController).toSelf();
 container.bind<PublisherController>(PublisherController).toSelf();
 container.bind<CategoriasController>(CategoriasController).toSelf();
+container.bind<JuegoController>(JuegoController).toSelf();
+container.bind<DesarrolladoresController>(DesarrolladoresController).toSelf();
+container.bind<PrecioController>(PrecioController).toSelf();
 
 // Repositorios
 container.bind<UserAuthRepository>(UserAuthRepository).toSelf();
@@ -49,16 +68,27 @@ container.bind<HostingRepository>(HostingRepository).toSelf();
 container.bind<UserRepository>(UserRepository).toSelf();
 container.bind<SupportTicketRepository>(SupportTicketRepository).toSelf();
 container.bind<UserRolRepository>(UserRolRepository).toSelf();
+container.bind<JuegoRepository>(JuegoRepository).toSelf();
+container.bind<DesarrolladoresRepository>(DesarrolladoresRepository).toSelf();
+container.bind<PrecioRepository>(PrecioRepository).toSelf();
+container.bind<WishlistRepository>(WishlistRepository).toSelf();
+container.bind<RolAplRepository>(RolAplRepository).toSelf();
 
 // Interfaces
 container.bind<IAuthService>(AuthService).to(AuthService);
 container.bind<IUserService>(UserService).to(UserService);
 container.bind<IPasswordService>(PasswordService).to(PasswordService);
 container.bind<IHostingService>(HostingService).to(HostingService);
-container.bind<ISupportTicketService>(SupportTicketService).to(SupportTicketService);
+container
+  .bind<ISupportTicketService>(SupportTicketService)
+  .to(SupportTicketService);
 container.bind<IPublisherService>(PublisherService).to(PublisherService);
 container.bind<ICategoriasService>(CategoriasService).to(CategoriasService);
 container.bind<IUserRolAplService>(UserRolAplService).to(UserRolAplService);
-
-
+container.bind<IJuegoService>(JuegoService).to(JuegoService);
+container
+  .bind<IDesarrolladoresService>(DesarrolladoresService)
+  .to(DesarrolladoresService);
+container.bind<IPrecioService>(PrecioService).to(PrecioService);
+container.bind<IWishlistService>(WishlistService).to(WishlistService);
 export { container };

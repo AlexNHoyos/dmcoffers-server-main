@@ -62,6 +62,32 @@
  *         - modificationtimestamp
  *         - status
  * 
+ *     UsuarioUpdateByAdminSchema:
+ *       type: object
+ *       properties:
+ *         realname:
+ *           type: string
+ *           description: Nombre de Usuario
+ *         surname:
+ *           type: string
+ *           description: Apellido de Usuario
+ *         modificationuser:
+ *           type: string
+ *           description: Nombre del usuario que modificó el Usuario
+ *         status:
+ *           type: boolean
+ *           description: Estado del Usuario. Activo o Inactivo
+ *         rolDescription:
+ *           type: string
+ *           description: Rol del usuario
+ *           enum: ["admin", "moderador", "usuarioForo", "usuarioTienda"]
+ *       required:
+ *         - realname
+ *         - surname
+ *         - modificationuser
+ *         - modificationtimestamp
+ *         - status
+ *    
  * paths:
  *   /api/users/findall:
  *     get:
@@ -176,4 +202,38 @@
  *           description: No se creó Usuario
  *         500:
  *           description: Error Interno del Servidor
+ * 
+ *   /api/users/updateUser/{id}:
+ *     put:
+ *       summary: Modificar un Usuario creado mediante ID
+ *       security:
+ *         - apiAuth: []
+ *       tags:
+ *         - Usuarios
+ *       parameters:
+ *         - in: path
+ *           name: id
+ *           required: true
+ *           description: ID del Usuario
+ *           schema:
+ *             type: number
+ *       requestBody:
+ *         description: Esquema de Modificación de Usuario
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UsuarioUpdateByAdminSchema'
+ *       responses:
+ *         200:
+ *           description: Usuario modificado con éxito
+ *         401:
+ *           description: No autorizado (NOT AUTHORIZED)
+ *         403:
+ *           description: No tiene permitido el acceso
+ *         404:
+ *           description: No se encontró Usuario
+ *         500:
+ *           description: Error Interno del Servidor
+ *      
  */

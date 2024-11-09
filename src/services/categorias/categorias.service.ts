@@ -10,15 +10,13 @@ import { CategoriasRepository } from '../../repositories/categorias/categorias.d
 
 @injectable()
 export class CategoriasService implements ICategoriasService {
-  
   private _categoriasRepository: CategoriasRepository;
 
   constructor(
-    @inject(CategoriasRepository) categoriasRepository: CategoriasRepository,
+    @inject(CategoriasRepository) categoriasRepository: CategoriasRepository
   ) {
-    this._categoriasRepository = categoriasRepository;   
+    this._categoriasRepository = categoriasRepository;
   }
-
 
   async findAll(): Promise<Categorias[]> {
     return this._categoriasRepository.findAll();
@@ -29,20 +27,14 @@ export class CategoriasService implements ICategoriasService {
   }
 
   async create(newCategoria: Categorias): Promise<Categorias> {
-
-   return this._categoriasRepository.create(newCategoria);
+    return this._categoriasRepository.create(newCategoria);
   }
 
-
   async update(id: number, categorias: Categorias): Promise<Categorias> {
-
     return this._categoriasRepository.update(id, categorias);
   }
 
   async delete(id: number): Promise<Categorias | undefined> {
     return this._categoriasRepository.delete(id);
   }
-
 }
-
-

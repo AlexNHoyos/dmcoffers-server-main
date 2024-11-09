@@ -5,7 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm';
+
+import { Juego } from '../juegos/juegos.entity.js';
 
 @Entity('pub_game_publisher') // El nombre de la tabla en la base de datos
 // Definimos la clase Publisher para representar la entidad de un publicador
@@ -36,6 +39,9 @@ export class Publisher {
 
   @Column({ nullable: true })
   public modificationuser: string;
+
+  @OneToMany(() => Juego, (juegos) => juegos.publisher)
+  public juegos: Juego[] | undefined;
 
   // Constructor de la clase Publisher
   constructor(
