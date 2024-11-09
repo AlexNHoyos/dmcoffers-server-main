@@ -5,8 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm';
 
+import { Juego } from '../juegos/juegos.entity.js';
 @Entity('pub_game_developer') // El nombre de la tabla en la base de datos
 export class Desarrollador {
   @PrimaryGeneratedColumn()
@@ -35,6 +37,9 @@ export class Desarrollador {
 
   @Column({ nullable: true })
   public modificationuser: string;
+
+  @OneToMany(() => Juego, (juego) => juego.developer)
+  public juegos: Juego[] | undefined;
 
   constructor(
     id: number,

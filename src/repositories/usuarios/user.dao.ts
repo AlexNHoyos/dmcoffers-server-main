@@ -10,17 +10,15 @@ import { injectable } from 'inversify';
 
 @injectable()
 export class UserRepository implements IUserRepository {
-  private userRepo: Repository<User>;
-  private userAuthRepo: Repository<UserAuth>;
+  private _userRepo: Repository<User>;
 
   constructor() {
-    this.userRepo = AppDataSource.getRepository(User);
-    this.userAuthRepo = AppDataSource.getRepository(UserAuth);
+    this._userRepo = AppDataSource.getRepository(User);
   }
 
   async findAll(): Promise<User[]> {
     try {
-      return await this.userRepo.find();
+      return await this._userRepo.find();
     } catch (error) {
       console.error(errorEnumUser.usersNotFounded, error);
       throw new DatabaseErrorCustom(errorEnumUser.usersNotFounded, 500);
@@ -29,7 +27,7 @@ export class UserRepository implements IUserRepository {
 
   async findOne(id: number): Promise<User | undefined> {
     try {
-      const user = await this.userRepo.findOneBy({id});
+      const user = await this._userRepo.findOneBy({id});
       return user?? undefined;
     } catch (error) {
       console.error(errorEnumUser.userIndicatedNotFound, error);
@@ -39,8 +37,8 @@ export class UserRepository implements IUserRepository {
 
   async create(user: User): Promise<User> {
     try {
-      const newUser = this.userRepo.create(user);
-      return await this.userRepo.save(newUser);
+      const newUser = this._userRepo.create(user);
+      return await this._userRepo.save(newUser);
     } catch (error) {
       console.error(errorEnumUser.userNotCreated, error);
       throw new DatabaseErrorCustom(errorEnumUser.userNotCreated, 500);
@@ -50,13 +48,13 @@ export class UserRepository implements IUserRepository {
   async update(id: number, user: Partial<User>): Promise<User> {
     try {
 
-      const existinguser = await this.userRepo.findOneBy({ id });
+      const existinguser = await this._userRepo.findOneBy({ id });
       if (!existinguser) {
         throw new DatabaseErrorCustom(errorEnumUser.userIndicatedNotFound, 404);
       }
-      await this.userRepo.update(id, user);
+      await this._userRepo.update(id, user);
       
-      return await this.userRepo.findOneByOrFail({id});
+      return await this._userRepo.findOneByOrFail({id});
     } catch (error) {
       console.error(errorEnumUser.userNotUpdated, error);
       throw new DatabaseErrorCustom(errorEnumUser.userNotUpdated, 500);
@@ -69,7 +67,7 @@ export class UserRepository implements IUserRepository {
       if (!userToRemove) {
         return undefined;
       }
-      await this.userRepo.remove(userToRemove);
+      await this._userRepo.remove(userToRemove);
       return userToRemove;
     } catch (error) {
       console.error(errorEnumUser.userNotDeleted, error);
@@ -80,7 +78,7 @@ export class UserRepository implements IUserRepository {
 
   async findByUserName(userName: string): Promise<User | undefined> {
     try {
-      const user =  await this.userRepo.findOne({ where: { username: userName } });
+      const user =  await this._userRepo.findOne({ where: { username: userName } });
       return user?? undefined;
     } catch (error) {
       console.error(errorEnumUser.userIndicatedNotFound, error);
@@ -92,7 +90,7 @@ export class UserRepository implements IUserRepository {
     // Asignar el objeto `UserAuth` al `User` antes de iniciar la transacción
 
   
-    const queryRunner = this.userRepo.manager.connection.createQueryRunner();
+    const queryRunner = this._userRepo.manager.connection.createQueryRunner();
     await queryRunner.startTransaction();
   
     try {
