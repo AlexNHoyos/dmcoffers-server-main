@@ -8,7 +8,7 @@ import {
   httpPut,
 } from 'inversify-express-utils';
 import { inject } from 'inversify';
-import { validate } from '../../middleware/validation/validation-middleware.js';
+import { validateInputData } from '../../middleware/validation/validation-middleware.js';
 import { IPrecioService } from '../../services/interfaces/precios/IPrecioService.js';
 import { PrecioService } from '../../services/juego/precios.service.js';
 import {
@@ -43,7 +43,7 @@ export class PrecioController {
     }
   }
 
-  @httpGet('/:id_game/:valid_until_date', validate(getPrecioValidationRules))
+  @httpGet('/:id_game/:valid_until_date', validateInputData(getPrecioValidationRules))
   public async findOne(req: Request, res: Response, next: NextFunction) {
     const id_game = parseInt(req.params.id, 10);
     const valid_until_date = new Date(req.params.valid_until_date);
@@ -63,7 +63,7 @@ export class PrecioController {
     }
   }
 
-  @httpPost('/', validate(createPrecioValidationRules))
+  @httpPost('/', validateInputData(createPrecioValidationRules))
   public async create(req: Request, res: Response, next: NextFunction) {
     const newDev = req.body;
 
@@ -75,7 +75,7 @@ export class PrecioController {
     }
   }
 
-  @httpPut('/:id_game/:valid_until_date', validate(updatePrecioValidationRules))
+  @httpPut('/:id_game/:valid_until_date', validateInputData(updatePrecioValidationRules))
   public async update(req: Request, res: Response, next: NextFunction) {
     const id_game = parseInt(req.params.id, 10);
     const valid_until_date = new Date(req.params.valid_until_date);
@@ -99,7 +99,7 @@ export class PrecioController {
 
   @httpDelete(
     '/:id_game/:valid_until_date',
-    validate(deletePrecioValidationRules)
+    validateInputData(deletePrecioValidationRules)
   )
   // Eliminar un precio
   public async remove(req: Request, res: Response, next: NextFunction) {

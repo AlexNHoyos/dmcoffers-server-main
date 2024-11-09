@@ -10,7 +10,7 @@ import {
 import { IDesarrolladoresService } from '../../services/interfaces/desarrolladores/IDesarrolladoresService.js';
 import { DesarrolladoresService } from '../../services/desarrolladores/desarrolladores.service.js';
 import { inject } from 'inversify';
-import { validate } from '../../middleware/validation/validation-middleware.js';
+import { validateInputData } from '../../middleware/validation/validation-middleware.js';
 import {
   createDesarrolladoresValidationRules,
   deleteDesarrolladoresValidationRules,
@@ -45,7 +45,7 @@ export class DesarrolladoresController {
     }
   }
 
-  @httpGet('/:id', validate(getDesarrolladoresValidationRules))
+  @httpGet('/:id', validateInputData(getDesarrolladoresValidationRules))
   // Obtener todos los publicadores de juegos
   public async findOne(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
@@ -62,7 +62,7 @@ export class DesarrolladoresController {
     }
   }
 
-  @httpPost('/', validate(createDesarrolladoresValidationRules))
+  @httpPost('/', validateInputData(createDesarrolladoresValidationRules))
   public async create(req: Request, res: Response, next: NextFunction) {
     const newDev = req.body;
 
@@ -74,7 +74,7 @@ export class DesarrolladoresController {
     }
   }
 
-  @httpPut('/:id', validate(updateDesarrolladoresValidationRules))
+  @httpPut('/:id', validateInputData(updateDesarrolladoresValidationRules))
   public async update(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
     const devUpdates = req.body;
@@ -91,7 +91,7 @@ export class DesarrolladoresController {
     }
   }
 
-  @httpDelete('/:id', validate(deleteDesarrolladoresValidationRules))
+  @httpDelete('/:id', validateInputData(deleteDesarrolladoresValidationRules))
   // Eliminar un desarrollador
   public async remove(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
