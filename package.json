@@ -10,7 +10,7 @@
     "start-dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./dist/index.js\""
   },
   "engines": {
-  "node": "20.11.1"
+  "node": "20.x"
   },
   "author": "Hoyos, A. ; Marcosano, M. ; Ceballos, R.; Fernandez, M.; Tobajas Ramirez, I.",
   "license": "ISC",
