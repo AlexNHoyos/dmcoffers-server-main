@@ -107,9 +107,9 @@ export const updateUserByAdminValidationRules = [
         .optional()
         .isBoolean()
         .withMessage('Status debe ser un booleano'), 
-    body('currentRolDescription')
+    body('rolDescription')
         .optional()
-        .isBoolean()
-        .withMessage('currentRolDescription debe ser un string'),
+        .isString()
+        .withMessage('rolDescription debe ser un string'),
 ];
 

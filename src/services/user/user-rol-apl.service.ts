@@ -41,7 +41,7 @@ export class UserRolAplService implements IUserRolAplService {
 
         let rolToAsign = null;
 
-        if (rolName !== null || rolName !== undefined) {
+        if (rolName !== null && rolName !== undefined) {
             const rol = await this._rolAplRepository.findByRolName(rolName!)
             rolToAsign = rol?.id;
         }

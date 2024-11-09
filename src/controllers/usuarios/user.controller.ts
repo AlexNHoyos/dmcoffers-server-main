@@ -106,7 +106,7 @@ export class UserController {
         const userUpdates = req.body;
   
         try {
-            const updatedUser = await this._userService.updateUserByAdmin(id, userUpdates);
+            const updatedUser = await this._userService.updateUserByAdmin(id, userUpdates, userUpdates.rolDescription);
             if (updatedUser) {
                 res.status(200).json(updatedUser);
             } else {

@@ -108,7 +108,12 @@ export class UserService implements IUserService {
 
   async update(id: number, user: User): Promise<User> {
     
-    const updatedUser: User = await this.initializeUserToUpdate(id, user);
+    const oldUser = await this._userRepository.findOne(id);
+    if (!oldUser) {
+      throw new ValidationError('Usuario no encontrado', 400);
+    }
+
+    const updatedUser = await this.initializeUserToUpdate(id, user, oldUser);
 
     return this._userRepository.update(id, updatedUser);
   }
@@ -125,10 +130,17 @@ export class UserService implements IUserService {
 
   async updateUserByAdmin(id: number, user: User, rolToAsign: string): Promise<User | undefined> {
 
-    const updatedUserData: User = await this.initializeUserToUpdate(id, user);
-    let userRolAplList  =  (await updatedUserData.userRolApl)?.map(c => c);
+    const oldUser = await this._userRepository.findOne(id);
+    if (!oldUser) {
+      throw new ValidationError('Usuario no encontrado', 400);
+    }
+    
+    let userRolAplList  =  (await oldUser.userRolApl)?.map(c => c);
+
     const currentRol = await this._userRolAplService.SearchUserCurrentRol(userRolAplList!);
 
+    const updatedUserData = await this.initializeUserToUpdate(id, user, oldUser);  
+    
     let userUpdated = await this._userRepository.update(id, updatedUserData)
 
     if (rolToAsign !== currentRol?.description ) {
@@ -181,23 +193,19 @@ export class UserService implements IUserService {
   }
 
 
-  private async initializeUserToUpdate(id: number, user: User) {
-    const oldUser = await this._userRepository.findOne(id);
-    if (!oldUser) {
-      throw new ValidationError('Usuario no encontrado', 400);
-    }
+  private async initializeUserToUpdate(id: number, userWithChanges: User, oldUser: User) {
 
     const userToUpdate: User = {
       id: oldUser.id,
-      realname: user.realname ?? oldUser.realname,
-      surname: user.surname ?? oldUser.surname,
-      username: user.username ?? oldUser.username,
-      birth_date: user.birth_date ?? oldUser.birth_date,
-      delete_date: user.delete_date ?? oldUser.delete_date,
-      status: user.status ?? oldUser.status,
+      realname: userWithChanges.realname ?? oldUser.realname,
+      surname: userWithChanges.surname ?? oldUser.surname,
+      username: userWithChanges.username ?? oldUser.username,
+      birth_date: userWithChanges.birth_date ?? oldUser.birth_date,
+      delete_date: userWithChanges.delete_date ?? oldUser.delete_date,
+      status: userWithChanges.status ?? oldUser.status,
       creationuser: oldUser.creationuser, // No debe cambiar en la actualización
       creationtimestamp: oldUser.creationtimestamp, // No debe cambiar en la actualización
-      modificationuser: user.modificationuser ?? oldUser?.modificationuser,
+      modificationuser: userWithChanges.modificationuser ?? oldUser?.modificationuser,
       modificationtimestamp: new Date(), // Fecha de modificación actual
     };
     return userToUpdate;
