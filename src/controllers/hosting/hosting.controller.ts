@@ -5,7 +5,7 @@ import { controller, httpDelete, httpGet, httpPost, httpPut } from 'inversify-ex
 import { IHostingService } from '../../services/interfaces/hosting/IHostingService.js';
 import { inject } from 'inversify';
 import { authenticateToken } from '../../middleware/auth/authToken.js';
-import { validate } from '../../middleware/validation/validation-middleware.js';
+import { validateInputData } from '../../middleware/validation/validation-middleware.js';
 import { createHostingValidationRules, deleteHostingValidationRules, getHostingValidationRules, updateHostingValidationRules } from '../../middleware/validation/validations-rules/hosting-validations.js';
 
 
@@ -34,7 +34,7 @@ export class HostingController {
         }
     };
 
-    @httpGet('/:id', validate(getHostingValidationRules))
+    @httpGet('/:id', validateInputData(getHostingValidationRules))
     public async findOne(req: Request, res: Response, next: NextFunction) {
         const id = parseInt(req.params.id, 10);
         try {
@@ -49,7 +49,7 @@ export class HostingController {
         }
     };
 
-    @httpPost('/create', validate(createHostingValidationRules))
+    @httpPost('/create', validateInputData(createHostingValidationRules))
     public async create(req: Request, res: Response, next: NextFunction){
         const newHosting = req.body;
 
@@ -61,7 +61,7 @@ export class HostingController {
         }
     };
 
-    @httpPut('/:id',  validate(updateHostingValidationRules))
+    @httpPut('/:id',  validateInputData(updateHostingValidationRules))
     public async update(req: Request, res: Response, next: NextFunction){
         const id = parseInt(req.params.id, 10);
         const hostingUpdates = req.body;
@@ -79,7 +79,7 @@ export class HostingController {
     };
 
 
-    @httpDelete('/:id', validate(deleteHostingValidationRules))    
+    @httpDelete('/:id', validateInputData(deleteHostingValidationRules))    
     public async remove(req: Request, res: Response, next: NextFunction){
         const id = parseInt(req.params.id, 10);
         try {

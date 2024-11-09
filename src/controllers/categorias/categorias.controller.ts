@@ -4,7 +4,7 @@ import { controller, httpDelete, httpGet, httpPost, httpPut } from 'inversify-ex
 import { CategoriasService } from '../../services/categorias/categorias.service.js';
 import { ICategoriasService } from '../../services/interfaces/categorias/ICategoriasService.js';
 import { inject } from 'inversify';
-import { validate } from '../../middleware/validation/validation-middleware.js';
+import { validateInputData } from '../../middleware/validation/validation-middleware.js';
 import { createCategoriesValidationRules, deleteCategoriesValidationRules, getCategoriesValidationRules, updateCategoriesValidationRules } from '../../middleware/validation/validations-rules/categorias-validations.js';
 
 
@@ -38,7 +38,7 @@ export class CategoriasController {
   };
 
 
-  @httpGet('/:id', validate(getCategoriesValidationRules))
+  @httpGet('/:id', validateInputData(getCategoriesValidationRules))
   public async findOne(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
 
@@ -56,7 +56,7 @@ export class CategoriasController {
   };
 
 
-  @httpPost('/create', validate(createCategoriesValidationRules))
+  @httpPost('/create', validateInputData(createCategoriesValidationRules))
   public async create(req: Request, res: Response,  next: NextFunction) {
     const newCat = req.body;
 
@@ -70,7 +70,7 @@ export class CategoriasController {
   };
 
 
-  @httpPut('/:id',  validate(updateCategoriesValidationRules))
+  @httpPut('/:id',  validateInputData(updateCategoriesValidationRules))
   public async update(req: Request, res: Response, next: NextFunction) {
    
     const id = parseInt(req.params.id, 10);   
@@ -90,7 +90,7 @@ export class CategoriasController {
   };
 
   
-  @httpDelete('/:id', validate(deleteCategoriesValidationRules))  
+  @httpDelete('/:id', validateInputData(deleteCategoriesValidationRules))  
   public async remove(req: Request, res: Response, next: NextFunction) {
     
     const id = parseInt(req.params.id, 10);

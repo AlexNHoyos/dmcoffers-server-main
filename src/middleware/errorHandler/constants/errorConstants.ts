@@ -69,3 +69,8 @@ export enum errorEnumOferta {
   ofertaNotUpdated = 'Error al actualizar la oferta',
   ofertaNotDeleted = 'Error al borrar la oferta',
 }
+
+
+export enum errorEnumRol {
+  rolIndicatedNotFound = 'Error al obtener el rol indicado',
+}

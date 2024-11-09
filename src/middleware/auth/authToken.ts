@@ -31,3 +31,27 @@ export const authenticateToken = (
     }
   });
 };
+
+
+export const authorizeRol = (requiredRol: string) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+      const token = req.headers.authorization?.split(' ')[1];
+      
+      if (!token) {
+          return res.status(401).json({ message: 'Token no proporcionado' });
+      }
+
+      try {
+          const decodedToken = jwt.verify(token, secretKey) as { rol: string };
+          
+          // Verifica si el rol del usuario es el requerido
+          if (decodedToken.rol !== requiredRol) {
+              return res.status(403).json({ message: 'Acceso denegado. Se requiere rol de administrador.' });
+          }
+
+          next(); // Si el rol coincide, permite el acceso a la ruta
+      } catch (error) {
+          res.status(403).json({ message: 'Token no válido' });
+      }
+  };
+};

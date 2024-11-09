@@ -13,7 +13,7 @@ import {
 import { authenticateToken } from '../../middleware/auth/authToken.js';
 import { inject } from 'inversify';
 import { IJuegoService } from '../../services/interfaces/juego/IJuegoService.js';
-import { validate } from '../../middleware/validation/validation-middleware.js';
+import { validateInputData } from '../../middleware/validation/validation-middleware.js';
 import {
   createJuegoValidationRules,
   deleteJuegoValidationRules,
@@ -50,7 +50,7 @@ export class JuegoController {
     }
   }
 
-  @httpGet('/search', validate(getJuegoByNameValidationRules))
+  @httpGet('/search', validateInputData(getJuegoByNameValidationRules))
   public async findByName(
     req: Request,
     res: Response,
@@ -93,7 +93,7 @@ export class JuegoController {
     }
   }
 
-  @httpGet('/:id', validate(getJuegoValidationRules))
+  @httpGet('/:id', validateInputData(getJuegoValidationRules))
   public async findOne(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
 
@@ -109,7 +109,7 @@ export class JuegoController {
     }
   }
 
-  @httpPost('/', authenticateToken, validate(createJuegoValidationRules))
+  @httpPost('/', authenticateToken, validateInputData(createJuegoValidationRules))
   public async create(req: Request, res: Response, next: NextFunction) {
     const newJuego = req.body;
 
@@ -121,7 +121,7 @@ export class JuegoController {
     }
   }
 
-  @httpPatch('/:id', authenticateToken, validate(updateJuegoValidationRules))
+  @httpPatch('/:id', authenticateToken, validateInputData(updateJuegoValidationRules))
   public async update(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
     const juegoUpdates = req.body;
@@ -138,7 +138,7 @@ export class JuegoController {
     }
   }
 
-  @httpDelete('/:id', authenticateToken, validate(deleteJuegoValidationRules))
+  @httpDelete('/:id', authenticateToken, validateInputData(deleteJuegoValidationRules))
   public async remove(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
 

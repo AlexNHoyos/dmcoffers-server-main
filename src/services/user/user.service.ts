@@ -13,6 +13,7 @@ import { UserRolApl } from '../../models/usuarios/user-rol-apl.entity.js';
 import { userRolIdCons } from '../../shared/constants/general-constants.js';
 import { UserRolAplService } from './user-rol-apl.service.js';
 import { IUserRolAplService } from '../interfaces/user/IUserRolAplService.js';
+import { RolApl } from '../../models/roles/rol-apl.entity.js';
 
 @injectable()
 export class UserService implements IUserService {
@@ -31,8 +32,36 @@ export class UserService implements IUserService {
 
   }
 
-  async findAll(): Promise<User[]> {
-    return this._userRepository.findAll();
+  async findAll(): Promise<UserDto[]> {
+   
+    const usersList = await this._userRepository.findAll()
+
+    let userOutPutList: UserDto[] = [];
+
+    userOutPutList = await Promise.all(usersList.map(async (user) => {
+      
+        const userRolAplList = (await user.userRolApl)?.map((c) => c);
+        const currentRol = await this._userRolAplService.SearchUserCurrentRol(userRolAplList!);
+
+        const userOutput: UserDto = {
+            idUser: user.id,
+            rolDesc: currentRol?.description,
+            realname: user.realname,
+            surname: user.surname,
+            username: user.username,
+            birth_date: user.birth_date,
+            creationuser: user.creationuser,
+            creationtimestamp: user.creationtimestamp,
+            password: user.userauth?.password,
+            status: user.status,
+            delete_date: user.delete_date,
+        };
+
+        return userOutput;
+    }));
+ 
+       
+    return userOutPutList;
   }
 
   async findOne(id: number): Promise<User | undefined> {
@@ -51,8 +80,6 @@ export class UserService implements IUserService {
     }
 
     const userToCreate = await this.initializeUser(newUser);
-
-    
 
     const userCreated = await this._userRepository.registerUser(userToCreate);
 
@@ -80,27 +107,13 @@ export class UserService implements IUserService {
 
 
   async update(id: number, user: User): Promise<User> {
-    const oldUser = await this._userRepository.findOne(id);
-    if (!oldUser) {
-      throw new ValidationError('Usuario no encontrado', 400);
-   }
-   
-    const updatedUser: User = {
-      id: oldUser.id, 
-      realname: user.realname ?? oldUser.realname,
-      surname: user.surname ?? oldUser.surname,
-      username: user.username ?? oldUser.username,
-      birth_date: user.birth_date ?? oldUser.birth_date,
-      delete_date: user.delete_date ?? oldUser.delete_date,
-      status: user.status ?? oldUser.status,
-      creationuser: oldUser.creationuser, // No debe cambiar en la actualización
-      creationtimestamp: oldUser.creationtimestamp, // No debe cambiar en la actualización
-      modificationuser: user.modificationuser ?? oldUser?.modificationuser,
-      modificationtimestamp: user.modificationtimestamp ?? new Date(), // Fecha de modificación actual
-  };
+    
+    const updatedUser: User = await this.initializeUserToUpdate(id, user);
 
     return this._userRepository.update(id, updatedUser);
   }
+
+
 
   async delete(id: number): Promise<User | undefined> {
     return this._userRepository.delete(id);
@@ -109,6 +122,27 @@ export class UserService implements IUserService {
   async findByUserName(userName: string):  Promise<User | undefined> {
     return this._userRepository.findByUserName(userName);
   }
+
+  async updateUserByAdmin(id: number, user: User, rolToAsign: string): Promise<User | undefined> {
+
+    const updatedUserData: User = await this.initializeUserToUpdate(id, user);
+    let userRolAplList  =  (await updatedUserData.userRolApl)?.map(c => c);
+    const currentRol = await this._userRolAplService.SearchUserCurrentRol(userRolAplList!);
+
+    let userUpdated = await this._userRepository.update(id, updatedUserData)
+
+    if (rolToAsign !== currentRol?.description ) {
+      const rolAsigned = await this._userRolAplService.AsignRolUser(userUpdated, rolToAsign);
+
+      userUpdated.currentRolId = rolAsigned?.id;
+      userUpdated.currentRolDescription = rolAsigned?.description;
+
+    }
+    
+    return userUpdated;
+  }
+
+
 
 
   private async initializeUser(newUser: UserDto) {
@@ -144,5 +178,28 @@ export class UserService implements IUserService {
         
     return userToCreate;
 
+  }
+
+
+  private async initializeUserToUpdate(id: number, user: User) {
+    const oldUser = await this._userRepository.findOne(id);
+    if (!oldUser) {
+      throw new ValidationError('Usuario no encontrado', 400);
+    }
+
+    const userToUpdate: User = {
+      id: oldUser.id,
+      realname: user.realname ?? oldUser.realname,
+      surname: user.surname ?? oldUser.surname,
+      username: user.username ?? oldUser.username,
+      birth_date: user.birth_date ?? oldUser.birth_date,
+      delete_date: user.delete_date ?? oldUser.delete_date,
+      status: user.status ?? oldUser.status,
+      creationuser: oldUser.creationuser, // No debe cambiar en la actualización
+      creationtimestamp: oldUser.creationtimestamp, // No debe cambiar en la actualización
+      modificationuser: user.modificationuser ?? oldUser?.modificationuser,
+      modificationtimestamp: new Date(), // Fecha de modificación actual
+    };
+    return userToUpdate;
   }
 }
