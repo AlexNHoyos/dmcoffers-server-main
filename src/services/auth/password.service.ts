@@ -7,15 +7,15 @@ import { IPasswordService } from '../interfaces/auth/IPasswordService.js';
 export class PasswordService implements IPasswordService {
     
     
- async validatePassword(password: string): Promise<void> {
+ async validatePassword(password: string): Promise<Boolean> {
     
     if (!password) {
       throw new ValidationError('Contraseña no proporcionada');
     }
+
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-    if (!passwordPattern.test(password)) {
-      throw new ValidationError('Contraseña inválida');
-    }
+    
+    return passwordPattern.test(password)
   }
 
   async hashPassword(password: string): Promise<string> {

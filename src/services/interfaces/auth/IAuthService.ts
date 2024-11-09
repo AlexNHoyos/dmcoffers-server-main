@@ -6,5 +6,4 @@ export interface IAuthService {
   
   login(user: User, password: string): Promise <string>;
 
-  validateUserAuthOnCreate(userAuth: UserAuth): Promise<UserAuth>
 }

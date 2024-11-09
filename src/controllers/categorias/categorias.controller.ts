@@ -4,20 +4,20 @@ import { controller, httpDelete, httpGet, httpPost, httpPut } from 'inversify-ex
 import { CategoriasService } from '../../services/categorias/categorias.service.js';
 import { ICategoriasService } from '../../services/interfaces/categorias/ICategoriasService.js';
 import { inject } from 'inversify';
-import { validate } from '../../middleware/validation/validation-middleware.js';
+import { validateInputData } from '../../middleware/validation/validation-middleware.js';
 import { createCategoriesValidationRules, deleteCategoriesValidationRules, getCategoriesValidationRules, updateCategoriesValidationRules } from '../../middleware/validation/validations-rules/categorias-validations.js';
 
 
 @controller('/api/categories', authenticateToken)
 export class CategoriasController {
   
-  private categoriasService: ICategoriasService;
+  private _categoriasService: ICategoriasService;
 
   constructor(
     @inject(CategoriasService) categoriasService: ICategoriasService,
   ) 
   {
-    this.categoriasService = categoriasService;
+    this._categoriasService = categoriasService;
   }
 
   
@@ -25,7 +25,7 @@ export class CategoriasController {
   public async findAll(req: Request, res: Response, next: NextFunction) {
     
     try {
-      const categorias = await this.categoriasService.findAll();
+      const categorias = await this._categoriasService.findAll();
       if (categorias.length > 0) {
         res.status(200).json(categorias);
       } else {
@@ -38,12 +38,12 @@ export class CategoriasController {
   };
 
 
-  @httpGet('/:id', validate(getCategoriesValidationRules))
+  @httpGet('/:id', validateInputData(getCategoriesValidationRules))
   public async findOne(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
 
     try {
-      const categoria = await this.categoriasService.findOne(id);
+      const categoria = await this._categoriasService.findOne(id);
       if (categoria) {
         res.status(200).json(categoria);
       } else {
@@ -56,12 +56,12 @@ export class CategoriasController {
   };
 
 
-  @httpPost('/create', validate(createCategoriesValidationRules))
+  @httpPost('/create', validateInputData(createCategoriesValidationRules))
   public async create(req: Request, res: Response,  next: NextFunction) {
     const newCat = req.body;
 
     try {
-      const createdCat = await this.categoriasService.create(newCat);
+      const createdCat = await this._categoriasService.create(newCat);
       res.status(201).json(createdCat);
     } catch (error) {
       next(error);
@@ -70,14 +70,14 @@ export class CategoriasController {
   };
 
 
-  @httpPut('/:id',  validate(updateCategoriesValidationRules))
+  @httpPut('/:id',  validateInputData(updateCategoriesValidationRules))
   public async update(req: Request, res: Response, next: NextFunction) {
    
     const id = parseInt(req.params.id, 10);   
     const catUpdate = req.body;
 
     try {
-      const updatedCat = await this.categoriasService.update(id, catUpdate);
+      const updatedCat = await this._categoriasService.update(id, catUpdate);
       if (updatedCat) {
         res.status(200).json(updatedCat);
       } else {
@@ -90,13 +90,13 @@ export class CategoriasController {
   };
 
   
-  @httpDelete('/:id', validate(deleteCategoriesValidationRules))  
+  @httpDelete('/:id', validateInputData(deleteCategoriesValidationRules))  
   public async remove(req: Request, res: Response, next: NextFunction) {
     
     const id = parseInt(req.params.id, 10);
 
     try {
-      const deletedCategory = await this.categoriasService.delete(id);
+      const deletedCategory = await this._categoriasService.delete(id);
       if (deletedCategory) {
         res.status(200).json(deletedCategory);
       } else {

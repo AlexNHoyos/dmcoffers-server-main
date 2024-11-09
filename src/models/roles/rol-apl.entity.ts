@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Relation, OneToMany } from 'typeorm';
-import { UserRolApl } from '../usuarios/user-rol-apl.js';
+import { UserRolApl } from '../usuarios/user-rol-apl.entity.js';
 
 
 @Entity('swe_rolapl')
@@ -26,8 +26,8 @@ export class RolApl {
     @Column({name: "status",type: "boolean"})
     public status: boolean | undefined;
 
-    @OneToMany(() => UserRolApl, (userRolApl) => userRolApl.user)
-    public userRolApl?: Relation<UserRolApl>;
+    @OneToMany(() => UserRolApl, (userRolApl) => userRolApl.rolApl)
+    public userRolApl?: Promise<UserRolApl[]>;
 
 
     constructor(   

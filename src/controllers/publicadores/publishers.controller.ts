@@ -5,20 +5,20 @@ import { controller, httpDelete, httpGet, httpPost, httpPut } from 'inversify-ex
 import { inject } from 'inversify';
 import { IPublisherService } from '../../services/interfaces/publisher/IPublisherService.js';
 import { PublisherService } from '../../services/publisher/publisher.service.js';
-import { validate } from '../../middleware/validation/validation-middleware.js';
+import { validateInputData } from '../../middleware/validation/validation-middleware.js';
 import { createPublisherValidationRules, deletePublisherValidationRules, getPublisherValidationRules, updatePublisherValidationRules } from '../../middleware/validation/validations-rules/publisher-validations.js';
 
 
 @controller('/api/publishers', authenticateToken)
 export class PublisherController {
 
-  private publisherService: IPublisherService;
+  private _publisherService: IPublisherService;
 
   constructor(
     @inject(PublisherService) publisherService: IPublisherService,
   ) 
   {
-    this.publisherService = publisherService;
+    this._publisherService = publisherService;
   }
 
 
@@ -26,7 +26,7 @@ export class PublisherController {
   public async findAll( req: Request, res: Response, next: NextFunction) {
     
     try {
-      const publishers = await this.publisherService.findAll();
+      const publishers = await this._publisherService.findAll();
       if (publishers.length > 0) {
         res.status(200).json(publishers);
       } else {
@@ -38,13 +38,13 @@ export class PublisherController {
   };
 
 
-  @httpGet('/:id', validate(getPublisherValidationRules))
+  @httpGet('/:id', validateInputData(getPublisherValidationRules))
   public async findOne(req: Request, res: Response, next: NextFunction) {
     
     const id = parseInt(req.params.id, 10);
 
     try {
-      const publisher = await this.publisherService.findOne(id);
+      const publisher = await this._publisherService.findOne(id);
       if (publisher) {
         res.status(200).json(publisher);
       } else {
@@ -56,13 +56,13 @@ export class PublisherController {
   };
 
 
-  @httpPost('/create', validate(createPublisherValidationRules))
+  @httpPost('/create', validateInputData(createPublisherValidationRules))
   public async create(req: Request, res: Response, next: NextFunction) {
     
     const newPub = req.body;
 
     try {
-      const createdPub = await this.publisherService.create(newPub);
+      const createdPub = await this._publisherService.create(newPub);
       res.status(201).json(createdPub);
     } catch (error) {
       next(error);
@@ -70,7 +70,7 @@ export class PublisherController {
   };
 
 
-  @httpPut('/:id',  validate(updatePublisherValidationRules))
+  @httpPut('/:id',  validateInputData(updatePublisherValidationRules))
   public async update(req: Request, res: Response,  next: NextFunction) {
 
     const id = parseInt(req.params.id, 10);
@@ -78,7 +78,7 @@ export class PublisherController {
 
 
     try {
-      const updatedPub = await this.publisherService.update(id, pubUpdates);
+      const updatedPub = await this._publisherService.update(id, pubUpdates);
       if (updatedPub) {
         res.status(200).json(updatedPub);
       } else {
@@ -90,13 +90,13 @@ export class PublisherController {
   };
 
   // Eliminar un publicador
-  @httpDelete('/:id', validate(deletePublisherValidationRules))    
+  @httpDelete('/:id', validateInputData(deletePublisherValidationRules))    
   public async remove(req: Request, res: Response, next: NextFunction) {
     
     const id = parseInt(req.params.id, 10);
 
     try {
-      const deletedPublisher = await this.publisherService.delete(id);
+      const deletedPublisher = await this._publisherService.delete(id);
       if (deletedPublisher) {
         res.status(200).json(deletedPublisher);
       } else {

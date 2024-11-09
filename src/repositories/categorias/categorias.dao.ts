@@ -43,6 +43,10 @@ export class CategoriasRepository implements IBaseRepository<Categorias> {
     }
   }
 
+  async findByIds(ids: number[]): Promise<Categorias[]> {
+    return this.repository.findByIds(ids);
+  }
+
   async create(Categorias: Categorias): Promise<Categorias> {
     try {
       return await this.repository.save(Categorias);

@@ -1,26 +1,37 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
+
+import { Juego } from '../juegos/juegos.entity.js';
 
 @Entity('pub_category') // El nombre de la tabla en la base de datos
-
 export class Categorias {
-
   @PrimaryGeneratedColumn()
   public id: number;
 
   @Column()
   public description: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp' })
   public creationtimestamp: Date;
 
   @Column()
   public creationuser: String;
 
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamp', nullable: true })
   public modificationtimestamp: Date;
 
-  @Column()
+  @Column({ nullable: true })
   public modificationuser: String;
+
+  @ManyToMany(() => Juego, (juego) => juego.categorias)
+  public juego: Juego[] | undefined;
 
   constructor(
     id: number,
@@ -30,13 +41,11 @@ export class Categorias {
     modificationtimestamp: Date,
     modificationuser: String
   ) {
-
     this.id = id;
     this.description = description;
     this.creationtimestamp = creationtimestamp;
     this.creationuser = creationuser;
     this.modificationtimestamp = modificationtimestamp;
     this.modificationuser = modificationuser;
-
   }
 }

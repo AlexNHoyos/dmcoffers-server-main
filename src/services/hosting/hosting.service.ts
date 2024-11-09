@@ -8,36 +8,36 @@ import { inject, injectable } from 'inversify';
 @injectable()
 export class HostingService implements IHostingService {
   
-  private hostingRepository: HostingRepository;
+  private _hostingRepository: HostingRepository;
 
   constructor(
     @inject(HostingRepository) hostingRepository: HostingRepository,
   ) {
-    this.hostingRepository = hostingRepository;
+    this._hostingRepository = hostingRepository;
   }
 
 
   async findAll(): Promise<Hosting[]> {
-    return this.hostingRepository.findAll();
+    return this._hostingRepository.findAll();
   }
 
   async findOne(id: number): Promise<Hosting | undefined> {
-    return this.hostingRepository.findOne(id);
+    return this._hostingRepository.findOne(id);
   }
 
   async create(newHosting: Hosting): Promise<Hosting> {
 
-   return this.hostingRepository.create(newHosting);
+   return this._hostingRepository.create(newHosting);
   }
 
 
   async update(id: number, hosting: Hosting): Promise<Hosting> {
 
-    return this.hostingRepository.update(id, hosting);
+    return this._hostingRepository.update(id, hosting);
   }
 
   async delete(id: number): Promise<Hosting | undefined> {
-    return this.hostingRepository.delete(id);
+    return this._hostingRepository.delete(id);
   }
 
 }

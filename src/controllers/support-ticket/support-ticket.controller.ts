@@ -6,7 +6,7 @@ import { controller, httpDelete, httpGet, httpPost, httpPut } from 'inversify-ex
 import { inject } from 'inversify';
 import { SupportTicketService } from '../../services/support-ticket/support-ticket.service.js';
 import { authenticateToken } from '../../middleware/auth/authToken.js';
-import { validate } from '../../middleware/validation/validation-middleware.js';
+import { validateInputData } from '../../middleware/validation/validation-middleware.js';
 import { createSupportTicketValidationRules, deleteSupportTicketValidationRules, getSupportTicketValidationRules, updateSupportTicketValidationRules } from '../../middleware/validation/validations-rules/support-ticket-validations.js';
 
 
@@ -14,20 +14,20 @@ import { createSupportTicketValidationRules, deleteSupportTicketValidationRules,
 @controller('/api/supportTicket', authenticateToken)
 export class SupportTicketController {
 
-    private supportTicketService: ISupportTicketService;
+    private _supportTicketService: ISupportTicketService;
 
     constructor(
 
         @inject(SupportTicketService) supportTicketService: ISupportTicketService,
 
     ){
-        this.supportTicketService = supportTicketService;
+        this._supportTicketService = supportTicketService;
     }
 
     @httpGet('/findall')
     public async findAll(req: Request, res: Response, next: NextFunction) {
         try {
-            const supportTicket = await this.supportTicketService.findAll();
+            const supportTicket = await this._supportTicketService.findAll();
             if (supportTicket.length > 0) {
                 res.status(200).json(supportTicket);
             } else {
@@ -38,13 +38,13 @@ export class SupportTicketController {
         }
     };
 
-    @httpGet('/:id', validate(getSupportTicketValidationRules))
+    @httpGet('/:id', validateInputData(getSupportTicketValidationRules))
     public async findOne(req: Request, res: Response, next: NextFunction) {
        
         const id = parseInt(req.params.id, 10);
 
         try {
-            const supportTicket = await this.supportTicketService.findOne(id);
+            const supportTicket = await this._supportTicketService.findOne(id);
             if (supportTicket) {
                 res.status(200).json(supportTicket);
             } else {
@@ -55,27 +55,27 @@ export class SupportTicketController {
         }
     };
 
-    @httpPost('/create', validate(createSupportTicketValidationRules))
+    @httpPost('/create', validateInputData(createSupportTicketValidationRules))
     public async create(req: Request, res: Response, next: NextFunction) {
         
         const newsupportTicket = req.body;
 
         try {
-            const createdSupportTicket = await this.supportTicketService.create(newsupportTicket);
+            const createdSupportTicket = await this._supportTicketService.create(newsupportTicket);
             res.status(201).json(createdSupportTicket);
         } catch (error) {
             next(error);
         }
     };
 
-    @httpPut('/:id',  validate(updateSupportTicketValidationRules))
+    @httpPut('/:id',  validateInputData(updateSupportTicketValidationRules))
     public async update(req: Request, res: Response, next: NextFunction) {
         const id = parseInt(req.params.id, 10);
         const supportTicketUpdates = req.body;
             
 
         try {
-            const updatedSupportTicket = await this.supportTicketService.update(id, supportTicketUpdates);
+            const updatedSupportTicket = await this._supportTicketService.update(id, supportTicketUpdates);
             if (updatedSupportTicket) {
                 res.status(200).json(updatedSupportTicket);
             } else {
@@ -86,12 +86,12 @@ export class SupportTicketController {
         }
     };
 
-    @httpDelete('/:id', validate(deleteSupportTicketValidationRules))    
+    @httpDelete('/:id', validateInputData(deleteSupportTicketValidationRules))    
     public async remove(req: Request, res: Response, next: NextFunction) {
         const id = parseInt(req.params.id, 10);
 
         try {
-            const deletedSupportTicket = await this.supportTicketService.delete(id);
+            const deletedSupportTicket = await this._supportTicketService.delete(id);
             if (deletedSupportTicket) {
                 res.status(200).json(deletedSupportTicket);
             } else {

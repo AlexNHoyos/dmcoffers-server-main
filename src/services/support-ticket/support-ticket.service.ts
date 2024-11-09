@@ -1,5 +1,5 @@
 // user.service.ts
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { ISupportTicketService } from '../interfaces/support-ticket/ISupport-ticket.js';
 import { SupportTicket } from '../../models/support-ticket/support-ticket.entity.js';
 import { SupportTicketRepository } from '../../repositories/support-ticket/support-ticket.dao.js';
@@ -7,34 +7,36 @@ import { SupportTicketRepository } from '../../repositories/support-ticket/suppo
 @injectable()
 export class SupportTicketService implements ISupportTicketService {
   
-  private supportTicketRepository: SupportTicketRepository;
+  private _supportTicketRepository: SupportTicketRepository;
 
-  constructor() {
-    this.supportTicketRepository = new SupportTicketRepository();
+  constructor(
+    @inject(SupportTicketRepository) supportTicketRepository: SupportTicketRepository,
+  ) {
+    this._supportTicketRepository = supportTicketRepository;
   }
 
 
   async findAll(): Promise<SupportTicket[]> {
-    return this.supportTicketRepository.findAll();
+    return this._supportTicketRepository.findAll();
   }
 
   async findOne(id: number): Promise<SupportTicket | undefined> {
-    return this.supportTicketRepository.findOne(id);
+    return this._supportTicketRepository.findOne(id);
   }
 
   async create(newSupportTicket: SupportTicket): Promise<SupportTicket> {
 
-   return this.supportTicketRepository.create(newSupportTicket);
+   return this._supportTicketRepository.create(newSupportTicket);
   }
 
 
   async update(id: number, supportTicket: SupportTicket): Promise<SupportTicket> {
 
-    return this.supportTicketRepository.update(id, supportTicket);
+    return this._supportTicketRepository.update(id, supportTicket);
   }
 
   async delete(id: number): Promise<SupportTicket | undefined> {
-    return this.supportTicketRepository.delete(id);
+    return this._supportTicketRepository.delete(id);
   }
 
 }

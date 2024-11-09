@@ -4,40 +4,68 @@ import { User } from '../../models/usuarios/user.entity.js';
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
 import { IUserService } from '../interfaces/user/IUserService.js';
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
-import { UserAuthRepository } from '../../repositories/usuarios/user-auth.dao.js';
 import { AuthenticationError } from '../../middleware/errorHandler/authenticationError.js';
 import { UserDto } from '../../models-dto/usuarios/user-dto.entity.js';
 import { inject, injectable, LazyServiceIdentifer } from 'inversify';
-import { IAuthService } from '../interfaces/auth/IAuthService.js';
-import { AuthService } from '../auth/auth.service.js';
-import { PasswordService } from '../auth/password.service.js';
 import { IPasswordService } from '../interfaces/auth/IPasswordService.js';
+import { PasswordService } from '../auth/password.service.js';
+import { UserRolApl } from '../../models/usuarios/user-rol-apl.entity.js';
+import { userRolIdCons } from '../../shared/constants/general-constants.js';
+import { UserRolAplService } from './user-rol-apl.service.js';
+import { IUserRolAplService } from '../interfaces/user/IUserRolAplService.js';
+import { RolApl } from '../../models/roles/rol-apl.entity.js';
 
 @injectable()
 export class UserService implements IUserService {
-  private authService: IAuthService;
-  private userRepository: UserRepository;
-  private userAuthRepository: UserAuthRepository;
-  private passwordService: IPasswordService;
+  private _userRepository: UserRepository;
+  private _passwordService: IPasswordService;
+  private _userRolAplService: IUserRolAplService;
 
   constructor(
-    @inject(new LazyServiceIdentifer(() => AuthService)) authService: IAuthService,
-    @inject(UserAuthRepository) userAuthRepository: UserAuthRepository,
+    @inject(UserRepository) userRepository: UserRepository,
     @inject(PasswordService) passwordService: IPasswordService,
+    @inject(UserRolAplService) userRolAplService: IUserRolAplService,
   ) {
-    this.authService = authService;
-    this.userRepository = new UserRepository();
-    this.userAuthRepository = new UserAuthRepository();
-    this.passwordService = passwordService;
+    this._userRepository = userRepository;
+    this._passwordService = passwordService;
+    this._userRolAplService = userRolAplService;
+
   }
 
+  async findAll(): Promise<UserDto[]> {
+   
+    const usersList = await this._userRepository.findAll()
 
-  async findAll(): Promise<User[]> {
-    return this.userRepository.findAll();
+    let userOutPutList: UserDto[] = [];
+
+    userOutPutList = await Promise.all(usersList.map(async (user) => {
+      
+        const userRolAplList = (await user.userRolApl)?.map((c) => c);
+        const currentRol = await this._userRolAplService.SearchUserCurrentRol(userRolAplList!);
+
+        const userOutput: UserDto = {
+            idUser: user.id,
+            rolDesc: currentRol?.description,
+            realname: user.realname,
+            surname: user.surname,
+            username: user.username,
+            birth_date: user.birth_date,
+            creationuser: user.creationuser,
+            creationtimestamp: user.creationtimestamp,
+            password: user.userauth?.password,
+            status: user.status,
+            delete_date: user.delete_date,
+        };
+
+        return userOutput;
+    }));
+ 
+       
+    return userOutPutList;
   }
 
   async findOne(id: number): Promise<User | undefined> {
-    return this.userRepository.findOne(id);
+    return this._userRepository.findOne(id);
   }
 
   async create(newUser: UserDto): Promise<UserDto> {
@@ -53,11 +81,13 @@ export class UserService implements IUserService {
 
     const userToCreate = await this.initializeUser(newUser);
 
-    const userCreated = await this.userRepository.registerUser(userToCreate);
-           
+    const userCreated = await this._userRepository.registerUser(userToCreate);
+
+    const rolAsigned = await this._userRolAplService.AsignRolUser(userCreated);
+             
     const userOutput : UserDto = {
       idUser: userCreated.id,
-      idUserAuth: userCreated.userauth?.id,
+      rolDesc: rolAsigned?.description,
       realname: userCreated.realname,
       surname: userCreated.surname,
       username: userCreated.username,
@@ -77,49 +107,72 @@ export class UserService implements IUserService {
 
 
   async update(id: number, user: User): Promise<User> {
-    const oldUser = await this.userRepository.findOne(id);
+    
+    const oldUser = await this._userRepository.findOne(id);
     if (!oldUser) {
       throw new ValidationError('Usuario no encontrado', 400);
-   }
-   
-    const updatedUser: User = {
-      id: oldUser.id, 
-      realname: user.realname ?? oldUser.realname,
-      surname: user.surname ?? oldUser.surname,
-      username: user.username ?? oldUser.username,
-      birth_date: user.birth_date ?? oldUser.birth_date,
-      delete_date: user.delete_date ?? oldUser.delete_date,
-      status: user.status ?? oldUser.status,
-      creationuser: oldUser.creationuser, // No debe cambiar en la actualización
-      creationtimestamp: oldUser.creationtimestamp, // No debe cambiar en la actualización
-      modificationuser: user.modificationuser ?? oldUser?.modificationuser,
-      modificationtimestamp: user.modificationtimestamp ?? new Date(), // Fecha de modificación actual
-  };
+    }
 
-    return this.userRepository.update(id, updatedUser);
+    const updatedUser = await this.initializeUserToUpdate(id, user, oldUser);
+
+    return this._userRepository.update(id, updatedUser);
   }
 
+
+
   async delete(id: number): Promise<User | undefined> {
-    return this.userRepository.delete(id);
+    return this._userRepository.delete(id);
   }
 
   async findByUserName(userName: string):  Promise<User | undefined> {
-    return this.userRepository.findByUserName(userName);
+    return this._userRepository.findByUserName(userName);
   }
+
+  async updateUserByAdmin(id: number, user: User, rolToAsign: string): Promise<User | undefined> {
+
+    const oldUser = await this._userRepository.findOne(id);
+    if (!oldUser) {
+      throw new ValidationError('Usuario no encontrado', 400);
+    }
+    
+    let userRolAplList  =  (await oldUser.userRolApl)?.map(c => c);
+
+    const currentRol = await this._userRolAplService.SearchUserCurrentRol(userRolAplList!);
+
+    const updatedUserData = await this.initializeUserToUpdate(id, user, oldUser);  
+    
+    let userUpdated = await this._userRepository.update(id, updatedUserData)
+
+    if (rolToAsign !== currentRol?.description ) {
+      const rolAsigned = await this._userRolAplService.AsignRolUser(userUpdated, rolToAsign);
+
+      userUpdated.currentRolId = rolAsigned?.id;
+      userUpdated.currentRolDescription = rolAsigned?.description;
+
+    }
+    
+    return userUpdated;
+  }
+
+
 
 
   private async initializeUser(newUser: UserDto) {
 
     newUser.creationtimestamp = new Date();
 
-    const userToValidate: UserAuth = new UserAuth(
+    newUser.password = await this._passwordService.validatePassword(newUser.password!)
+                        ? await this._passwordService.hashPassword(newUser.password!)
+                        : (() => { throw new ValidationError('La Contraseña es inválida'); })();
+
+
+    const newUserAuth: UserAuth = new UserAuth(
       newUser.password!,
       newUser.creationuser!,
       newUser.creationtimestamp,
 
     );
 
-    const userAuthValidated = await this.authService.validateUserAuthOnCreate(userToValidate);
 
     const userToCreate: User = new User ();
       userToCreate.id= undefined;
@@ -133,9 +186,28 @@ export class UserService implements IUserService {
       userToCreate.creationtimestamp= newUser.creationtimestamp;
       userToCreate.modificationuser= newUser.modificationuser;
       userToCreate.modificationtimestamp= newUser.modificationtimestamp;
-      userToCreate.userauth= userAuthValidated?? undefined;
+      userToCreate.userauth= newUserAuth;
         
     return userToCreate;
 
+  }
+
+
+  private async initializeUserToUpdate(id: number, userWithChanges: User, oldUser: User) {
+
+    const userToUpdate: User = {
+      id: oldUser.id,
+      realname: userWithChanges.realname ?? oldUser.realname,
+      surname: userWithChanges.surname ?? oldUser.surname,
+      username: userWithChanges.username ?? oldUser.username,
+      birth_date: userWithChanges.birth_date ?? oldUser.birth_date,
+      delete_date: userWithChanges.delete_date ?? oldUser.delete_date,
+      status: userWithChanges.status ?? oldUser.status,
+      creationuser: oldUser.creationuser, // No debe cambiar en la actualización
+      creationtimestamp: oldUser.creationtimestamp, // No debe cambiar en la actualización
+      modificationuser: userWithChanges.modificationuser ?? oldUser?.modificationuser,
+      modificationtimestamp: new Date(), // Fecha de modificación actual
+    };
+    return userToUpdate;
   }
 }

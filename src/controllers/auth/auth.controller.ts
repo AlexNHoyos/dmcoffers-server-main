@@ -8,31 +8,31 @@ import { IAuthService } from '../../services/interfaces/auth/IAuthService.js';
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
 import { UserService } from '../../services/user/user.service.js';
 import { IUserService } from '../../services/interfaces/user/IUserService.js';
-import { validate } from '../../middleware/validation/validation-middleware.js';
+import { validateInputData } from '../../middleware/validation/validation-middleware.js';
 import { loginValidationRules } from '../../middleware/validation/validations-rules/auth-validations.js';
 
 @controller('/api/auth')
 export class AuthController {
 
-  private authService: IAuthService;
-  private userService: IUserService;
+  private _authService: IAuthService;
+  private _userService: IUserService;
 
   constructor(
     @inject(AuthService) authService: IAuthService,
     @inject(UserService) userService: IUserService,
   ) 
   {
-    this.authService = authService;
-    this.userService = userService;
+    this._authService = authService;
+    this._userService = userService;
   }
 
-  @httpPost('/login',validate(loginValidationRules))
+  @httpPost('/login',validateInputData(loginValidationRules))
   public async login(req: Request, res: Response, next: NextFunction) {
     
     const { username, password } = req.body;
 
     try {
-      const user = await this.userService.findByUserName(username);
+      const user = await this._userService.findByUserName(username);
 
       if (!user || !user.id ) {
          throw new ValidationError('Usuario no encontrado' );
@@ -40,7 +40,7 @@ export class AuthController {
       else if (!user.userauth?.password) {
         throw new ValidationError('Usuario no encontrado');
       }
-      const accessToken = await this.authService.login(user, password);
+      const accessToken = await this._authService.login(user, password);
       res.json({ accessToken });
     } catch (error) {
       next(error);

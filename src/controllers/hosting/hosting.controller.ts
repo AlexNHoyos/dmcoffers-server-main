@@ -5,25 +5,25 @@ import { controller, httpDelete, httpGet, httpPost, httpPut } from 'inversify-ex
 import { IHostingService } from '../../services/interfaces/hosting/IHostingService.js';
 import { inject } from 'inversify';
 import { authenticateToken } from '../../middleware/auth/authToken.js';
-import { validate } from '../../middleware/validation/validation-middleware.js';
+import { validateInputData } from '../../middleware/validation/validation-middleware.js';
 import { createHostingValidationRules, deleteHostingValidationRules, getHostingValidationRules, updateHostingValidationRules } from '../../middleware/validation/validations-rules/hosting-validations.js';
 
 
 @controller('/api/hostings', authenticateToken)
 export class HostingController {
-  private hostingService: IHostingService;
+  private _hostingService: IHostingService;
 
   constructor(
     @inject(HostingService) hostingService: IHostingService,
   ) 
   {
-    this.hostingService = hostingService;
+    this._hostingService = hostingService;
   }
 
     @httpGet('/findall')
     public async findAll(req: Request, res: Response, next: NextFunction) {
         try {
-            const hostings = await this.hostingService.findAll();
+            const hostings = await this._hostingService.findAll();
             if (hostings.length > 0) {
                 res.status(200).json(hostings);
             } else {
@@ -34,11 +34,11 @@ export class HostingController {
         }
     };
 
-    @httpGet('/:id', validate(getHostingValidationRules))
+    @httpGet('/:id', validateInputData(getHostingValidationRules))
     public async findOne(req: Request, res: Response, next: NextFunction) {
         const id = parseInt(req.params.id, 10);
         try {
-            const hosting = await this.hostingService.findOne(id);
+            const hosting = await this._hostingService.findOne(id);
             if (hosting) {
                 res.status(200).json(hosting);
             } else {
@@ -49,25 +49,25 @@ export class HostingController {
         }
     };
 
-    @httpPost('/create', validate(createHostingValidationRules))
+    @httpPost('/create', validateInputData(createHostingValidationRules))
     public async create(req: Request, res: Response, next: NextFunction){
         const newHosting = req.body;
 
         try {
-            const createdHosting = await this.hostingService.create(newHosting);
+            const createdHosting = await this._hostingService.create(newHosting);
             res.status(201).json(createdHosting);
         } catch (error) {
             next(error);
         }
     };
 
-    @httpPut('/:id',  validate(updateHostingValidationRules))
+    @httpPut('/:id',  validateInputData(updateHostingValidationRules))
     public async update(req: Request, res: Response, next: NextFunction){
         const id = parseInt(req.params.id, 10);
         const hostingUpdates = req.body;
         
         try {
-            const updatedHosting = await this.hostingService.update(id, hostingUpdates);
+            const updatedHosting = await this._hostingService.update(id, hostingUpdates);
             if (updatedHosting) {
                 res.status(200).json(updatedHosting);
             } else {
@@ -79,11 +79,11 @@ export class HostingController {
     };
 
 
-    @httpDelete('/:id', validate(deleteHostingValidationRules))    
+    @httpDelete('/:id', validateInputData(deleteHostingValidationRules))    
     public async remove(req: Request, res: Response, next: NextFunction){
         const id = parseInt(req.params.id, 10);
         try {
-            const deletedHosting = await this.hostingService.delete(id);
+            const deletedHosting = await this._hostingService.delete(id);
             if (deletedHosting) {
                 res.status(200).json(deletedHosting);
             } else {

@@ -60,10 +60,6 @@ export const updateUserValidationRules = [
         .optional()
         .isString()
         .withMessage('modificationuser debe ser un string'),
-    body('modificationtimestamp')
-        .optional()
-        .isISO8601()
-        .withMessage('modificationuser debe ser una fecha válida'),
     body('password')
         .optional()
         .isString()
@@ -76,5 +72,44 @@ export const updateUserValidationRules = [
 
 export const deleteUserValidationRules = [
     param('id').notEmpty().isInt({ min: 1 }).withMessage('Formato de ID invalido')
+];
+
+export const updateUserByAdminValidationRules = [
+    param('id')
+        .notEmpty()
+        .isInt({ min: 1 })
+        .withMessage('Formato de ID invalido'),
+    body('realname')
+        .optional()
+        .isString()
+        .withMessage('realname debe ser un string'),
+    body('surname')
+        .optional()
+        .isString()
+        .withMessage('surname debe ser un string'),
+    body('username')
+        .optional()
+        .isString()
+        .withMessage('username debe ser un string'),
+    body('birth_date')
+        .optional()
+        .isISO8601()
+        .withMessage('Fecha de Nacimiento debe ser una fecha válida'),
+    body('modificationuser')
+        .optional()
+        .isString()
+        .withMessage('modificationuser debe ser un string'),
+    body('password')
+        .optional()
+        .isString()
+        .withMessage('password debe ser un string'),
+    body('status')
+        .optional()
+        .isBoolean()
+        .withMessage('Status debe ser un booleano'), 
+    body('rolDescription')
+        .optional()
+        .isString()
+        .withMessage('rolDescription debe ser un string'),
 ];
 

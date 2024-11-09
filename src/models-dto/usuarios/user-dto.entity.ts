@@ -1,6 +1,6 @@
 export class UserDto {
     idUser: number | undefined;
-    idUserAuth: number | undefined;
+    rolDesc: string | undefined;
     realname: string | undefined;
     surname: string | undefined;
     username: string | undefined;
@@ -8,14 +8,14 @@ export class UserDto {
     delete_date: Date | undefined;
     creationuser: string | undefined;
     creationtimestamp: Date | undefined;
-    modificationuser: string | undefined;
-    modificationtimestamp: Date | undefined;
     password: string | undefined;
-     status: boolean | undefined;
+    status: boolean | undefined;
+    modificationuser?: string | undefined;
+    modificationtimestamp?: Date | undefined;
 
     constructor(
         idUser?: number,
-        idUserAuth?: number,
+        rolDesc?: string,
         realname?: string,
         surname?: string,
         username?: string,
@@ -30,7 +30,7 @@ export class UserDto {
 
     ) {
         this.idUser = idUser;
-        this.idUserAuth = idUserAuth;
+        this.rolDesc = rolDesc;
         this.realname = realname;
         this.surname = surname;
         this.username = username;

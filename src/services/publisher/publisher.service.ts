@@ -6,38 +6,43 @@ import { IPublisherService } from '../interfaces/publisher/IPublisherService.js'
 
 @injectable()
 export class PublisherService implements IPublisherService {
-  
-  private publisherRepository: PublisherRepository;
+  private _publisherRepository: PublisherRepository;
 
   constructor(
-    @inject(PublisherRepository) publisherRepository: PublisherRepository,
-  ){    
-    this.publisherRepository = publisherRepository;
+    @inject(PublisherRepository) publisherRepository: PublisherRepository
+  ) {
+    this._publisherRepository = publisherRepository;
   }
 
   async findAll(): Promise<Publisher[]> {
-    return this.publisherRepository.findAll();
+    return this._publisherRepository.findAll();
   }
 
   async findOne(id: number): Promise<Publisher | undefined> {
-    return this.publisherRepository.findOne(id);
+    return this._publisherRepository.findOne(id);
   }
 
   async create(newpublisher: Publisher): Promise<Publisher> {
-
-   return this.publisherRepository.create(newpublisher);
+    if (
+      newpublisher.dissolution_date &&
+      new Date(newpublisher.dissolution_date) <= new Date()
+    ) {
+      newpublisher.status = false;
+    }
+    return this._publisherRepository.create(newpublisher);
   }
 
-
   async update(id: number, publisher: Publisher): Promise<Publisher> {
-
-    return this.publisherRepository.update(id, publisher);
+    if (
+      publisher.dissolution_date &&
+      new Date(publisher.dissolution_date) <= new Date()
+    ) {
+      publisher.status = false;
+    }
+    return this._publisherRepository.update(id, publisher);
   }
 
   async delete(id: number): Promise<Publisher | undefined> {
-    return this.publisherRepository.delete(id);
+    return this._publisherRepository.delete(id);
   }
-
 }
-
-
