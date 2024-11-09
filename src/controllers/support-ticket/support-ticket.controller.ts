@@ -7,7 +7,7 @@ import { inject } from 'inversify';
 import { SupportTicketService } from '../../services/support-ticket/support-ticket.service.js';
 import { authenticateToken } from '../../middleware/auth/authToken.js';
 import { validate } from '../../middleware/validation/validation-middleware.js';
-import { createSupportTicketValidationRules, deleteSupportTicketValidationRules, getSupportTicketValidationRules, updateSupportTicketValidationRules } from '../../middleware/validation/validations-rules/support-ticket-validations.js';
+import { createSupportTicketDescriptionValidationRules, createSupportTicketValidationRules, deleteSupportTicketValidationRules, getSupportTicketValidationRules, updateSupportTicketValidationRules } from '../../middleware/validation/validations-rules/support-ticket-validations.js';
 
 
     
@@ -97,6 +97,19 @@ export class SupportTicketController {
             } else {
                 res.status(404).json({ message: 'Ticket no encontrado' });
             }
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    @httpPost('/createTicket/:username', validate(createSupportTicketDescriptionValidationRules))
+    public async createTicket(req: Request, res: Response, next: NextFunction) {
+      const username = req.params.username;  
+        const newsupportTicket = req.body;
+
+        try {
+            const createdSupportTicket = await this._supportTicketService.createTicket(newsupportTicket, username);
+            res.status(201).json(createdSupportTicket);
         } catch (error) {
             next(error);
         }

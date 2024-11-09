@@ -41,3 +41,10 @@ export const deleteSupportTicketValidationRules = [
     param('id').isInt({ min: 1 }).withMessage('Formato de ID invalido')
 ];
 
+export const createSupportTicketDescriptionValidationRules =        [
+    body('description')
+        .notEmpty()
+        .isString()
+        .withMessage('description debe ser un string'),
+  ];
+
