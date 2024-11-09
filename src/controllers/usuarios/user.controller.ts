@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { UserService } from '../../services/user/user.service.js';
 import { IUserService } from '../../services/interfaces/user/IUserService.js';
-<<<<<<< HEAD
 import { inject } from 'inversify';
 import { controller, httpDelete, httpGet, httpPost, httpPut } from 'inversify-express-utils';
 import { validate } from '../../middleware/validation/validation-middleware.js';
@@ -9,26 +8,23 @@ import { createUserValidationRules, deleteUserValidationRules, getUserValidation
 import { authenticateToken } from '../../middleware/auth/authToken.js';
 import { OkNegotiatedContentResult } from 'inversify-express-utils/lib/results/OkNegotiatedContentResult.js';
 import { JsonResult } from 'inversify-express-utils/lib/results/JsonResult.js';
+import { AuthCryptography } from '../../middleware/auth/authCryptography.js';
 
 @controller('/api/users')
 export class UserController {
-  private _userService: IUserService;
-=======
-import { AuthCryptography } from '../../middleware/auth/authCryptography.js';
+    private _userService: IUserService;
 
-const userService: IUserService = new UserService();
-const authCryptography: AuthCryptography = new AuthCryptography();
->>>>>>> a3d1cb0cb91eb5b3070cdfdc61df7f5f1a883933
+    authCryptography: AuthCryptography = new AuthCryptography();
 
-  constructor(
-    @inject(UserService) userService: IUserService,
-  ) 
-  {
-    this._userService = userService;
-  }
+
+    constructor(
+        @inject(UserService) userService: IUserService,
+    ) {
+        this._userService = userService;
+    }
 
     @httpGet('/findall')
-    public async findAll(req: Request, res: Response, next: NextFunction){
+    public async findAll(req: Request, res: Response, next: NextFunction) {
         try {
             const users = await this._userService.findAll();
             if (users.length > 0) {
@@ -58,54 +54,19 @@ const authCryptography: AuthCryptography = new AuthCryptography();
         }
     };
 
-<<<<<<< HEAD
+
     @httpPost('/register', validate(createUserValidationRules))
     public async create(req: Request, res: Response, next: NextFunction) {
-        
+        console.log(req.body);
+
         const newUser = req.body;
-        
+        newUser.password = this.authCryptography.decrypt(newUser.password);
+
         try {
             const createdUser = await this._userService.create(newUser);
             res.status(201).json(createdUser);
         } catch (error) {
             next(error);
-=======
-export const create = async (req: Request, res: Response, next: NextFunction) => {
-
-    console.log(req.body);
-
-    const newUser = req.body;
-    newUser.password = authCryptography.decrypt(newUser.password);
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-
-    try {
-        const createdUser = await userService.create(newUser);
-        res.status(201).json(createdUser);
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const update = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.params.id, 10);
-    const userUpdates = req.body;
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-
-    try {
-        const updatedUser = await userService.update(id, userUpdates);
-        if (updatedUser) {
-            res.status(200).json(updatedUser);
-        } else {
-            res.status(404).json({ message: 'Usuario no encontrado' });
->>>>>>> a3d1cb0cb91eb5b3070cdfdc61df7f5f1a883933
         }
     };
 
@@ -114,7 +75,7 @@ export const update = async (req: Request, res: Response, next: NextFunction) =>
 
         const id = parseInt(req.params.id, 10);
         const userUpdates = req.body;
-  
+
         try {
             const updatedUser = await this._userService.update(id, userUpdates);
             if (updatedUser) {
