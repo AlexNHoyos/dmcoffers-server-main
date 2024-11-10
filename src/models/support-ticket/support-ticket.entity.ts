@@ -19,10 +19,10 @@ export class SupportTicket {
     public creationtimestamp: Date;
 
     @Column({ nullable: true })
-    public modificationuser: string;
+    public modificationuser?: string;
 
     @UpdateDateColumn({ nullable: true })
-    public modificationtimestamp: Date;
+    public modificationtimestamp?: Date;
 
     @Column({  })
     public description: string; 
@@ -43,18 +43,18 @@ export class SupportTicket {
         status: boolean,
         creationuser: string,
         creationtimestamp: Date,
-        modificationuser: string,
-        modificationtimestamp: Date,
         description: string,
+        modificationuser?: string,
+        modificationtimestamp?: Date,
         id?: number
 
     ) {
         this.status = status;
         this.creationuser = creationuser;
         this.creationtimestamp = creationtimestamp;
+        this.description = description;
         this.modificationuser = modificationuser;
         this.modificationtimestamp = modificationtimestamp;
-        this.description = description;
         this.id = id;
     }
 }
