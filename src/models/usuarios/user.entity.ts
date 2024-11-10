@@ -56,6 +56,10 @@ export class User {
 
   public currentRol?: RolApl;
 
+  public currentRolId?: number;
+
+  public currentRolDescription?: string;
+
   @OneToOne(() => UserAuth, (userauth) => userauth.user, {
     cascade: true,
     eager: true,

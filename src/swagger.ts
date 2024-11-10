@@ -1,7 +1,7 @@
 import swaggerJSDoc from 'swagger-jsdoc';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { Application, Express } from 'express';
+import { Application, Request, Response } from 'express';
 import swaggerUi from 'swagger-ui-express';
 
 // Define __dirname
@@ -41,7 +41,7 @@ const swaggerSpec = swaggerJSDoc(options);
 function swaggerDocs(app: Application) {
   app.use('/api/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-  app.get('/swagger.json', (req, res) => {
+  app.get('/swagger.json', (req: Request, res: Response) => {
     res.setHeader('Content-Type', 'application/json');
     res.send(swaggerSpec);
   });

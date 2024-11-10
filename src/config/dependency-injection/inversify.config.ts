@@ -44,6 +44,7 @@ import { IPrecioService } from '../../services/interfaces/precios/IPrecioService
 import { WishlistRepository } from '../../repositories/juego/whislist.dao.js';
 import { WishlistService } from '../../services/juego/wishlist.service.js';
 import { IWishlistService } from '../../services/interfaces/wishlist/IWishlistService.js';
+import { RolAplRepository } from '../../repositories/rol/rol-apl.dao.js';
 
 // Crear un nuevo contenedor de Inversify
 const container = new Container({ defaultScope: 'Singleton' });
@@ -71,6 +72,7 @@ container.bind<JuegoRepository>(JuegoRepository).toSelf();
 container.bind<DesarrolladoresRepository>(DesarrolladoresRepository).toSelf();
 container.bind<PrecioRepository>(PrecioRepository).toSelf();
 container.bind<WishlistRepository>(WishlistRepository).toSelf();
+container.bind<RolAplRepository>(RolAplRepository).toSelf();
 
 // Interfaces
 container.bind<IAuthService>(AuthService).to(AuthService);
