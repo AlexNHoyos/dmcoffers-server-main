@@ -6,7 +6,7 @@ import { IUserService } from '../interfaces/user/IUserService.js';
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
 import { AuthenticationError } from '../../middleware/errorHandler/authenticationError.js';
 import { UserDto } from '../../models-dto/usuarios/user-dto.entity.js';
-import { inject, injectable, LazyServiceIdentifer } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { IPasswordService } from '../interfaces/auth/IPasswordService.js';
 import { PasswordService } from '../auth/password.service.js';
 import { UserRolApl } from '../../models/usuarios/user-rol-apl.entity.js';
