@@ -9,6 +9,7 @@ import { UserRepository } from '../../repositories/usuarios/user.dao.js';
 import { IUserService } from '../interfaces/user/IUserService.js';
 import { UserService } from '../user/user.service.js';
 import { AuthenticationError } from '../../middleware/errorHandler/authenticationError.js';
+import { ticketDto } from '../../models-dto/support-ticket/ticket-dto.js';
 
 
 @injectable()
@@ -41,7 +42,7 @@ export class SupportTicketService implements ISupportTicketService {
   }
 
   //crear ticket tabla intermedia
-  async createTicket(supportTicketInput: SupportTicket, userName: string): Promise<SupportTicket> {
+  async createTicket(supportTicketInput: SupportTicket, userName: string): Promise<ticketDto> {
     const userLog = await this._userService.findByUserName(userName);
 
     if (!userLog) {
@@ -59,8 +60,17 @@ export class SupportTicketService implements ISupportTicketService {
       );
 
     newSupportTicket.user = Promise.resolve(userLog);
-      
-    return this._supportTicketRepository.create(newSupportTicket);
+    
+    const ticketCreated = await this._supportTicketRepository.create(newSupportTicket);
+
+    let ticketOutput: ticketDto = new ticketDto( 
+      ticketCreated.id,
+      ticketCreated.status,
+      ticketCreated.creationuser,
+      ticketCreated.creationtimestamp,
+      ticketCreated.description);
+
+    return ticketOutput;
   }
 
   async update(id: number, supportTicket: SupportTicket): Promise<SupportTicket> {

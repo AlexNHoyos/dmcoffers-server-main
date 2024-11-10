@@ -19,10 +19,10 @@ export class ticketDto{
         description?: string | undefined,
     ){
         this.id = id;
-        this.description = description;
         this.status = status ;
         this.creationuser = creationuser;
         this.creationtimestamp = creationtimestamp; 
+        this.description = description;
         this.modificationuser = modificationuser;
         this.modificationtimestamp = modificationtimestamp;
     }
