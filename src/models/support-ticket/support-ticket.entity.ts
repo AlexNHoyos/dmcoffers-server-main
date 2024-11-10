@@ -15,6 +15,9 @@ export class SupportTicket {
     @Column()
     public creationuser: string;
 
+    @Column({ name: "description" })
+    public description: string; 
+
     @CreateDateColumn()
     public creationtimestamp: Date;
 
@@ -24,8 +27,7 @@ export class SupportTicket {
     @UpdateDateColumn({ nullable: true })
     public modificationtimestamp?: Date;
 
-    @Column({  })
-    public description: string; 
+  
 
     @ManyToMany(() => User, (user) => user.ticketlist,{
         nullable: true,
