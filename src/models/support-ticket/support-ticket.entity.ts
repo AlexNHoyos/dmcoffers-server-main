@@ -1,6 +1,6 @@
 
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm';
-import { User } from '../usuarios/user.entity';
+import { User } from '../usuarios/user.entity.js';
 
 @Entity('hd_support_ticket') // El nombre de la tabla en la base de datos
 
