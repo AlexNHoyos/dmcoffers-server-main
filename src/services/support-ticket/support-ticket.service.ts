@@ -41,13 +41,25 @@ export class SupportTicketService implements ISupportTicketService {
   }
 
   //crear ticket tabla intermedia
-  async createTicket(newSupportTicket: SupportTicket, userName: string): Promise<SupportTicket> {
+  async createTicket(supportTicketInput: SupportTicket, userName: string): Promise<SupportTicket> {
     const userLog = await this._userService.findByUserName(userName);
 
     if (!userLog) {
       throw new AuthenticationError('El Usuario no fue encontrado', 404);
     }
 
+    supportTicketInput.status = true;
+    supportTicketInput.creationtimestamp = new Date();
+
+    let newSupportTicket:  SupportTicket = new SupportTicket(
+        supportTicketInput.status,
+        userName,
+        supportTicketInput.creationtimestamp,
+        supportTicketInput.description
+      );
+
+    newSupportTicket.user = Promise.resolve(userLog);
+      
     return this._supportTicketRepository.create(newSupportTicket);
   }
 
