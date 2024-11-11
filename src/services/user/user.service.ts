@@ -6,7 +6,7 @@ import { IUserService } from '../interfaces/user/IUserService.js';
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
 import { AuthenticationError } from '../../middleware/errorHandler/authenticationError.js';
 import { UserDto } from '../../models-dto/usuarios/user-dto.entity.js';
-import { inject, injectable, LazyServiceIdentifer } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { IPasswordService } from '../interfaces/auth/IPasswordService.js';
 import { PasswordService } from '../auth/password.service.js';
 import { UserRolApl } from '../../models/usuarios/user-rol-apl.entity.js';
@@ -76,7 +76,7 @@ export class UserService implements IUserService {
     const userExisted = await this.findByUserName(newUser.username);
 
     if (userExisted) {
-      throw new AuthenticationError('El Usuario ya existe', 404);
+      throw new AuthenticationError('El Usuario ya existe', 409);
     }
 
     const userToCreate = await this.initializeUser(newUser);
@@ -128,23 +128,41 @@ export class UserService implements IUserService {
     return this._userRepository.findByUserName(userName);
   }
 
-  async updateUserByAdmin(id: number, user: User, rolToAsign: string): Promise<User | undefined> {
+  async userNameAlreadyExist(newUserName: string): Promise<boolean>{
+    
+    const user = await this.findByUserName(newUserName);
 
+    let isUserNameOcuped = user !== undefined ? true : false;
+
+    return isUserNameOcuped;
+  }
+
+
+  async updateUserByAdmin(id: number, userInput: User, rolToAsign: string): Promise<User | undefined> {
+
+    let userNameAlreadyExist = false;
     const oldUser = await this._userRepository.findOne(id);
     if (!oldUser) {
       throw new ValidationError('Usuario no encontrado', 400);
     }
+    if (userInput.username !== undefined && userInput.username !== null) {
+      userNameAlreadyExist = await this.userNameAlreadyExist(userInput.username!);
+    }
     
+    if (userNameAlreadyExist) {
+      throw new AuthenticationError('El username que intenta guardar ya existe', 409);
+    }
+
     let userRolAplList  =  (await oldUser.userRolApl)?.map(c => c);
 
     const currentRol = await this._userRolAplService.SearchUserCurrentRol(userRolAplList!);
 
-    const updatedUserData = await this.initializeUserToUpdate(id, user, oldUser);  
+    const updatedUserData = await this.initializeUserToUpdate(id, userInput, oldUser);  
     
     let userUpdated = await this._userRepository.update(id, updatedUserData)
 
-    if (rolToAsign !== currentRol?.description ) {
-      const rolAsigned = await this._userRolAplService.AsignRolUser(userUpdated, rolToAsign);
+    if (rolToAsign !== currentRol?.description  && rolToAsign.trim() !== '') {
+      const rolAsigned = await this._userRolAplService.AsignRolUser(userUpdated, rolToAsign, currentRol);
 
       userUpdated.currentRolId = rolAsigned?.id;
       userUpdated.currentRolDescription = rolAsigned?.description;
@@ -165,14 +183,12 @@ export class UserService implements IUserService {
                         ? await this._passwordService.hashPassword(newUser.password!)
                         : (() => { throw new ValidationError('La Contraseña es inválida'); })();
 
-
     const newUserAuth: UserAuth = new UserAuth(
       newUser.password!,
       newUser.creationuser!,
       newUser.creationtimestamp,
 
     );
-
 
     const userToCreate: User = new User ();
       userToCreate.id= undefined;
@@ -197,9 +213,9 @@ export class UserService implements IUserService {
 
     const userToUpdate: User = {
       id: oldUser.id,
-      realname: userWithChanges.realname ?? oldUser.realname,
-      surname: userWithChanges.surname ?? oldUser.surname,
-      username: userWithChanges.username ?? oldUser.username,
+      realname: userWithChanges.realname && userWithChanges.realname.trim() !== '' ? userWithChanges.realname : oldUser.realname,
+      surname: userWithChanges.surname && userWithChanges.surname.trim() !== '' ? userWithChanges.surname : oldUser.surname,
+      username: userWithChanges.username && userWithChanges.username.trim() !== '' ? userWithChanges.username : oldUser.username,
       birth_date: userWithChanges.birth_date ?? oldUser.birth_date,
       delete_date: userWithChanges.delete_date ?? oldUser.delete_date,
       status: userWithChanges.status ?? oldUser.status,

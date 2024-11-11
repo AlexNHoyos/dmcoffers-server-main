@@ -8,20 +8,23 @@ import { createUserValidationRules, deleteUserValidationRules, getUserValidation
 import { authenticateToken, authorizeRol } from '../../middleware/auth/authToken.js';
 import { OkNegotiatedContentResult } from 'inversify-express-utils/lib/results/OkNegotiatedContentResult.js';
 import { JsonResult } from 'inversify-express-utils/lib/results/JsonResult.js';
+import { AuthCryptography } from '../../middleware/auth/authCryptography.js';
 
 @controller('/api/users')
 export class UserController {
-  private _userService: IUserService;
+    private _userService: IUserService;
 
-  constructor(
-    @inject(UserService) userService: IUserService,
-  ) 
-  {
-    this._userService = userService;
-  }
+    authCryptography: AuthCryptography = new AuthCryptography();
+
+
+    constructor(
+        @inject(UserService) userService: IUserService,
+    ) {
+        this._userService = userService;
+    }
 
     @httpGet('/findall')
-    public async findAll(req: Request, res: Response, next: NextFunction){
+    public async findAll(req: Request, res: Response, next: NextFunction) {
         try {
             const users = await this._userService.findAll();
             if (users.length > 0) {
@@ -53,9 +56,11 @@ export class UserController {
 
     @httpPost('/register', validateInputData(createUserValidationRules))
     public async create(req: Request, res: Response, next: NextFunction) {
-        
+        console.log(req.body);
+
         const newUser = req.body;
-        
+        newUser.password = this.authCryptography.decrypt(newUser.password);
+
         try {
             const createdUser = await this._userService.create(newUser);
             res.status(201).json(createdUser);
@@ -69,7 +74,7 @@ export class UserController {
 
         const id = parseInt(req.params.id, 10);
         const userUpdates = req.body;
-  
+
         try {
             const updatedUser = await this._userService.update(id, userUpdates);
             if (updatedUser) {
