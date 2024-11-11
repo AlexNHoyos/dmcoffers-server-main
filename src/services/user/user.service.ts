@@ -66,14 +66,11 @@ export class UserService implements IUserService {
 
   async findOne(id: number): Promise<UserDto | undefined> {
     const user = await this._userRepository.findOne(id);
-
     if (!user) return undefined;
-
     const userRolAplList = (await user.userRolApl)?.map((c) => c);
     const currentRol = await this._userRolAplService.SearchUserCurrentRol(
       userRolAplList!
     );
-
     const userOutput: UserDto = {
       idUser: user.id,
       rolDesc: currentRol?.description,
@@ -87,7 +84,6 @@ export class UserService implements IUserService {
       status: user.status,
       delete_date: user.delete_date,
     };
-
     return userOutput;
   }
 
@@ -153,16 +149,24 @@ export class UserService implements IUserService {
     return isUserNameOcuped;
   }
 
-  async updateUserByAdmin(
-    id: number,
-    userInput: User,
-    rolToAsign: string
-  ): Promise<User | undefined> {
-    let userNameAlreadyExist = false;
+  async updateUserByAdmin(id: number, userInput: User, rolToAsign: string): Promise<User | undefined> {
+    //let userNameAlreadyExist = false;
     const oldUser = await this._userRepository.findOne(id);
     if (!oldUser) {
       throw new ValidationError('Usuario no encontrado', 400);
     }
+    /*if (userInput.username !== undefined && userInput.username !== null) {
+      userNameAlreadyExist = await this.userNameAlreadyExist(
+        userInput.username!
+      );
+    }
+
+    if (userNameAlreadyExist) {
+      throw new AuthenticationError(
+        'El username que intenta guardar ya existe',
+        409
+      );
+    }*/
 
     let userRolAplList = (await oldUser.userRolApl)?.map((c) => c);
 
@@ -172,17 +176,16 @@ export class UserService implements IUserService {
 
     const updatedUserData = await this.initializeUserToUpdate(
       id,
-      user,
+      userInput,
       oldUser
     );
 
     let userUpdated = await this._userRepository.update(id, updatedUserData);
 
-    if (rolToAsign !== currentRol?.description) {
-      const rolAsigned = await this._userRolAplService.AsignRolUser(
-        userUpdated,
-        rolToAsign
-      );
+    if (
+      rolToAsign !== currentRol?.description /*&& rolToAsign.trim() !== ''*/
+    ) {
+      const rolAsigned = await this._userRolAplService.AsignRolUser(userUpdated, rolToAsign, currentRol);
 
       userUpdated.currentRolId = rolAsigned?.id;
       userUpdated.currentRolDescription = rolAsigned?.description;
@@ -194,13 +197,9 @@ export class UserService implements IUserService {
   private async initializeUser(newUser: UserDto) {
     newUser.creationtimestamp = new Date();
 
-    newUser.password = (await this._passwordService.validatePassword(
-      newUser.password!
-    ))
-      ? await this._passwordService.hashPassword(newUser.password!)
-      : (() => {
-          throw new ValidationError('La Contraseña es inválida');
-        })();
+    newUser.password = (await this._passwordService.validatePassword(newUser.password!))
+                       ? await this._passwordService.hashPassword(newUser.password!)
+                       : (() => { throw new ValidationError('La Contraseña es inválida');})();
 
     const newUserAuth: UserAuth = new UserAuth(
       newUser.password!,
