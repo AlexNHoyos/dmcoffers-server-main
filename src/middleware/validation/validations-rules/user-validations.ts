@@ -86,11 +86,11 @@ export const updateUserByAdminValidationRules = [
     .isInt({ min: 1 })
     .withMessage('Formato de ID invalido'),
   body('realname')
-    .optional()
+    .optional({ nullable: true })
     .isString()
     .withMessage('realname debe ser un string'),
   body('surname')
-    .optional()
+    .optional({ nullable: true })
     .isString()
     .withMessage('surname debe ser un string'),
   body('username')
