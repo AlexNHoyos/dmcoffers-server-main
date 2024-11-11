@@ -98,7 +98,7 @@ export class UserService implements IUserService {
     const userExisted = await this.findByUserName(newUser.username);
 
     if (userExisted) {
-      throw new AuthenticationError('El Usuario ya existe', 404);
+      throw new AuthenticationError('El Usuario ya existe', 409);
     }
 
     const userToCreate = await this.initializeUser(newUser);
@@ -145,11 +145,20 @@ export class UserService implements IUserService {
     return this._userRepository.findByUserName(userName);
   }
 
+  async userNameAlreadyExist(newUserName: string): Promise<boolean> {
+    const user = await this.findByUserName(newUserName);
+
+    let isUserNameOcuped = user !== undefined ? true : false;
+
+    return isUserNameOcuped;
+  }
+
   async updateUserByAdmin(
     id: number,
-    user: User,
+    userInput: User,
     rolToAsign: string
   ): Promise<User | undefined> {
+    let userNameAlreadyExist = false;
     const oldUser = await this._userRepository.findOne(id);
     if (!oldUser) {
       throw new ValidationError('Usuario no encontrado', 400);
@@ -223,9 +232,18 @@ export class UserService implements IUserService {
   ) {
     const userToUpdate: User = {
       id: oldUser.id,
-      realname: userWithChanges.realname ?? oldUser.realname,
-      surname: userWithChanges.surname ?? oldUser.surname,
-      username: userWithChanges.username ?? oldUser.username,
+      realname:
+        userWithChanges.realname && userWithChanges.realname.trim() !== ''
+          ? userWithChanges.realname
+          : oldUser.realname,
+      surname:
+        userWithChanges.surname && userWithChanges.surname.trim() !== ''
+          ? userWithChanges.surname
+          : oldUser.surname,
+      username:
+        userWithChanges.username && userWithChanges.username.trim() !== ''
+          ? userWithChanges.username
+          : oldUser.username,
       birth_date: userWithChanges.birth_date ?? oldUser.birth_date,
       delete_date: userWithChanges.delete_date ?? oldUser.delete_date,
       status: userWithChanges.status ?? oldUser.status,
