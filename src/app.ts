@@ -13,11 +13,25 @@ import { container } from './config/dependency-injection/inversify.config.js';
 // Inicializar el servidor con Inversify y Express
 const server = new InversifyExpressServer(container);
 
+// Define origins based on environment
+const allowedOrigins = process.env.NODE_ENV === 'production' 
+    ? ['https://dmcoffers-client-q3x1.onrender.com'] 
+    : ['http://localhost:4200']; // Permitir localhost para desarrollo
+
+const corsOptions: cors.CorsOptions = {
+    origin: function (origin, callback) {
+        if (allowedOrigins.indexOf(origin || '') !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+};
+
 server.setConfig((app) => {
   // Configuramos Express para que pueda analizar solicitudes con formato JSON
   app.use(express.json());
-  app.use(cors());
-
+  app.use(cors(corsOptions));
   //app.use(commonRouter);
 
   //ruta para utilizar documentacion de swagger
