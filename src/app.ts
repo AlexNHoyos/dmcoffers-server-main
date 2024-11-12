@@ -27,7 +27,7 @@ server.setConfig((app) => {
 server.setErrorConfig((app) => {
   app.use(errorHandler); // Middleware para manejar errores
   // Ruta para manejar 404
-  app.use((_, res) => {
+  app.use((_: Request, res: Response) => {
     return res.status(404).send({ message: 'Recurso no encontrado' });
   });
 });
