@@ -14,7 +14,7 @@
     "skipLibCheck": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "types": ["node"],
+    "types": ["node"]
   },
   "include": ["src/**/*", "**/*.ts"],
   "exclude": ["node_modules"]
