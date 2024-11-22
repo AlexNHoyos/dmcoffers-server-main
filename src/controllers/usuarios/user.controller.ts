@@ -54,12 +54,7 @@ export class UserController {
         }
     };
 
-<<<<<<< HEAD
-
-    @httpPost('/register', validate(createUserValidationRules))
-=======
     @httpPost('/register', validateInputData(createUserValidationRules))
->>>>>>> develop
     public async create(req: Request, res: Response, next: NextFunction) {
         console.log(req.body);
 
@@ -114,7 +109,7 @@ export class UserController {
 
         const id = parseInt(req.params.id, 10);
         const userUpdates = req.body;
-  
+
         try {
             const updatedUser = await this._userService.updateUserByAdmin(id, userUpdates, userUpdates.rolDescription);
             if (updatedUser) {
