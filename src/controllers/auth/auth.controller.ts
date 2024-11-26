@@ -3,12 +3,12 @@ import { NextFunction, Request, Response } from 'express';
 import { AuthService } from '../../services/auth/auth.service.js'; 
 
 import { controller, httpGet, httpPost } from 'inversify-express-utils';
-import { inject, injectable, LazyServiceIdentifer } from 'inversify';
+import { inject} from 'inversify';
 import { IAuthService } from '../../services/interfaces/auth/IAuthService.js';
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
 import { UserService } from '../../services/user/user.service.js';
 import { IUserService } from '../../services/interfaces/user/IUserService.js';
-import { validate } from '../../middleware/validation/validation-middleware.js';
+import { validateInputData } from '../../middleware/validation/validation-middleware.js';
 import { loginValidationRules } from '../../middleware/validation/validations-rules/auth-validations.js';
 
 @controller('/api/auth')
@@ -26,7 +26,7 @@ export class AuthController {
     this._userService = userService;
   }
 
-  @httpPost('/login',validate(loginValidationRules))
+  @httpPost('/login',validateInputData(loginValidationRules))
   public async login(req: Request, res: Response, next: NextFunction) {
     
     const { username, password } = req.body;

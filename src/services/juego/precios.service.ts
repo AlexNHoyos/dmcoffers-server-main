@@ -51,4 +51,24 @@ export class PrecioService implements IPrecioService {
   ): Promise<Precio | undefined> {
     return this.precioRepository.delete(id_game, valid_until_date);
   }
+
+  async createPriceIfChanged(
+    id_game: number,
+    newPrice: number,
+    creationuser: string
+  ): Promise<Precio | null> {
+    const lastPrice = await this.getLastPrice(id_game);
+    if (!lastPrice || lastPrice.price !== newPrice) {
+      const newPrecio = new Precio(
+        id_game,
+        new Date(),
+        newPrice,
+        new Date(),
+        creationuser
+      );
+
+      return await this.create(newPrecio); // Crea un nuevo precio
+    }
+    return null;
+  }
 }

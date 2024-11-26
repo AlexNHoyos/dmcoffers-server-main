@@ -18,13 +18,9 @@ export class Precio {
   @Column({ type: 'varchar', length: 25 })
   public creationuser: string | undefined;
 
-  @Column({ type: 'timestamp', nullable: true })
-  public modificationtimestamp: Date | undefined;
-
-  @Column({ type: 'varchar', length: 25, nullable: true })
-  public modificationuser: string | undefined;
-
-  @ManyToOne(() => Juego, (juego) => juego.precios)
+  @ManyToOne(() => Juego, (juego) => juego.precios, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'id_game' })
   public juego: Juego | undefined;
 
@@ -43,7 +39,5 @@ export class Precio {
     this.price = price;
     this.creationtimestamp = creationtimestamp;
     this.creationuser = creationuser;
-    this.modificationtimestamp = modificationtimestamp;
-    this.modificationuser = modificationuser;
   }
 }

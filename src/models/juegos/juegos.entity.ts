@@ -17,6 +17,7 @@ import { Desarrollador } from '../desarrolladores/desarrolladores.entity.js';
 import { Categorias } from '../categorias/categorias.entity.js';
 import { Oferta } from '../ofertas/ofertas.entity.js';
 import { Precio } from './precios.entity.js';
+import { User } from '../usuarios/user.entity.js';
 
 @Entity('pub_game')
 export class Juego {
@@ -69,11 +70,17 @@ export class Juego {
   })
   public categorias?: Promise<Categorias[]>;
 
-  @OneToMany(() => Precio, (precio) => precio.juego)
+  @OneToMany(() => Precio, (precio) => precio.juego, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   precios?: Precio[];
 
   @OneToMany(() => Oferta, (oferta) => oferta.juego)
   ofertas?: Oferta[];
+
+  @ManyToMany(() => User, (user) => user.wishlist)
+  public deseadoPor?: Promise<User[]>;
 
   constructor(
     id?: number,

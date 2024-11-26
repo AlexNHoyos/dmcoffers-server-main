@@ -7,7 +7,7 @@ import { UserService } from '../user/user.service.js';
 import { generateToken } from '../../shared/Utils/jwtUtils.js';
 import { IUserService } from '../interfaces/user/IUserService.js';
 import { IAuthService } from '../interfaces/auth/IAuthService.js';
-import { inject, injectable, LazyServiceIdentifer } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { IPasswordService } from '../interfaces/auth/IPasswordService.js';
 import { PasswordService } from './password.service.js';
 import { User } from '../../models/usuarios/user.entity.js';

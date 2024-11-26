@@ -118,6 +118,37 @@
  *           description: No se creó Support Ticket
  *         500:
  *           description: Error Interno del Servidor
+ * 
+ *   /api/supportTicket/createTicket/{username}:
+ *     post:
+ *       summary: Crear un Support Ticket
+ *       security:
+ *         - apiAuth: []
+ *       tags:
+ *         - Support Ticket
+ *       parameters:
+ *         - in: path
+ *           name: username
+ *           required: true
+ *           description: username del Usuario creador del ticket
+ *           schema:
+ *             type: string
+ *       requestBody:
+ *         description: Esquema de Creación de Support Ticket
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SupportTicketCreateTicketCUUSchema'
+ *       responses:
+ *         201:
+ *           description: Support Ticket creado con éxito
+ *         401:
+ *           description: No autorizado (NOT AUTHORIZED)
+ *         404:
+ *           description: No se creó Support Ticket
+ *         500:
+ *           description: Error Interno del Servidor
  *
  * components:
  *   schemas:
@@ -155,4 +186,14 @@
  *       required:
  *         - creationuser
  *         - status
+ * 
+ *     SupportTicketCreateTicketCUUSchema:
+ *       type: object
+ *       properties:
+ *         description:
+ *           type: string
+ *           description: descripcion del Support Ticket
+ *       required:
+ *         - description
+ *
  */

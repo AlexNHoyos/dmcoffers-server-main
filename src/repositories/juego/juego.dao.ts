@@ -1,4 +1,4 @@
-import { Repository, FindOneOptions, ILike } from 'typeorm';
+import { Repository, FindOneOptions, ILike, In } from 'typeorm';
 import { Juego } from '../../models/juegos/juegos.entity.js';
 import { Publisher } from '../../models/publicadores/publisher.entity.js';
 import { Desarrollador } from '../../models/desarrolladores/desarrolladores.entity.js';
@@ -57,7 +57,6 @@ export class JuegoRepository implements IJuegoRepository {
 
   async findByName(gamename: string): Promise<Juego[] | undefined> {
     try {
-      console.log(gamename);
       return await this.repository.find({
         where: { gamename: ILike(`%${gamename}%`) },
         relations: ['publisher', 'developer', 'categorias', 'precios'],
@@ -65,6 +64,39 @@ export class JuegoRepository implements IJuegoRepository {
     } catch (error) {
       console.error('Error buscando juegos por nombre:', error);
       throw new DatabaseErrorCustom(errorEnumJuego.juegoIndicatedNotFound, 500);
+    }
+  }
+
+  async findWishlistGames(userId: number): Promise<Juego[]> {
+    try {
+      // Consulta en la tabla `pub_wl_game` para obtener los IDs de los juegos en la wishlist del usuario
+      const wishlistGameIds = await AppDataSource.getRepository('pub_wl_game')
+        .createQueryBuilder('pub_wl_game')
+        .select('pub_wl_game.id_game')
+        .where('pub_wl_game.id_user = :userId', { userId })
+        .getRawMany(); // Usamos `getRawMany` para obtener los resultados como objetos literales
+
+      // Extrae solo los IDs de los juegos de la wishlist
+      const gameIds = wishlistGameIds.map(
+        (entry: { pub_wl_game_id_game: number }) => entry.pub_wl_game_id_game
+      );
+
+      // Si no hay juegos en la wishlist, devolvemos un array vacío
+      if (gameIds.length === 0) {
+        return [];
+      }
+
+      // Busca los juegos en la tabla `Juego` que coincidan con estos IDs
+      return await this.repository.find({
+        where: { id: In(gameIds) },
+        relations: ['publisher', 'developer', 'categorias', 'precios'],
+        order: {
+          id: 'ASC',
+        },
+      });
+    } catch (error) {
+      console.error('Error obteniendo la wishlist del usuario:', error);
+      throw new DatabaseErrorCustom(errorEnumJuego.juegosNotFounded, 500);
     }
   }
 
@@ -81,7 +113,7 @@ export class JuegoRepository implements IJuegoRepository {
     try {
       const existingJuego = await this.repository.findOne({
         where: { id },
-        relations: ['categorias'],
+        relations: ['categorias', 'publisher', 'developer', 'precios'],
       });
 
       if (!existingJuego) {
