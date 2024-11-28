@@ -37,12 +37,20 @@ export class SweItemMenu {
     @UpdateDateColumn({ type: 'varchar', length: 255, nullable: true })
     public modificationtimestamp: Date;
 
+    @Column()
+    public endpoint: string;
+
+    @Column()
+    public ordernumber: number;
+
     constructor(
         id: number,
         title: string,
         description: string,
         idSupItemMenu: Promise<SweItemMenu>,
         idSweAccModApl: Promise<SweAccModApl>,
+        endpoint: string,
+        ordernumber: number,
         creationtimestamp: Date,
         creationuser: string,
         modificationtimestamp: Date,
@@ -53,6 +61,8 @@ export class SweItemMenu {
         this.description = description;
         this.idSupItemMenu = idSupItemMenu;
         this.idSweAccModApl = idSweAccModApl;
+        this.endpoint = endpoint;
+        this.ordernumber = ordernumber;
         this.creationtimestamp = creationtimestamp;
         this.creationuser = creationuser;
         this.modificationtimestamp = modificationtimestamp;

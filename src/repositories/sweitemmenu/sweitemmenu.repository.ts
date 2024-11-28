@@ -1,9 +1,11 @@
+import { injectable } from "inversify";
 import pool from "../../config/pg-database/db.js";
 import { errorEnumSideMenu } from "../../middleware/errorHandler/constants/errorConstants.js";
 import { DatabaseErrorCustom } from "../../middleware/errorHandler/dataBaseError.js";
 import { SweItemMenu } from "../../models/sweitemmenu/sweitemmenu.entity.js";
 import { IBaseRepository } from "../interfaces/IBaseRepository.js";
 
+@injectable()
 export class SideMenuRepository implements IBaseRepository<SweItemMenu> {
 
     async findAll() {
