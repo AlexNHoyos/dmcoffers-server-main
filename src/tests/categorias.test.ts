@@ -4,7 +4,7 @@ import { container } from '../config/dependency-injection/inversify.config';
 import { CategoriasController } from '../controllers/categorias/categorias.controller';
 
 //mock de categorias 
-jest.mock('../../controllers/categorias/categorias.controller.js');
+jest.mock('../../services/categorias/categorias.service.js');
 
 describe("findAll categorias", ()=> {
 

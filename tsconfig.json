@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "incremental": true,
-    "target": "ES6",
-    "module": "CommonJS",
+    "target": "es2020",
+    "module": "ESNext",
     "moduleResolution": "node",
     "sourceMap": true,
     "rootDir": "./src",
