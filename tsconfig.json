@@ -15,8 +15,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "types": ["node", "jest"],
-  },
-  "include": ["src/**/*", "**/*.ts",
-              "tests/**/*"],
-  "exclude": ["node_modules"]
+    "baseUrl": "./src", // Configura la raíz de los módulos
+    "paths": {
+      "*": ["node_modules", "src/*"]}
+  }
 }

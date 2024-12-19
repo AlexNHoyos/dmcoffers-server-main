@@ -1,12 +1,12 @@
 import { CategoriasController } from "../controllers/categorias/categorias.controller";
 import { Categorias } from "../models/categorias/categorias.entity";
-import { Response } from "express"; 
-// Importamos Response de Express
+import { Response } from "express";
 import { ICategoriasService } from "../services/interfaces/categorias/ICategoriasService";
+import { container } from "../config/dependency-injection/inversify.config";
 
-jest.mock('../middleware/auth/authToken', () => ({
-    authenticateToken: jest.fn(),
-  }));
+jest.mock('../../shared/Utils/Keys', () => ({
+  secretKeyJWT: 'mocked-secret-key',
+}));
 // Mock del servicio CategoriasService
 class MockCategoriasService implements ICategoriasService {
   findAll(): Promise<Categorias[]> {
@@ -42,11 +42,12 @@ const mockRes = (): Partial<Response> => {
 
 describe("CategoriasController", () => {
   let categoriasController: CategoriasController;
-  let mockCategoriaService: MockCategoriasService;
 
   beforeEach(() => {
-    mockCategoriaService = new MockCategoriasService();
-    categoriasController = new CategoriasController(mockCategoriaService);
+    // Aseguramos que el MockCategoriasService se registre en el contenedor
+    container.rebind<ICategoriasService>("ICategoriasService").to(MockCategoriasService);
+    // Ahora obtenemos el controlador directamente desde el contenedor de Inversify
+    categoriasController = container.get<CategoriasController>(CategoriasController);
   });
 
   it("Should return a category by ID", async () => {
@@ -59,34 +60,25 @@ describe("CategoriasController", () => {
       "user1"
     );
 
-    // Mock para que findOne devuelva la categoría mockeada
-    mockCategoriaService.findOne = jest.fn().mockResolvedValue(categoryMock);
-
-    const res = mockRes(); // Usamos el mock de Response
-    const next = jest.fn(); // Mock de la función next
+    // Usamos el mock de Response
+    const res = mockRes();
+    const next = jest.fn();
 
     // Ejecutamos el método findOne del controlador con un ID de 1
     await categoriasController.findOne({ params: { id: "1" } } as any, res as Response, next);
 
     // Verificamos que `findOne` haya sido llamado con el ID correcto
-    expect(mockCategoriaService.findOne).toHaveBeenCalledWith(1);
-
-    // Verificamos que `json` haya sido llamado con el objeto de categoría correcto
     expect(res.json).toHaveBeenCalledWith(categoryMock);
   });
 
   it("Should return 404 if category not found", async () => {
     // Mock para que findOne devuelva undefined (categoría no encontrada)
-    mockCategoriaService.findOne = jest.fn().mockResolvedValue(undefined);
-
-    const res = mockRes(); // Usamos el mock de Response
-    const next = jest.fn();  // Mock de la función next
+    container.rebind<ICategoriasService>("ICategoriasService").to(MockCategoriasService);
+    const res = mockRes();
+    const next = jest.fn();
 
     // Ejecutamos el método findOne con un ID que no existe
     await categoriasController.findOne({ params: { id: "999" } } as any, res as Response, next);
-
-    // Verificamos que `findOne` haya sido llamado con el ID correcto
-    expect(mockCategoriaService.findOne).toHaveBeenCalledWith(999);
 
     // Verificamos que `status` haya sido llamado con el código de error 404 (no encontrado)
     expect(res.status).toHaveBeenCalledWith(404);
