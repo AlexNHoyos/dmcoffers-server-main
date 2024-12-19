@@ -3,12 +3,14 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 
-import errorHandler from './middleware/errorHandler/errorHandler.js';
+import errorHandler from './middleware/errorHandler/errorHandler';
 
-import swaggerDocs from './swagger.js';
+import 'reflect-metadata';
+
+import swaggerDocs from './swagger';
 import commonRouter from './routes/common.routes.js';
 import { InversifyExpressServer } from 'inversify-express-utils';
-import { container } from './config/dependency-injection/inversify.config.js';
+import { container } from './config/dependency-injection/inversify.config';
 
 // Inicializar el servidor con Inversify y Express
 const server = new InversifyExpressServer(container);
