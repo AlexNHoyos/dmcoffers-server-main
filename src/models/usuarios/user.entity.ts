@@ -16,6 +16,7 @@ import { UserAuth } from './user-auth.entity.js';
 import { UserRolApl } from './user-rol-apl.entity.js';
 import { RolApl } from '../roles/rol-apl.entity.js';
 import { Juego } from '../juegos/juegos.entity.js';
+import { SupportTicket } from '../support-ticket/support-ticket.entity.js';
 
 @Entity('swe_usrapl') // El nombre de la tabla en la base de datos
 export class User {
@@ -49,6 +50,7 @@ export class User {
   @UpdateDateColumn({ nullable: true })
   public modificationtimestamp: Date | undefined;
 
+
   @Column({ name: 'status', type: 'boolean' })
   public status: boolean | undefined;
 
@@ -75,6 +77,13 @@ export class User {
   })
   public wishlist?: Juego[];
 
+  @ManyToMany(() => SupportTicket, (supportticket) => supportticket.user,{
+    nullable: true,
+    lazy: true
+  })
+
+  public ticketlist?: Promise<SupportTicket[]>
+
   constructor(
     id?: number,
     realname?: string,
@@ -86,7 +95,7 @@ export class User {
     creationtimestamp?: Date,
     modificationuser?: string,
     modificationtimestamp?: Date,
-    status?: boolean
+    status?: boolean,
   ) {
     this.id = id;
     this.realname = realname;
