@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { AuthService } from '../../services/auth/auth.service.js'; 
 
 import { controller, httpGet, httpPost } from 'inversify-express-utils';
-import { inject, injectable, LazyServiceIdentifer } from 'inversify';
+import { inject} from 'inversify';
 import { IAuthService } from '../../services/interfaces/auth/IAuthService.js';
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
 import { UserService } from '../../services/user/user.service.js';

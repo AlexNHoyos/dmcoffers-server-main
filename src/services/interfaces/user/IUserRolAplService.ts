@@ -6,5 +6,5 @@ export interface IUserRolAplService {
   // Métodos adicionales específicos para User, agregar cuando los haya
   SearchUserCurrentRol(userRolAplList: UserRolApl[]): Promise<RolApl | undefined>
 
-  AsignRolUser(user: User, rolToAsign?: string): Promise<RolApl | undefined>
+  AsignRolUser(user: User, rolToAsign?: string, currentRol?: RolApl): Promise<RolApl | undefined>
 }

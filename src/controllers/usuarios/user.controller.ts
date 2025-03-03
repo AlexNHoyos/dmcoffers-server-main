@@ -54,12 +54,7 @@ export class UserController {
         }
     };
 
-<<<<<<< HEAD
-
-    @httpPost('/register', validate(createUserValidationRules))
-=======
     @httpPost('/register', validateInputData(createUserValidationRules))
->>>>>>> develop
     public async create(req: Request, res: Response, next: NextFunction) {
         console.log(req.body);
 
