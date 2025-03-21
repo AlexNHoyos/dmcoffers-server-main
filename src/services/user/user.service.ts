@@ -14,15 +14,16 @@ import { userRolIdCons } from '../../shared/constants/general-constants.js';
 import { UserRolAplService } from './user-rol-apl.service.js';
 import { IUserRolAplService } from '../interfaces/user/IUserRolAplService.js';
 import { RolApl } from '../../models/roles/rol-apl.entity.js';
+import { IUserRepository } from '../../repositories/interfaces/user/IUserRepository.js';
 
 @injectable()
 export class UserService implements IUserService {
-  private _userRepository: UserRepository;
+  private _userRepository: IUserRepository;
   private _passwordService: IPasswordService;
   private _userRolAplService: IUserRolAplService;
 
   constructor(
-    @inject(UserRepository) userRepository: UserRepository,
+    @inject(UserRepository) userRepository: IUserRepository,
     @inject(PasswordService) passwordService: IPasswordService,
     @inject(UserRolAplService) userRolAplService: IUserRolAplService
   ) {
@@ -35,6 +36,8 @@ export class UserService implements IUserService {
     const usersList = await this._userRepository.findAll();
 
     let userOutPutList: UserDto[] = [];
+
+    if (!usersList || usersList.length === 0) return userOutPutList;
 
     userOutPutList = await Promise.all(
       usersList.map(async (user) => {
@@ -104,17 +107,17 @@ export class UserService implements IUserService {
     const rolAsigned = await this._userRolAplService.AsignRolUser(userCreated);
 
     const userOutput: UserDto = {
-      idUser: userCreated.id,
+      idUser: userCreated?.id,
       rolDesc: rolAsigned?.description,
-      realname: userCreated.realname,
-      surname: userCreated.surname,
-      username: userCreated.username,
-      birth_date: userCreated.birth_date,
-      creationuser: userCreated.creationuser,
-      creationtimestamp: userCreated.creationtimestamp,
-      password: userCreated.userauth?.password,
-      status: userCreated.status,
-      delete_date: userCreated.delete_date,
+      realname: userCreated?.realname,
+      surname: userCreated?.surname,
+      username: userCreated?.username,
+      birth_date: userCreated?.birth_date,
+      creationuser: userCreated?.creationuser,
+      creationtimestamp: userCreated?.creationtimestamp,
+      password: userCreated?.userauth?.password,
+      status: userCreated?.status,
+      delete_date: userCreated?.delete_date,
       modificationuser: undefined,
       modificationtimestamp: undefined,
     };
@@ -130,7 +133,9 @@ export class UserService implements IUserService {
 
     const updatedUser = await this.initializeUserToUpdate(id, user, oldUser);
 
-    return this._userRepository.update(id, updatedUser);
+    const userOutput = this._userRepository.update(id, updatedUser)
+    
+    return userOutput ;
   }
 
   async delete(id: number): Promise<User | undefined> {
@@ -181,7 +186,7 @@ export class UserService implements IUserService {
     );
 
     let userUpdated = await this._userRepository.update(id, updatedUserData);
-
+    if (!userUpdated ) return;
     if (
       rolToAsign !== currentRol?.description /*&& rolToAsign.trim() !== ''*/
     ) {
