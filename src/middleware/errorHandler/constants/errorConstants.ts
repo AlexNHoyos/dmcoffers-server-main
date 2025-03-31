@@ -74,3 +74,11 @@ export enum errorEnumOferta {
 export enum errorEnumRol {
   rolIndicatedNotFound = 'Error al obtener el rol indicado',
 }
+
+export enum errorEnumSideMenu {
+  sideMenuNotCreated = 'Error al crear acceso en menu lateral',
+  sideMenuIndicatedNotFound = 'Error al obtener acceso en menu lateral indicado',
+  sideMenuNotFounded = 'Error al obtener los accesos en menu lateral',
+  sideMenuNotUpdated = 'Error al actualizar acceso en menu lateral',
+  sideMenuNotDeleted = 'Error al borrar acceso en menu lateral',
+}
