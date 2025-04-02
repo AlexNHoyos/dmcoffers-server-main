@@ -23,9 +23,6 @@ export class SweItemMenuController {
         try {
             const sweItemMenu = await this.sweItemMenuService.findAll();
             if (sweItemMenu.length > 0) {
-                sweItemMenu.forEach(item => {
-                    console.log(item.idSupItemMenu);
-                })
                 res.status(200).json(sweItemMenu);
             } else {
                 res.status(404).json({ message: 'No se han hayado items de menu' });

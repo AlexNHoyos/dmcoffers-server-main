@@ -1,4 +1,12 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
 import { SweAccModApl } from "../sweaccmodapl/sweaccmodapl.entity.js";
 
 @Entity('swe_itemmenu')
@@ -13,21 +21,18 @@ export class SweItemMenu {
     @Column()
     public description: string;
 
-    @ManyToOne(() => SweAccModApl, (sweAccModApl) => sweAccModApl.id, {
+    @ManyToOne(() => SweAccModApl, {
         nullable: true,
         lazy: true,
     })
+    @JoinColumn({ name: 'id_sweaccmodapl' })  // Se define el nombre de la FK en la BD
     public idSweAccModApl?: Promise<SweAccModApl>;
 
-    @ManyToOne(() => SweItemMenu, (sweItemMenu) => sweItemMenu.subItems, {
-        nullable: true,
-        lazy: true,
+    @ManyToOne(() => SweItemMenu, {
+        nullable: true
     })
     @JoinColumn({ name: 'id_supitemmenu' })
-    public idSupItemMenu?: Promise<SweItemMenu>;
-
-    @OneToMany(() => SweItemMenu, (sweItemMenu) => sweItemMenu.idSupItemMenu)
-    public subItems?: SweItemMenu[];
+    public idSupItemMenu?: SweItemMenu;
 
     @Column({ type: 'varchar', length: 255 })
     public creationuser: string;
@@ -36,10 +41,10 @@ export class SweItemMenu {
     public creationtimestamp: Date;
 
     @Column({ nullable: true })
-    public modificationuser: string;
+    public modificationuser?: string;
 
     @UpdateDateColumn({ type: 'varchar', length: 255, nullable: true })
-    public modificationtimestamp: Date;
+    public modificationtimestamp?: Date;
 
     @Column()
     public endpoint: string;
@@ -51,14 +56,14 @@ export class SweItemMenu {
         id: number,
         title: string,
         description: string,
-        idSupItemMenu: Promise<SweItemMenu>,
+        idSupItemMenu: SweItemMenu,
         idSweAccModApl: Promise<SweAccModApl>,
         endpoint: string,
         ordernumber: number,
         creationtimestamp: Date,
         creationuser: string,
-        modificationtimestamp: Date,
-        modificationuser: string
+        modificationtimestamp?: Date,
+        modificationuser?: string
     ) {
         this.id = id;
         this.title = title;
