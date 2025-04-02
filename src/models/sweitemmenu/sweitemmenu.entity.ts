@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { SweAccModApl } from "../sweaccmodapl/sweaccmodapl.entity.js";
 
 @Entity('swe_itemmenu')
@@ -19,11 +19,15 @@ export class SweItemMenu {
     })
     public idSweAccModApl?: Promise<SweAccModApl>;
 
-    @ManyToOne(() => SweItemMenu, (sweItemMenu) => sweItemMenu.id, {
+    @ManyToOne(() => SweItemMenu, (sweItemMenu) => sweItemMenu.subItems, {
         nullable: true,
-        lazy: true
+        lazy: true,
     })
+    @JoinColumn({ name: 'id_supitemmenu' })
     public idSupItemMenu?: Promise<SweItemMenu>;
+
+    @OneToMany(() => SweItemMenu, (sweItemMenu) => sweItemMenu.idSupItemMenu)
+    public subItems?: SweItemMenu[];
 
     @Column({ type: 'varchar', length: 255 })
     public creationuser: string;
@@ -68,5 +72,4 @@ export class SweItemMenu {
         this.modificationtimestamp = modificationtimestamp;
         this.modificationuser = modificationuser;
     }
-
 }
