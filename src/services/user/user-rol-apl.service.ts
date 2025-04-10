@@ -37,31 +37,29 @@ export class UserRolAplService implements IUserRolAplService {
         return await latestUserRol.rolApl;
     }
 
-    async AsignRolUser(user: User, rolName?: string): Promise<RolApl | undefined>{
-
-        let rolToAsign = null;
-
-        if (rolName !== null && rolName !== undefined) {
-            const rol = await this._rolAplRepository.findByRolName(rolName!)
-            rolToAsign = rol?.id;
-        }
-        else {
-            rolToAsign = userRolIdCons.usuarioTienda;
-        };
+    async AsignRolUser(user: User, rolName?: string, currentRol?: RolApl): Promise<RolApl | undefined> {
+        let rolToAsign: number | undefined;
         
-
-        const newUserRol: UserRolApl = new UserRolApl()
+        if (rolName) {
+            const rol = await this._rolAplRepository.findByRolName(rolName);
+            rolToAsign = rol?.id;
+        } else if (!currentRol) {
+            rolToAsign = userRolIdCons.usuarioTienda;
+        } else {
+            rolToAsign = currentRol.id;
+        }
+    
+        const newUserRol = new UserRolApl();
         newUserRol.id = undefined;
         newUserRol.idRolapl = rolToAsign;
         newUserRol.idUsrapl = user.id;
         newUserRol.creationuser = user.creationuser;
-        newUserRol.creationtimestamp = user.creationtimestamp;
+        newUserRol.creationtimestamp = new Date();
         newUserRol.status = true;
-
-        const userRolAsigned = this._userRolRepository.create(newUserRol);
-        
-        const currentRol = (await userRolAsigned).rolApl;
-        
-        return currentRol;
+    
+        // Guarda el nuevo rol en la base de datos
+        const userRolAsigned = await this._userRolRepository.create(newUserRol);
+    
+        return userRolAsigned.rolApl;
     }
 }

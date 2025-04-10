@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import * as crypto  from 'crypto';
 import { encryptionKey, iv } from "../../shared/Utils/Keys.js";
 
 export class AuthCryptography {

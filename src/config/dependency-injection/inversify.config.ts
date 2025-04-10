@@ -45,6 +45,10 @@ import { WishlistRepository } from '../../repositories/juego/whislist.dao.js';
 import { WishlistService } from '../../services/juego/wishlist.service.js';
 import { IWishlistService } from '../../services/interfaces/wishlist/IWishlistService.js';
 import { RolAplRepository } from '../../repositories/rol/rol-apl.dao.js';
+import { SweItemMenuController } from '../../controllers/sweitemmenu/sweitemmenu.controller.js';
+import { SideMenuRepository } from '../../repositories/sweitemmenu/sweitemmenu.repository.js';
+import { ISweItemMenuService } from '../../services/interfaces/sweitemmenu/ISweItemMenu.js';
+import { SweItemMenuService } from '../../services/sweitemmenu/sweitemmenu.service.js';
 
 // Crear un nuevo contenedor de Inversify
 const container = new Container({ defaultScope: 'Singleton' });
@@ -59,6 +63,7 @@ container.bind<CategoriasController>(CategoriasController).toSelf();
 container.bind<JuegoController>(JuegoController).toSelf();
 container.bind<DesarrolladoresController>(DesarrolladoresController).toSelf();
 container.bind<PrecioController>(PrecioController).toSelf();
+container.bind<SweItemMenuController>(SweItemMenuController).toSelf();
 
 // Repositorios
 container.bind<UserAuthRepository>(UserAuthRepository).toSelf();
@@ -73,6 +78,7 @@ container.bind<DesarrolladoresRepository>(DesarrolladoresRepository).toSelf();
 container.bind<PrecioRepository>(PrecioRepository).toSelf();
 container.bind<WishlistRepository>(WishlistRepository).toSelf();
 container.bind<RolAplRepository>(RolAplRepository).toSelf();
+container.bind<SideMenuRepository>(SideMenuRepository).toSelf();
 
 // Interfaces
 container.bind<IAuthService>(AuthService).to(AuthService);
@@ -91,4 +97,5 @@ container
   .to(DesarrolladoresService);
 container.bind<IPrecioService>(PrecioService).to(PrecioService);
 container.bind<IWishlistService>(WishlistService).to(WishlistService);
+container.bind<ISweItemMenuService>(SweItemMenuService).to(SweItemMenuService);
 export { container };

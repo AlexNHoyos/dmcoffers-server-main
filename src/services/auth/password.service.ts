@@ -13,7 +13,7 @@ export class PasswordService implements IPasswordService {
       throw new ValidationError('Contraseña no proporcionada');
     }
 
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\W_]{8,}$/;
     
     return passwordPattern.test(password)
   }

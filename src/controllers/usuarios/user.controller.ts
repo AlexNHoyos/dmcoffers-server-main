@@ -109,7 +109,7 @@ export class UserController {
 
         const id = parseInt(req.params.id, 10);
         const userUpdates = req.body;
-  
+
         try {
             const updatedUser = await this._userService.updateUserByAdmin(id, userUpdates, userUpdates.rolDescription);
             if (updatedUser) {
