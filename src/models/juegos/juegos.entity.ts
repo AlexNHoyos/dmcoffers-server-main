@@ -82,6 +82,18 @@ export class Juego {
   @ManyToMany(() => User, (user) => user.wishlist)
   public deseadoPor?: Promise<User[]>;
 
+  @ManyToMany(() => User, (user) => user.cart, {
+  nullable: true,
+  lazy: true,
+  })
+  enCarritoDe?: Promise<User[]>;
+
+  @ManyToMany(() => User, (user) => user.biblioteca, {
+  nullable: true,
+  lazy: true,
+  })
+  public compradoPor?: Promise<User[]>;
+
   constructor(
     id?: number,
     gamename?: string,
