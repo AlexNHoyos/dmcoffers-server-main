@@ -102,6 +102,27 @@ export class JuegoController {
     }
   }
 
+  @httpGet('/cart', authenticateToken)
+public async getCart(req: Request, res: Response, next: NextFunction) {
+  const userId = res.locals.userId;
+
+  try {
+    const carrito = await this.juegoService.findCartGames(userId);
+if (carrito.length === 0) {
+        res
+          .status(404)
+          .json({
+            message: 'Este usuario no tiene juegos en su carrito.',
+          });
+      } else {
+        res.status(200).json(carrito);
+      }
+    } catch (error) {
+      console.error('Error al obtener el carrito:', error);
+      next(error);
+    }
+}
+
   @httpGet('/:id', validateInputData(getJuegoValidationRules))
   public async findOne(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
@@ -220,7 +241,6 @@ export class JuegoController {
   //Endpoints para carrito
   @httpPost('/cart/:juegoId', authenticateToken)
   public async addToCart(req: Request, res: Response, next: NextFunction) {
-  console.log('[CONTROLLER] Entró a addToCart con ID:', req.params.juegoId);
   const userId = res.locals.userId;
   const juegoId = parseInt(req.params.juegoId, 10);
 
@@ -258,17 +278,7 @@ public async checkIfInCart(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-@httpGet('/cart', authenticateToken)
-public async getCart(req: Request, res: Response, next: NextFunction) {
-  const userId = res.locals.userId;
 
-  try {
-    const carrito = await this.cartService.getCart(userId);
-    res.status(200).json(carrito);
-  } catch (error) {
-    next(error);
-  }
-}
 
 
 //Endpoints para biblioteca

@@ -92,6 +92,25 @@ export class JuegoService implements IJuegoService {
     }
   }
 
+  public async findCartGames(userId: number): Promise<JuegoDto[]> {
+    try {
+      const cartGames = await this.juegoRepository.findCartGames(
+        userId
+      );
+
+      // Devolver los juegos en formato DTO
+      return await Promise.all(
+        cartGames.map(async (juego) => {
+          const lastPrice = await this.precioService.getLastPrice(juego.id!);
+          return this.convertToDto(juego, lastPrice?.price);
+        })
+      );
+    } catch (error) {
+      console.error('Error al obtener los juegos del carrito:', error);
+      throw new Error('Failed to fetch cart games');
+    }
+  }
+
   async create(newJuego: JuegoDto): Promise<JuegoDto> {
     this.validacionField(newJuego);
 

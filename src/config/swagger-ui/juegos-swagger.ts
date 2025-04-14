@@ -274,6 +274,32 @@
  *          description: Error Interno del Servidor
  */
 
+/**
+ * @swagger
+ * /api/juegos/cart:
+ *    get:
+ *      summary: Obtener el carrito de un usuario logeado
+ *      security:
+ *        - apiAuth: []  # Aquí se usa el token de autenticación
+ *      tags:
+ *        - Juegos
+ *      responses:
+ *        200:
+ *          description: Carrito obtenido con éxito
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/juegoSchema'  # Aquí se hace referencia al esquema del juego
+ *        404:
+ *          description: No se encontraron juegos en el carrito
+ *        401:
+ *          description: No autorizado (token inválido o expirado)
+ *        500:
+ *          description: Error interno del servidor
+ */
+
 //
 
 
