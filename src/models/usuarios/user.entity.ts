@@ -83,7 +83,6 @@ export class User {
   })
 
   @ManyToMany(() => Juego, (juego) => juego.enCarritoDe)
-
   @JoinTable({
     name: 'pub_cart_game',
     joinColumn: { name: 'id_user', referencedColumnName: 'id' },

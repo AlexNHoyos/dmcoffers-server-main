@@ -22,18 +22,27 @@ import {
   updateJuegoValidationRules,
 } from '../../middleware/validation/validations-rules/juego-validations.js';
 import { WishlistService } from '../../services/juego/wishlist.service.js';
+import { CartService } from '../../services/juego/cart.service.js';
+import { BibliotecaService } from '../../services/juego/biblioteca.service.js';
 
 @controller('/api/juegos')
 export class JuegoController {
   private juegoService: IJuegoService;
   private wishlistService: WishlistService;
+  private cartService: CartService;
+  private bibliotecaService: BibliotecaService;
 
   constructor(
     @inject(JuegoService) juegoService: IJuegoService,
-    @inject(WishlistService) wishlistService: WishlistService
+    @inject(WishlistService) wishlistService: WishlistService,
+    @inject(CartService) cartService: CartService,
+    @inject(BibliotecaService) bibliotecaService: BibliotecaService,
+
   ) {
     this.juegoService = juegoService;
     this.wishlistService = wishlistService;
+    this.cartService = cartService;
+    this.bibliotecaService = bibliotecaService;
   }
 
   @httpGet('/')
@@ -207,4 +216,87 @@ export class JuegoController {
       next(error);
     }
   }
+
+  //Endpoints para carrito
+  @httpPost('/cart/:juegoId', authenticateToken)
+  public async addToCart(req: Request, res: Response, next: NextFunction) {
+  console.log('[CONTROLLER] Entró a addToCart con ID:', req.params.juegoId);
+  const userId = res.locals.userId;
+  const juegoId = parseInt(req.params.juegoId, 10);
+
+  try {
+    await this.cartService.addToCart(userId, juegoId);
+    res.status(201).json({ message: 'Juego agregado al carrito' });
+  } catch (error) {
+    next(error);
+  }
+}
+
+@httpDelete('/cart/:juegoId', authenticateToken)
+public async removeFromCart(req: Request, res: Response, next: NextFunction) {
+  const userId = res.locals.userId;
+  const juegoId = parseInt(req.params.juegoId, 10);
+
+  try {
+    await this.cartService.removeFromCart(userId, juegoId);
+    res.status(200).json({ message: 'Juego eliminado del carrito' });
+  } catch (error) {
+    next(error);
+  }
+}
+
+@httpGet('/cart/:juegoId', authenticateToken)
+public async checkIfInCart(req: Request, res: Response, next: NextFunction) {
+  const userId = res.locals.userId;
+  const juegoId = parseInt(req.params.juegoId, 10);
+
+  try {
+    const isInCart = await this.cartService.isInCart(userId, juegoId);
+    res.status(200).json({ isInCart });
+  } catch (error) {
+    next(error);
+  }
+}
+
+@httpGet('/cart', authenticateToken)
+public async getCart(req: Request, res: Response, next: NextFunction) {
+  const userId = res.locals.userId;
+
+  try {
+    const carrito = await this.cartService.getCart(userId);
+    res.status(200).json(carrito);
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+//Endpoints para biblioteca
+
+@httpGet('/biblioteca', authenticateToken)
+public async getBiblioteca(req: Request, res: Response, next: NextFunction) {
+  const userId = res.locals.userId;
+
+  try {
+    const biblioteca = await this.bibliotecaService.getBiblioteca(userId);
+    res.status(200).json(biblioteca);
+  } catch (error) {
+    next(error);
+  }
+}
+
+@httpGet('/biblioteca/:juegoId', authenticateToken)
+public async checkIfInBiblioteca(req: Request, res: Response, next: NextFunction) {
+  const userId = res.locals.userId;
+  const juegoId = parseInt(req.params.juegoId, 10);
+
+  try {
+    const isInBiblioteca = await this.bibliotecaService.isInBiblioteca(userId, juegoId);
+    res.status(200).json({ isInBiblioteca });
+  } catch (error) {
+    next(error);
+  }
+}
+
+
 }
