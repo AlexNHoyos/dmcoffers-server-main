@@ -86,42 +86,48 @@ export class JuegoController {
 
     try {
       const wishlist = await this.juegoService.findWishlistGames(userId);
-
-      if (wishlist.length === 0) {
-        res
-          .status(404)
-          .json({
-            message: 'Este usuario no tiene juegos en su lista de deseados.',
-          });
-      } else {
-        res.status(200).json(wishlist);
-      }
+      res.status(200).json(wishlist);
     } catch (error) {
       console.error('Error al obtener la wishlist:', error);
       next(error);
     }
   }
 
+  //Endpoint para el checkout
+@httpPost('/cart/checkout', authenticateToken)
+public async checkoutCart(req: Request, res: Response, next: NextFunction) {
+  const userId = res.locals.userId;
+  try {
+    // Obtener juegos del carrito
+    const juegos = await this.cartService.getCart(userId);
+    
+    if (juegos.length === 0) {
+      return res.status(400).json({ message: 'El carrito está vacío' });
+    }
+
+    // Simular agregar los juegos a la biblioteca del usuario
+    await this.cartService.checkout(userId); // esta lógica la creás ahora
+
+    res.status(200).json({ message: 'Compra realizada con éxito' });
+  } catch (error) {
+    next(error);
+  }
+}
+
+
   @httpGet('/cart', authenticateToken)
-public async getCart(req: Request, res: Response, next: NextFunction) {
+  public async getCart(req: Request, res: Response, next: NextFunction) {
   const userId = res.locals.userId;
 
   try {
     const carrito = await this.juegoService.findCartGames(userId);
-if (carrito.length === 0) {
-        res
-          .status(404)
-          .json({
-            message: 'Este usuario no tiene juegos en su carrito.',
-          });
-      } else {
         res.status(200).json(carrito);
-      }
-    } catch (error) {
+    } 
+    catch (error) {
       console.error('Error al obtener el carrito:', error);
       next(error);
     }
-}
+  }
 
   @httpGet('/:id', validateInputData(getJuegoValidationRules))
   public async findOne(req: Request, res: Response, next: NextFunction) {
@@ -277,8 +283,6 @@ public async checkIfInCart(req: Request, res: Response, next: NextFunction) {
     next(error);
   }
 }
-
-
 
 
 //Endpoints para biblioteca

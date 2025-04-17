@@ -103,4 +103,8 @@ export class CartRepository {
       throw new DatabaseErrorCustom('Problema al buscar carrito', 500);
     }
   }
+
+  public async clearCart(userId: number): Promise<void> {
+  await this.userRepository.query('DELETE FROM pub_cart_game WHERE id_user = $1', [userId]);
+}
 }
