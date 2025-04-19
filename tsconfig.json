@@ -1,15 +1,9 @@
 {
   "compilerOptions": {
     "incremental": true,
-<<<<<<< HEAD
     "target": "ES2020",
     "module": "ES2020",
     "moduleResolution": "node",
-=======
-    "target": "ES2022", 
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
->>>>>>> 70bd13044668b0ef12318cd477e45fa36eb03897
     "sourceMap": true,
     "rootDir": "./src",
     "outDir": "./dist",
@@ -19,17 +13,10 @@
     "alwaysStrict": true,
     "skipLibCheck": true,
     "emitDecoratorMetadata": true,
-<<<<<<< HEAD
     "experimentalDecorators": true,
     "types": ["node", "jest"],
     "baseUrl": "./src", // Configura la raíz de los módulos
     "paths": {
       "*": ["node_modules", "src/*"]}
   }
-=======
-    "experimentalDecorators": true
-  },
-  "include": ["src/**/*", "**/*.ts", "jest.config.js", "jest.setup.js"],
-  "exclude": ["node_modules"]
->>>>>>> 70bd13044668b0ef12318cd477e45fa36eb03897
 }
