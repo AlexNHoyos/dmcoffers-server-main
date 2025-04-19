@@ -78,6 +78,19 @@ export class JuegoController {
       next(error);
     }
   }
+  @httpGet('/biblioteca', authenticateToken)
+public async getBiblioteca(req: Request, res: Response, next: NextFunction) {
+  const userId = res.locals.userId;
+
+  try {
+    const biblioteca = await this.bibliotecaService.getBiblioteca(userId);
+    console.log(biblioteca);
+    res.status(200).json(biblioteca);
+
+  } catch (error) {
+    next(error);
+  }
+}
 
   // Ruta para obtener la wishlist del usuario logeado
   @httpGet('/wishlist', authenticateToken)
@@ -93,9 +106,11 @@ export class JuegoController {
     }
   }
 
+  
+
   //Endpoint para el checkout
-@httpPost('/cart/checkout', authenticateToken)
-public async checkoutCart(req: Request, res: Response, next: NextFunction) {
+  @httpPost('/cart/checkout', authenticateToken)
+  public async checkoutCart(req: Request, res: Response, next: NextFunction) {
   const userId = res.locals.userId;
   try {
     // Obtener juegos del carrito
@@ -112,7 +127,7 @@ public async checkoutCart(req: Request, res: Response, next: NextFunction) {
   } catch (error) {
     next(error);
   }
-}
+  }
 
 
   @httpGet('/cart', authenticateToken)
@@ -287,17 +302,7 @@ public async checkIfInCart(req: Request, res: Response, next: NextFunction) {
 
 //Endpoints para biblioteca
 
-@httpGet('/biblioteca', authenticateToken)
-public async getBiblioteca(req: Request, res: Response, next: NextFunction) {
-  const userId = res.locals.userId;
 
-  try {
-    const biblioteca = await this.bibliotecaService.getBiblioteca(userId);
-    res.status(200).json(biblioteca);
-  } catch (error) {
-    next(error);
-  }
-}
 
 @httpGet('/biblioteca/:juegoId', authenticateToken)
 public async checkIfInBiblioteca(req: Request, res: Response, next: NextFunction) {
@@ -307,6 +312,7 @@ public async checkIfInBiblioteca(req: Request, res: Response, next: NextFunction
   try {
     const isInBiblioteca = await this.bibliotecaService.isInBiblioteca(userId, juegoId);
     res.status(200).json({ isInBiblioteca });
+
   } catch (error) {
     next(error);
   }
