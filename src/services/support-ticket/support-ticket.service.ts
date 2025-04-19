@@ -5,7 +5,6 @@ import { SupportTicket } from '../../models/support-ticket/support-ticket.entity
 import { SupportTicketRepository } from '../../repositories/support-ticket/support-ticket.dao.js';
 import { ValidationError } from '../../middleware/errorHandler/validationError.js';
 import { UserController } from '../../controllers/usuarios/user.controller.js';
-import { UserRepository } from '../../repositories/usuarios/user.dao.js';
 import { IUserService } from '../interfaces/user/IUserService.js';
 import { UserService } from '../user/user.service.js';
 import { AuthenticationError } from '../../middleware/errorHandler/authenticationError.js';

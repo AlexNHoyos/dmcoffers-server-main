@@ -45,6 +45,12 @@ import { WishlistRepository } from '../../repositories/juego/whislist.dao.js';
 import { WishlistService } from '../../services/juego/wishlist.service.js';
 import { IWishlistService } from '../../services/interfaces/wishlist/IWishlistService.js';
 import { RolAplRepository } from '../../repositories/rol/rol-apl.dao.js';
+import { SweItemMenuController } from '../../controllers/sweitemmenu/sweitemmenu.controller.js';
+import { SideMenuRepository } from '../../repositories/sweitemmenu/sweitemmenu.repository.js';
+import { ISweItemMenuService } from '../../services/interfaces/sweitemmenu/ISweItemMenu.js';
+import { SweItemMenuService } from '../../services/sweitemmenu/sweitemmenu.service.js';
+import { IUserRepository } from '../../repositories/interfaces/user/IUserRepository.js';
+import { IUserAuthRepository } from '../../repositories/interfaces/user/IUserAuthRepository.js';
 
 // Crear un nuevo contenedor de Inversify
 const container = new Container({ defaultScope: 'Singleton' });
@@ -59,13 +65,14 @@ container.bind<CategoriasController>(CategoriasController).toSelf();
 container.bind<JuegoController>(JuegoController).toSelf();
 container.bind<DesarrolladoresController>(DesarrolladoresController).toSelf();
 container.bind<PrecioController>(PrecioController).toSelf();
+container.bind<SweItemMenuController>(SweItemMenuController).toSelf();
 
 // Repositorios
-container.bind<UserAuthRepository>(UserAuthRepository).toSelf();
+//container.bind<UserAuthRepository>(UserAuthRepository).toSelf();
 container.bind<PublisherRepository>(PublisherRepository).toSelf();
 container.bind<CategoriasRepository>(CategoriasRepository).toSelf();
 container.bind<HostingRepository>(HostingRepository).toSelf();
-container.bind<UserRepository>(UserRepository).toSelf();
+//container.bind<UserRepository>(UserRepository).toSelf();
 container.bind<SupportTicketRepository>(SupportTicketRepository).toSelf();
 container.bind<UserRolRepository>(UserRolRepository).toSelf();
 container.bind<JuegoRepository>(JuegoRepository).toSelf();
@@ -73,22 +80,23 @@ container.bind<DesarrolladoresRepository>(DesarrolladoresRepository).toSelf();
 container.bind<PrecioRepository>(PrecioRepository).toSelf();
 container.bind<WishlistRepository>(WishlistRepository).toSelf();
 container.bind<RolAplRepository>(RolAplRepository).toSelf();
+container.bind<SideMenuRepository>(SideMenuRepository).toSelf();
 
 // Interfaces
 container.bind<IAuthService>(AuthService).to(AuthService);
 container.bind<IUserService>(UserService).to(UserService);
 container.bind<IPasswordService>(PasswordService).to(PasswordService);
 container.bind<IHostingService>(HostingService).to(HostingService);
-container
-  .bind<ISupportTicketService>(SupportTicketService)
-  .to(SupportTicketService);
+container.bind<ISupportTicketService>(SupportTicketService).to(SupportTicketService);
 container.bind<IPublisherService>(PublisherService).to(PublisherService);
 container.bind<ICategoriasService>(CategoriasService).to(CategoriasService);
 container.bind<IUserRolAplService>(UserRolAplService).to(UserRolAplService);
 container.bind<IJuegoService>(JuegoService).to(JuegoService);
-container
-  .bind<IDesarrolladoresService>(DesarrolladoresService)
-  .to(DesarrolladoresService);
+container.bind<IDesarrolladoresService>(DesarrolladoresService).to(DesarrolladoresService);
 container.bind<IPrecioService>(PrecioService).to(PrecioService);
 container.bind<IWishlistService>(WishlistService).to(WishlistService);
+container.bind<ISweItemMenuService>(SweItemMenuService).to(SweItemMenuService);
+container.bind<IUserRepository>(UserRepository).toSelf();
+container.bind<IUserAuthRepository>(UserAuthRepository).toSelf();
+
 export { container };
