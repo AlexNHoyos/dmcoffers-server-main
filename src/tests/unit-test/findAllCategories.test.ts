@@ -1,56 +1,48 @@
+// src/tests/unit-test/findAllCategories.test.ts
+
 import { CategoriasService } from "../../services/categorias/categorias.service.js";
-import { ValidationError } from "../../middleware/errorHandler/validationError.js";
 import "reflect-metadata";
-import { beforeEach } from "node:test";
-import { CategoriasRepository } from "../../repositories/categorias/categorias.dao.js";
-import { Categorias } from "../../models/categorias/categorias.entity.js";
 
-jest.mock("E:\Users\nico_\OneDrive\Escritorio\Desarrollo\dmcoffers-server-main\src\repositories\categorias\categorias.dao.ts");
+// Simula el repositorio
+const mockCategoriasRepository = {
+  findAll: jest.fn(), // Mock del método findAll
+};
 
-describe('CategoriasService',() => {
-let categoriasService : CategoriasService;
-let categoriasRepositoryMock : jest.Mocked<CategoriasRepository>;
-    beforeEach(() =>{
-        categoriasRepositoryMock = new CategoriasRepository() as jest.Mocked<CategoriasRepository>;
-        categoriasService = new CategoriasService(categoriasRepositoryMock);
-    });
+// Datos simulados
+const mockCategorias = [
+  { id: 1, nombre: 'Categoría 1' },
+  { id: 2, nombre: 'Categoría 2' },
+];
 
-    describe('findAll', () =>{
+// Instancia el servicio con el repositorio simulado
+const categoriasService = new CategoriasService(mockCategoriasRepository as any);
 
-        it('Debería devolver todas las categorias', async () =>{
-            const mockCategorias: Categorias[] = [
-                {
-                    id: 1,
-                    description: 'Hola',
-                    creationtimestamp: new Date('2023-01-01T00:00:00Z'),
-                    creationuser: 'Ferg',
-                    modificationtimestamp: new Date('2023-04-25T13:00:00Z'),
-                    modificationuser: 'Cou',
-                    juego: [],
-                  },
-                  {
-                    id: 2,
-                    description: 'Categoría 2',
-                    creationtimestamp: new Date('2023-01-02T00:00:00Z'),
-                    creationuser: 'Admin',
-                    modificationtimestamp: new Date('2023-04-26T15:30:00Z'),
-                    modificationuser: 'Admin',
-                    juego: [],
-                  },
-              ];
-        
-              categoriasRepositoryMock.findAll.mockResolvedValue(mockCategorias);
-        
-              const result = await categoriasService.findAll();
-              expect(result).toEqual(mockCategorias);
-              expect(categoriasRepositoryMock.findAll).toHaveBeenCalled();
-        });
+describe('CategoriasService - findAll', () => {
+  beforeEach(() => {
+    jest.clearAllMocks(); // Limpia los mocks antes de cada prueba
+  });
 
-        it('Debería devolver undefined error si no encuentra las categorias', async() =>{
-            categoriasRepositoryMock.findAll.mockResolvedValue([]);
-            const result = await categoriasService.findAll();
-            expect(result).toEqual([]);
-            expect(categoriasRepositoryMock.findAll).toHaveBeenCalled();
-        });
-    })
+  it('Debería devolver todas las categorías', async () => {
+    // Configura el mock para devolver las categorías simuladas
+    mockCategoriasRepository.findAll.mockResolvedValue(mockCategorias);
+    
+    // Ejecuta el método findAll
+    const result = await categoriasService.findAll();
+    
+    // Verifica los resultados
+    expect(result).toEqual(mockCategorias);
+    expect(mockCategoriasRepository.findAll).toHaveBeenCalled();
+  });
+
+  it('Debería devolver un array vacío si no hay categorías', async () => {
+    // Configura el mock para devolver un array vacío
+    mockCategoriasRepository.findAll.mockResolvedValue([]);
+    
+    // Ejecuta el método findAll
+    const result = await categoriasService.findAll();
+    
+    // Verifica los resultados
+    expect(result).toEqual([]);
+    expect(mockCategoriasRepository.findAll).toHaveBeenCalled();
+  });
 });

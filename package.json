@@ -5,7 +5,6 @@
   "description": "Proyecto para DSW-UTN",
   "main": "index.ts",
   "scripts": {
-    "test": "cross-env NODE_ENV=test jest",
     "test-watch": "jest --watch",
     "build": "tsc -p tsconfig.json",
     "start": "npm run build && node ./dist/index.js",
