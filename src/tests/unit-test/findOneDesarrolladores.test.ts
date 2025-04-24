@@ -1,4 +1,4 @@
-import { DesarrolladoresService } from "/../services/desarrolladores/desarrolladores.service";
+import { DesarrolladoresService } from '../../services/desarrolladores/desarrolladores.service';
 import "reflect-metadata";
 
 //Simulo el repositorio
@@ -21,6 +21,7 @@ const desarolladoresService = new DesarrolladoresService(mockDesarrolladoresRepo
 describe('DesarrolladoresService - findOne', () => {
     beforeEach(() =>{
         jest.clearAllMocks();
+        mockDesarrolladoresRepository.findOne.mockReset();
     });
     it('Debería devolver algun desarrollador existente con ese id', async() => {
         mockDesarrolladoresRepository.findOne.mockResolvedValue(mockDesarrollador);
@@ -31,7 +32,7 @@ describe('DesarrolladoresService - findOne', () => {
         expect(mockDesarrolladoresRepository.findOne).toHaveBeenCalledWith(1);
     });
     it('Debería devolver undefined si no encuentra desarrollador', async() => {
-        mockDesarrolladoresRepository.findOne.mockResolvedValue(mockDesarrollador);
+        mockDesarrolladoresRepository.findOne.mockResolvedValue(undefined);
 
         const result = await mockDesarrolladoresRepository.findOne(999);
 
