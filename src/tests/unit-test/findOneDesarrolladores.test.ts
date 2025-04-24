@@ -7,14 +7,35 @@ const mockDesarrolladoresRepository = {
 };
 
 //Datos simulados
-const mockDesarrolladores = [
-    {id: 1},
-    {id: 2}
-]
+const mockDesarrollador = {
+    id : 1,
+    name : 'Test developer',
+    status : true,
+    creation_date: new Date()
+};
+
 
 //Instancia el servicio con el repositorio simulado
-const dessarolladoresService = new DesarrolladoresService(mockDesarrolladoresRepository as any);
+const desarolladoresService = new DesarrolladoresService(mockDesarrolladoresRepository as any);
 
-describe('DesarrolladoresService', () => {
-    
+describe('DesarrolladoresService - findOne', () => {
+    beforeEach(() =>{
+        jest.clearAllMocks();
+    });
+    it('Debería devolver algun desarrollador existente con ese id', async() => {
+        mockDesarrolladoresRepository.findOne.mockResolvedValue(mockDesarrollador);
+
+        const result = await mockDesarrolladoresRepository.findOne(1);
+
+        expect(result).toEqual(mockDesarrollador);
+        expect(mockDesarrolladoresRepository.findOne).toHaveBeenCalledWith(1);
+    });
+    it('Debería devolver undefined si no encuentra desarrollador', async() => {
+        mockDesarrolladoresRepository.findOne.mockResolvedValue(mockDesarrollador);
+
+        const result = await mockDesarrolladoresRepository.findOne(999);
+
+        expect(result).toBeUndefined();
+        expect(mockDesarrolladoresRepository.findOne).toHaveBeenCalledWith(999);
+    });
 })
