@@ -45,18 +45,18 @@ describe('UserService - userNameAlredyExist', () => {
     it('Debería devolver algún user con ese username', async () => {
         mockUserRepository.findByUserName.mockResolvedValue('alexhoyos');
 
-        const result = await mockUserRepository.findByUserName('alexhoyos');
+        const result = await userService.userNameAlreadyExist('alexhoyos');
 
-        expect(result).toBe(mockUser);
-        expect(result).toHaveBeenCalledWith('alexhoyos');
+        expect(result).toBe(true);
+        expect(mockUserRepository.findByUserName).toHaveBeenCalledWith('alexhoyos');
     });
 
     it('Debería devolver undefined si no encuentra ningún user con ese username', async () => {
         mockUserRepository.findByUserName.mockResolvedValue(undefined);
 
-        const result = await mockUserRepository.findByUserName(undefined);
+        const result = await userService.userNameAlreadyExist('nonexistent');
 
-        expect(result).toBeUndefined();
-        expect(mockUserRepository.findByUserName).toHaveBeenCalledWith(undefined);
+        expect(result).toBe(false);
+        expect(mockUserRepository.findByUserName).toHaveBeenCalledWith('nonexistent');
     });
 });
