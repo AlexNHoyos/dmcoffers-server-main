@@ -24,6 +24,22 @@ import {
 import { WishlistService } from '../../services/juego/wishlist.service.js';
 import { CartService } from '../../services/juego/cart.service.js';
 import { BibliotecaService } from '../../services/juego/biblioteca.service.js';
+import multer from 'multer';
+import path from 'path';
+
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/games'); // Carpeta donde se guardan las imagenes de los juegos
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now();
+    const ext = path.extname(file.originalname);
+    cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+  },
+});
+
+const upload = multer({ storage });
 
 @controller('/api/juegos')
 export class JuegoController {
@@ -43,6 +59,24 @@ export class JuegoController {
     this.wishlistService = wishlistService;
     this.cartService = cartService;
     this.bibliotecaService = bibliotecaService;
+  }
+  
+  @httpPost('/upload-image', authenticateToken, upload.single('image'))
+  public async uploadImage(req: Request, res: Response, next: NextFunction) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No se proporcionó ninguna imagen' });
+    }
+
+    const imagePath = `/uploads/games/${req.file.filename}`; // o guarda solo el filename si prefieres
+
+    res.status(201).json({
+      message: 'Imagen subida con éxito',
+      imagePath,
+    });
+    } catch (error) {
+    next(error);
+    }
   }
 
   @httpGet('/')
@@ -159,23 +193,37 @@ public async getBiblioteca(req: Request, res: Response, next: NextFunction) {
       next(error);
     }
   }
-
-  @httpPost('/', authenticateToken, validateInputData(createJuegoValidationRules))
+  
+  @httpPost('/', authenticateToken, upload.single('image'))
   public async create(req: Request, res: Response, next: NextFunction) {
-    const newJuego = req.body;
 
+    console.log('BODY:', req.body);
+    console.log('FILE:', req.file);
     try {
-      const createdJuego = await this.juegoService.create(newJuego);
-      res.status(201).json(createdJuego);
-    } catch (error) {
-      next(error);
+    if (!req.body.juego) {
+      throw new Error("No se recibió el campo 'juego' en el body.");
     }
+
+    const juegoData = JSON.parse(req.body.juego);
+    console.log('JUEGO PARSEADO:', juegoData);
+
+    const imagePath = req.file ? `/uploads/games/${req.file.filename}` : undefined;
+    const newJuego = await this.juegoService.createGame(juegoData, imagePath);
+
+    res.status(201).json(newJuego);
+  } catch (error) {
+    next(error);
+  }
   }
 
-  @httpPatch('/:id', authenticateToken, validateInputData(updateJuegoValidationRules))
+  @httpPatch('/:id', authenticateToken, upload.single('image'), validateInputData(updateJuegoValidationRules))
   public async update(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
     const juegoUpdates = req.body;
+
+    if (req.file) {
+      juegoUpdates.imagen = `/uploads/games/${req.file.filename}`;
+    }
 
     try {
       const updatedJuego = await this.juegoService.update(id, juegoUpdates);

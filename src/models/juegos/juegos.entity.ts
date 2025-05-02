@@ -45,6 +45,9 @@ export class Juego {
   @Column({ type: 'varchar', length: 255, nullable: true })
   public modificationuser: string | undefined;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  public image_path: string | undefined;
+
   @ManyToOne(() => Publisher, (publisher) => publisher.juegos, {
     nullable: false,
     eager: true,
@@ -102,7 +105,9 @@ export class Juego {
     creationtimestamp?: Date,
     creationuser?: string,
     modificationtimestamp?: Date,
-    modificationuser?: string
+    modificationuser?: string,
+    image_path?: string
+
   ) {
     this.id = id;
     this.gamename = gamename;
@@ -112,5 +117,6 @@ export class Juego {
     this.creationuser = creationuser;
     this.modificationtimestamp = modificationtimestamp;
     this.modificationuser = modificationuser;
+    this.image_path = image_path;
   }
 }

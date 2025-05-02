@@ -3,12 +3,18 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import errorHandler from './middleware/errorHandler/errorHandler.js';
 
 import swaggerDocs from './swagger.js';
 import commonRouter from './routes/common.routes.js';
 import { InversifyExpressServer } from 'inversify-express-utils';
 import { container } from './config/dependency-injection/inversify.config.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Inicializar el servidor con Inversify y Express
 const server = new InversifyExpressServer(container);
@@ -19,6 +25,8 @@ server.setConfig((app) => {
   app.use(cors());
 
   //app.use(commonRouter);
+
+   app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
   //ruta para utilizar documentacion de swagger
   swaggerDocs(app);
