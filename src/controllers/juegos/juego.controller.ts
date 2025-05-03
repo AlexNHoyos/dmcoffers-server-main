@@ -33,9 +33,10 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/games'); // Carpeta donde se guardan las imagenes de los juegos
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now();
     const ext = path.extname(file.originalname);
-    cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+    const baseName = path.basename(file.originalname, ext).replace(/\s+/g, '_');
+    const uniqueSuffix = Date.now();
+    cb(null, `${baseName}-${uniqueSuffix}${ext}`);
   },
 });
 
@@ -61,7 +62,7 @@ export class JuegoController {
     this.bibliotecaService = bibliotecaService;
   }
   
-  @httpPost('/upload-image', authenticateToken, upload.single('image'))
+ /* @httpPost('/upload-image', authenticateToken, upload.single('image'))
   public async uploadImage(req: Request, res: Response, next: NextFunction) {
   try {
     if (!req.file) {
@@ -77,7 +78,7 @@ export class JuegoController {
     } catch (error) {
     next(error);
     }
-  }
+  }*/
 
   @httpGet('/')
   public async findAll(req: Request, res: Response, next: NextFunction) {
@@ -197,15 +198,17 @@ public async getBiblioteca(req: Request, res: Response, next: NextFunction) {
   @httpPost('/', authenticateToken, upload.single('image'))
   public async create(req: Request, res: Response, next: NextFunction) {
 
-    console.log('BODY:', req.body);
-    console.log('FILE:', req.file);
     try {
     if (!req.body.juego) {
       throw new Error("No se recibió el campo 'juego' en el body.");
     }
 
     const juegoData = JSON.parse(req.body.juego);
-    console.log('JUEGO PARSEADO:', juegoData);
+   
+    Object.assign(req.body, juegoData);
+
+    // Ejecutar validaciones
+    await validateInputData(createJuegoValidationRules)(req, res, next);
 
     const imagePath = req.file ? `/uploads/games/${req.file.filename}` : undefined;
     const newJuego = await this.juegoService.createGame(juegoData, imagePath);
@@ -216,22 +219,32 @@ public async getBiblioteca(req: Request, res: Response, next: NextFunction) {
   }
   }
 
-  @httpPatch('/:id', authenticateToken, upload.single('image'), validateInputData(updateJuegoValidationRules))
+  @httpPatch('/:id', authenticateToken, upload.single('image'))
   public async update(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
-    const juegoUpdates = req.body;
-
-    if (req.file) {
-      juegoUpdates.imagen = `/uploads/games/${req.file.filename}`;
-    }
 
     try {
+
+    // Validar que venga el campo 'juego'
+    if (!req.body.juego) {
+      throw new Error("No se recibió el campo 'juego' en el body.");
+    }
+
+    // Parsear los datos que vienen en JSON string
+    const juegoUpdates = JSON.parse(req.body.juego);
+
+    if (req.file) {
+      juegoUpdates.image_path = `/uploads/games/${req.file.filename}`;
+    }else{
+      console.log("No se cargó ninguna imagen")
+    }
+      console.log(juegoUpdates);
       const updatedJuego = await this.juegoService.update(id, juegoUpdates);
-      if (updatedJuego) {
+    if (updatedJuego) {
         res.status(200).json(updatedJuego);
-      } else {
+    } else {
         res.status(404).json({ message: 'Juego no encontrado' });
-      }
+    }
     } catch (error) {
       next(error);
     }

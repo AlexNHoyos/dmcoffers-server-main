@@ -32,7 +32,7 @@ export const createJuegoValidationRules = [
     .withMessage('id_developer debe ser un entero positivo'),
   body('categorias')
     .isArray()
-    .withMessage('categoriassssssss debe ser un array de IDs de categorías'),
+    .withMessage('categorias debe ser un array de IDs de categorías'),
 ];
 
 export const updateJuegoValidationRules = [
