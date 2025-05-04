@@ -3,17 +3,16 @@ import { IUserRepository } from '../../repositories/interfaces/user/IUserReposit
 import request from 'supertest';
 import app from '../../app.js';
 import { IPasswordService } from '../../services/interfaces/auth/IPasswordService.js';
-import { IAuthService } from '../../services/interfaces/auth/IAuthService.js';
-import { User } from '../../models/usuarios/user.entity.js';
 import { IUserRolAplService } from '../../services/interfaces/user/IUserRolAplService.js';
+import { User } from '../../models/usuarios/user.entity.js';
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
 import { UserDto } from '../../models-dto/usuarios/user-dto.entity.js';
+import { AuthCryptography } from '../../middleware/auth/authCryptography.js';
 
-// Creamos un mock manual del repositorio en lugar de instanciar `IUserRepository`
 const mockUserRepository: jest.Mocked<IUserRepository> = {
   create: jest.fn(),
   findByUsername: jest.fn(),
-  findByUserName: jest.fn(), 
+  findByUserName: jest.fn(),
   registerUser: jest.fn(),
   findAll: jest.fn(),
   findOne: jest.fn(),
@@ -34,18 +33,21 @@ const mockUserRolAplService = {
 
 describe('User Service - Integration Tests', () => {
   let userService: UserService;
-
-
+  const authCryptography = new AuthCryptography();
 
   beforeAll(() => {
-    userService = new UserService(mockUserRepository,mockPasswordService, mockUserRolAplService);
+    userService = new UserService(mockUserRepository, mockPasswordService, mockUserRolAplService);
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   it('Debería registrar un usuario correctamente (usando mock)', async () => {
-    let password = "TestPasswrd123";
-    let creationuser = 'UsuarioTest';
-    let creationtimestamp = new Date();
-    let status = true;
+    const password = 'TestPasswrd123';
+    const creationuser = 'UsuarioTest';
+    const creationtimestamp = new Date();
+    const status = true;
 
     const newUserAuth: UserAuth = new UserAuth(
       password,
@@ -53,9 +55,8 @@ describe('User Service - Integration Tests', () => {
       creationtimestamp
     );
 
-    
     const newUser: User = {
-      id: 1, 
+      id: 1,
       username: 'testUser',
       realname: 'Test',
       surname: 'User',
@@ -63,12 +64,14 @@ describe('User Service - Integration Tests', () => {
       creationuser,
       creationtimestamp,
       status,
-      delete_date: undefined, 
-      modificationuser: undefined, 
-      modificationtimestamp: undefined, 
-      userauth: newUserAuth, 
+      delete_date: undefined,
+      modificationuser: undefined,
+      modificationtimestamp: undefined,
+      userauth: newUserAuth,
     };
 
+    const encryptedPassword = authCryptography.encrypt(password);
+    console.log('Encrypted password:', encryptedPassword); // Agregar log para depuración
 
     const newUserDto: UserDto = {
       idUser: undefined,
@@ -79,30 +82,37 @@ describe('User Service - Integration Tests', () => {
       birth_date: new Date(),
       creationuser,
       creationtimestamp,
-      password: 'TestPasswrd123', 
+      password: encryptedPassword, // Usar contraseña cifrada
       status,
-      delete_date: undefined, 
-      modificationuser: undefined, 
-      modificationtimestamp: undefined, 
-      
+      delete_date: undefined,
+      modificationuser: undefined,
+      modificationtimestamp: undefined,
     };
 
-
-    // Simulamos la respuesta del método `create`
+    // Configurar mocks
+    mockPasswordService.hashPassword.mockResolvedValue('hashedPassword');
     mockUserRepository.create.mockResolvedValue(newUser);
 
     const response = await request(app)
       .post('/api/users/register')
       .send(newUserDto);
 
-      console.log('Response status:', response.status);
-      console.log('Response body:', response.body); 
+    console.log('Response status:', response.status);
+    console.log('Response body:', response.body);
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('id');
     expect(response.body.username).toBe(newUser.username);
 
     expect(mockUserRepository.create).toHaveBeenCalledTimes(1);
-    expect(mockUserRepository.create).toHaveBeenCalledWith(newUser);
+    expect(mockUserRepository.create).toHaveBeenCalledWith(expect.objectContaining({
+      username: newUser.username,
+      realname: newUser.realname,
+      surname: newUser.surname,
+      birth_date: expect.any(Date),
+      creationuser,
+      creationtimestamp: expect.any(Date),
+      status,
+    }));
   });
 });

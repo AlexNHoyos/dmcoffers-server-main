@@ -17,6 +17,4 @@ const errorHandler = (err: CustomError, req: Request, res: Response, next: NextF
   });
 };
 
-
-
 export default errorHandler;

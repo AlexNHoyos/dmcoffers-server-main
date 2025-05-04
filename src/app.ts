@@ -2,7 +2,6 @@
 // Importamos el enrutador para las rutas relacionadas con los editores
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-<<<<<<< HEAD
 
 import errorHandler from './middleware/errorHandler/errorHandler';
 
@@ -10,9 +9,6 @@ import 'reflect-metadata';
 
 import swaggerDocs from './swagger';
 import commonRouter from './routes/common.routes.js';
-=======
-import errorHandler from './middleware/errorHandler/errorHandler.js';
->>>>>>> 70bd13044668b0ef12318cd477e45fa36eb03897
 import { InversifyExpressServer } from 'inversify-express-utils';
 import { container } from './config/dependency-injection/inversify.config';
 
