@@ -1,24 +1,35 @@
 import { UserService } from '../../services/user/user.service.js';
 import { IUserRepository } from '../../repositories/interfaces/user/IUserRepository.js';
 import request from 'supertest';
-import app from '../../app.js';
+import { createApp } from '../../app.js';
 import { IPasswordService } from '../../services/interfaces/auth/IPasswordService.js';
 import { IUserRolAplService } from '../../services/interfaces/user/IUserRolAplService.js';
 import { User } from '../../models/usuarios/user.entity.js';
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
 import { UserDto } from '../../models-dto/usuarios/user-dto.entity.js';
 import { AuthCryptography } from '../../middleware/auth/authCryptography.js';
+import { Container } from 'inversify';
+import { UserController } from '../../controllers/usuarios/user.controller.js';
+import { UserRepository } from '../../repositories/usuarios/user.dao.js';
+import { PasswordService } from '../../services/auth/password.service.js';
+import { UserRolAplService } from '../../services/user/user-rol-apl.service.js';
+import { userRolIdCons } from '../../shared/constants/general-constants.js';
 
-const mockUserRepository: jest.Mocked<IUserRepository> = {
-  create: jest.fn(),
-  findByUsername: jest.fn(),
-  findByUserName: jest.fn(),
-  registerUser: jest.fn(),
-  findAll: jest.fn(),
-  findOne: jest.fn(),
-  update: jest.fn(),
-  delete: jest.fn(),
-} as jest.Mocked<IUserRepository>;
+// Importar controladores explícitamente
+import '../../controllers/usuarios/user.controller.js';
+
+class MockUserRepository extends UserRepository {
+  create = jest.fn();
+  findByUsername = jest.fn();
+  findByUserName = jest.fn();
+  registerUser = jest.fn();
+  findAll = jest.fn();
+  findOne = jest.fn();
+  update = jest.fn();
+  delete = jest.fn();
+}
+
+const mockUserRepository = new MockUserRepository();
 
 const mockPasswordService = {
   validatePassword: jest.fn(),
@@ -28,15 +39,37 @@ const mockPasswordService = {
 
 const mockUserRolAplService = {
   SearchUserCurrentRol: jest.fn(),
-  AsignRolUser: jest.fn(),
-} as jest.Mocked<IUserRolAplService>;
+  AsignRolUser: jest.fn().mockResolvedValue({
+    id: 1,
+    description: 'public',
+    creationuser: 'testUser',
+    creationtimestamp: new Date(),
+    modificationuser: undefined,
+    modificationtimestamp: undefined,
+    status: true,
+  }),
+  _userRolRepository: jest.fn(), // Mocking the missing property
+  _rolAplRepository: jest.fn(), // Mocking the missing property
+} as unknown as UserRolAplService;
 
 describe('User Service - Integration Tests', () => {
+  let app: any;
   let userService: UserService;
   const authCryptography = new AuthCryptography();
+  const container = new Container();
 
   beforeAll(() => {
-    userService = new UserService(mockUserRepository, mockPasswordService, mockUserRolAplService);
+    container.bind(UserService).to(UserService);
+    container.bind(UserRepository).toConstantValue(mockUserRepository);
+    container.bind(PasswordService).toConstantValue(mockPasswordService);
+    container.bind(UserRolAplService).toConstantValue(mockUserRolAplService);
+    container.bind(UserController).to(UserController);
+
+    console.log('Container bindings:', container['_bindingDictionary']);
+    console.log('Resolved UserController:', container.get(UserController));
+
+    userService = container.get(UserService);
+    app = createApp(container);
   });
 
   beforeEach(() => {
@@ -71,7 +104,7 @@ describe('User Service - Integration Tests', () => {
     };
 
     const encryptedPassword = authCryptography.encrypt(password);
-    console.log('Encrypted password:', encryptedPassword); // Agregar log para depuración
+    console.log('Encrypted password:', encryptedPassword);
 
     const newUserDto: UserDto = {
       idUser: undefined,
@@ -82,16 +115,17 @@ describe('User Service - Integration Tests', () => {
       birth_date: new Date(),
       creationuser,
       creationtimestamp,
-      password: encryptedPassword, // Usar contraseña cifrada
+      password: encryptedPassword,
       status,
       delete_date: undefined,
       modificationuser: undefined,
       modificationtimestamp: undefined,
     };
 
-    // Configurar mocks
+    mockUserRepository.findByUserName.mockResolvedValue(undefined); // Simulando que no existe el usuario
+    mockPasswordService.validatePassword.mockReturnValue(Promise.resolve(true));
     mockPasswordService.hashPassword.mockResolvedValue('hashedPassword');
-    mockUserRepository.create.mockResolvedValue(newUser);
+    mockUserRepository.registerUser.mockResolvedValue(newUser);
 
     const response = await request(app)
       .post('/api/users/register')
@@ -104,15 +138,17 @@ describe('User Service - Integration Tests', () => {
     expect(response.body).toHaveProperty('id');
     expect(response.body.username).toBe(newUser.username);
 
-    expect(mockUserRepository.create).toHaveBeenCalledTimes(1);
-    expect(mockUserRepository.create).toHaveBeenCalledWith(expect.objectContaining({
-      username: newUser.username,
-      realname: newUser.realname,
-      surname: newUser.surname,
-      birth_date: expect.any(Date),
-      creationuser,
-      creationtimestamp: expect.any(Date),
-      status,
-    }));
+    expect(mockUserRepository.registerUser).toHaveBeenCalledTimes(1);
+    expect(mockUserRepository.registerUser).toHaveBeenCalledWith(
+      expect.objectContaining({
+        username: newUser.username,
+        realname: newUser.realname,
+        surname: newUser.surname,
+        birth_date: expect.any(Date),
+        creationuser,
+        creationtimestamp: expect.any(Date),
+        status,
+      })
+    );
   });
 });
