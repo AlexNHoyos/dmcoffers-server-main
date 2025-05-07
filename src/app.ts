@@ -1,6 +1,6 @@
 // Importamos el módulo 'express' para crear un servidor web
 // Importamos el enrutador para las rutas relacionadas con los editores
-/*import express, { Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 
 import errorHandler from './middleware/errorHandler/errorHandler';
@@ -48,37 +48,4 @@ server.setErrorConfig((app) => {
 
 const appConfigured = server.build(); // Construye la app con Inversify
 
-export default appConfigured;*/
-
-import express from 'express';
-import { InversifyExpressServer } from 'inversify-express-utils';
-import { Container } from 'inversify';
-import { UserService } from './services/user/user.service.js';
-import { UserRepository } from './repositories/usuarios/user.dao.js';
-import { PasswordService } from './services/auth/password.service.js';
-import { UserRolAplService } from './services/user/user-rol-apl.service.js';
-import dotenv from 'dotenv';
-
-dotenv.config({ path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env' });
-console.log('NODE_ENV actual:', process.env.NODE_ENV);
-
-export const createApp = (container?: Container) => {
-  const appContainer = container || new Container();
-
-  if (!container) {
-    appContainer.bind(UserService).to(UserService);
-    appContainer.bind(UserRepository).to(UserRepository);
-    appContainer.bind(PasswordService).to(PasswordService);
-    appContainer.bind(UserRolAplService).to(UserRolAplService);
-  }
-
-  const server = new InversifyExpressServer(appContainer);
-  const app = server.build();
-
-  app.use(express.json());
-  // ... otras configuraciones
-
-  return app;
-};
-
-export default createApp();
+export default appConfigured;

@@ -1,35 +1,25 @@
 import { UserService } from '../../services/user/user.service.js';
 import { IUserRepository } from '../../repositories/interfaces/user/IUserRepository.js';
 import request from 'supertest';
-import { createApp } from '../../app.js';
+import app from '../../app.js';
 import { IPasswordService } from '../../services/interfaces/auth/IPasswordService.js';
-import { IUserRolAplService } from '../../services/interfaces/user/IUserRolAplService.js';
+import { IAuthService } from '../../services/interfaces/auth/IAuthService.js';
 import { User } from '../../models/usuarios/user.entity.js';
+import { IUserRolAplService } from '../../services/interfaces/user/IUserRolAplService.js';
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
 import { UserDto } from '../../models-dto/usuarios/user-dto.entity.js';
-import { AuthCryptography } from '../../middleware/auth/authCryptography.js';
-import { Container } from 'inversify';
-import { UserController } from '../../controllers/usuarios/user.controller.js';
-import { UserRepository } from '../../repositories/usuarios/user.dao.js';
-import { PasswordService } from '../../services/auth/password.service.js';
-import { UserRolAplService } from '../../services/user/user-rol-apl.service.js';
-import { userRolIdCons } from '../../shared/constants/general-constants.js';
 
-// Importar controladores explícitamente
-import '../../controllers/usuarios/user.controller.js';
-
-class MockUserRepository extends UserRepository {
-  create = jest.fn();
-  findByUsername = jest.fn();
-  findByUserName = jest.fn();
-  registerUser = jest.fn();
-  findAll = jest.fn();
-  findOne = jest.fn();
-  update = jest.fn();
-  delete = jest.fn();
-}
-
-const mockUserRepository = new MockUserRepository();
+// Creamos un mock manual del repositorio en lugar de instanciar `IUserRepository`
+const mockUserRepository: jest.Mocked<IUserRepository> = {
+  create: jest.fn(),
+  findByUsername: jest.fn(),
+  findByUserName: jest.fn(), 
+  registerUser: jest.fn(),
+  findAll: jest.fn(),
+  findOne: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+} as jest.Mocked<IUserRepository>;
 
 const mockPasswordService = {
   validatePassword: jest.fn(),
@@ -39,48 +29,23 @@ const mockPasswordService = {
 
 const mockUserRolAplService = {
   SearchUserCurrentRol: jest.fn(),
-  AsignRolUser: jest.fn().mockResolvedValue({
-    id: 1,
-    description: 'public',
-    creationuser: 'testUser',
-    creationtimestamp: new Date(),
-    modificationuser: undefined,
-    modificationtimestamp: undefined,
-    status: true,
-  }),
-  _userRolRepository: jest.fn(), // Mocking the missing property
-  _rolAplRepository: jest.fn(), // Mocking the missing property
-} as unknown as UserRolAplService;
+  AsignRolUser: jest.fn(),
+} as jest.Mocked<IUserRolAplService>;
 
 describe('User Service - Integration Tests', () => {
-  let app: any;
   let userService: UserService;
-  const authCryptography = new AuthCryptography();
-  const container = new Container();
+
+
 
   beforeAll(() => {
-    container.bind(UserService).to(UserService);
-    container.bind(UserRepository).toConstantValue(mockUserRepository);
-    container.bind(PasswordService).toConstantValue(mockPasswordService);
-    container.bind(UserRolAplService).toConstantValue(mockUserRolAplService);
-    container.bind(UserController).to(UserController);
-
-    console.log('Container bindings:', container['_bindingDictionary']);
-    console.log('Resolved UserController:', container.get(UserController));
-
-    userService = container.get(UserService);
-    app = createApp(container);
-  });
-
-  beforeEach(() => {
-    jest.clearAllMocks();
+    userService = new UserService(mockUserRepository,mockPasswordService, mockUserRolAplService);
   });
 
   it('Debería registrar un usuario correctamente (usando mock)', async () => {
-    const password = 'TestPasswrd123';
-    const creationuser = 'UsuarioTest';
-    const creationtimestamp = new Date();
-    const status = true;
+    let password = "TestPasswrd123";
+    let creationuser = 'UsuarioTest';
+    let creationtimestamp = new Date();
+    let status = true;
 
     const newUserAuth: UserAuth = new UserAuth(
       password,
@@ -88,8 +53,9 @@ describe('User Service - Integration Tests', () => {
       creationtimestamp
     );
 
+    
     const newUser: User = {
-      id: 1,
+      id: 1, 
       username: 'testUser',
       realname: 'Test',
       surname: 'User',
@@ -97,14 +63,12 @@ describe('User Service - Integration Tests', () => {
       creationuser,
       creationtimestamp,
       status,
-      delete_date: undefined,
-      modificationuser: undefined,
-      modificationtimestamp: undefined,
-      userauth: newUserAuth,
+      delete_date: undefined, 
+      modificationuser: undefined, 
+      modificationtimestamp: undefined, 
+      userauth: newUserAuth, 
     };
 
-    const encryptedPassword = authCryptography.encrypt(password);
-    console.log('Encrypted password:', encryptedPassword);
 
     const newUserDto: UserDto = {
       idUser: undefined,
@@ -115,40 +79,30 @@ describe('User Service - Integration Tests', () => {
       birth_date: new Date(),
       creationuser,
       creationtimestamp,
-      password: encryptedPassword,
+      password: 'TestPasswrd123', 
       status,
-      delete_date: undefined,
-      modificationuser: undefined,
-      modificationtimestamp: undefined,
+      delete_date: undefined, 
+      modificationuser: undefined, 
+      modificationtimestamp: undefined, 
+      
     };
 
-    mockUserRepository.findByUserName.mockResolvedValue(undefined); // Simulando que no existe el usuario
-    mockPasswordService.validatePassword.mockReturnValue(Promise.resolve(true));
-    mockPasswordService.hashPassword.mockResolvedValue('hashedPassword');
-    mockUserRepository.registerUser.mockResolvedValue(newUser);
+
+    // Simulamos la respuesta del método `create`
+    mockUserRepository.create.mockResolvedValue(newUser);
 
     const response = await request(app)
       .post('/api/users/register')
       .send(newUserDto);
 
-    console.log('Response status:', response.status);
-    console.log('Response body:', response.body);
+      console.log('Response status:', response.status);
+      console.log('Response body:', response.body); 
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('id');
     expect(response.body.username).toBe(newUser.username);
 
-    expect(mockUserRepository.registerUser).toHaveBeenCalledTimes(1);
-    expect(mockUserRepository.registerUser).toHaveBeenCalledWith(
-      expect.objectContaining({
-        username: newUser.username,
-        realname: newUser.realname,
-        surname: newUser.surname,
-        birth_date: expect.any(Date),
-        creationuser,
-        creationtimestamp: expect.any(Date),
-        status,
-      })
-    );
+    expect(mockUserRepository.create).toHaveBeenCalledTimes(1);
+    expect(mockUserRepository.create).toHaveBeenCalledWith(newUser);
   });
 });
