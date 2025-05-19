@@ -18,7 +18,7 @@ export class SupportTicketRepository implements IBaseRepository<SweItemMenu> {
         try {
             return await this.repository.find({
                 order: {
-                    id: 'ASC', // Ordena por id ascendente
+                    ordernumber: 'ASC', // Ordena por valor de atributo order
                 },
             });
         } catch (error) {
