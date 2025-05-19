@@ -10,7 +10,7 @@ export class SideMenuRepository implements IBaseRepository<SweItemMenu> {
 
     async findAll() {
         try {
-            const result = await pool.query('SELECT * FROM swe_itemmenu si ORDER BY si.id ASC')
+            const result = await pool.query('SELECT * FROM swe_itemmenu si ORDER BY si.ordernumber ASC')
             return result.rows;
         } catch (error) {
             console.error(errorEnumSideMenu.sideMenuNotFounded, error);
