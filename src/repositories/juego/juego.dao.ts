@@ -100,6 +100,60 @@ export class JuegoRepository implements IJuegoRepository {
     }
   }
 
+  async findCartGames(userId: number): Promise<Juego[]> {
+  try {
+    const cartGameIds = await AppDataSource.getRepository('pub_cart_game')
+      .createQueryBuilder('pub_cart_game')
+      .select('pub_cart_game.id_game')
+      .where('pub_cart_game.id_user = :userId', { userId })
+      .getRawMany();
+
+    const gameIds = cartGameIds.map(
+      (entry: { pub_cart_game_id_game: number }) => entry.pub_cart_game_id_game
+    );
+
+    if (gameIds.length === 0) {
+      return [];
+    }
+
+    return await this.repository.find({
+      where: { id: In(gameIds) },
+      relations: ['publisher', 'developer', 'categorias', 'precios'],
+      order: { id: 'ASC' },
+    });
+  } catch (error) {
+    console.error('Error obteniendo el carrito del usuario:', error);
+    throw new DatabaseErrorCustom('Error al obtener el carrito', 500);
+  }
+}
+
+async findPurchasedGames(userId: number): Promise<Juego[]> {
+  try {
+    const purchasedGameIds = await AppDataSource.getRepository('pub_user_game')
+      .createQueryBuilder('pub_user_game')
+      .select('pub_user_game.id_game')
+      .where('pub_user_game.id_user = :userId', { userId })
+      .getRawMany();
+
+    const gameIds = purchasedGameIds.map(
+      (entry: { pub_user_game_id_game: number }) => entry.pub_user_game_id_game
+    );
+
+    if (gameIds.length === 0) {
+      return [];
+    }
+
+    return await this.repository.find({
+      where: { id: In(gameIds) },
+      relations: ['publisher', 'developer', 'categorias', 'precios'],
+      order: { id: 'ASC' },
+    });
+  } catch (error) {
+    console.error('Error obteniendo la biblioteca del usuario:', error);
+    throw new DatabaseErrorCustom('Error al obtener juegos comprados', 500);
+  }
+}
+
   async create(juego: Juego): Promise<Juego> {
     try {
       return await this.repository.save(juego);

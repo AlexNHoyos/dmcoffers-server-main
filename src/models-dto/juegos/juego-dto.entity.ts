@@ -15,6 +15,8 @@ export class JuegoDto {
   publisherName?: string; // Agregado para devolver los nombres en los gets
   developerName?: string;
   categoriasNames?: string[];
+
+  image_path?: string | undefined;
   constructor(
     gamename: string,
     release_date: Date,

@@ -247,7 +247,63 @@
  *          description: Error interno del servidor
  */
 
+/**
+ * @swagger
+ * /api/juegos/cart/{juegoId}:
+ *    post:
+ *      summary: Agregar un juego al carrito
+ *      security:
+ *        - apiAuth: []
+ *      tags:
+ *        - Juegos
+ *      parameters:
+ *        - in: path
+ *          name: juegoId
+ *          required: true
+ *          description: ID del juego a agregar al carrito
+ *          schema:
+ *            type: number
+ *      responses:
+ *        201:
+ *          description: Juego agregado al carrito con éxito
+ *        401:
+ *          description: No autorizado (NOT AUTHORIZED)
+ *        404:
+ *          description: No se encontró el juego
+ *        500:
+ *          description: Error Interno del Servidor
+ */
+
+/**
+ * @swagger
+ * /api/juegos/cart:
+ *    get:
+ *      summary: Obtener el carrito de un usuario logeado
+ *      security:
+ *        - apiAuth: []  # Aquí se usa el token de autenticación
+ *      tags:
+ *        - Juegos
+ *      responses:
+ *        200:
+ *          description: Carrito obtenido con éxito
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                items:
+ *                  $ref: '#/components/schemas/juegoSchema'  # Aquí se hace referencia al esquema del juego
+ *        404:
+ *          description: No se encontraron juegos en el carrito
+ *        401:
+ *          description: No autorizado (token inválido o expirado)
+ *        500:
+ *          description: Error interno del servidor
+ */
+
 //
+
+
+
 
 //----SCHEMAS----//
 

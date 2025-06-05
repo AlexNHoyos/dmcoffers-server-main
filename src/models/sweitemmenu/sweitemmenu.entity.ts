@@ -7,7 +7,6 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
-import { SweAccModApl } from "../sweaccmodapl/sweaccmodapl.entity.js";
 
 @Entity('swe_itemmenu')
 export class SweItemMenu {
@@ -21,18 +20,14 @@ export class SweItemMenu {
     @Column()
     public description: string;
 
-    @ManyToOne(() => SweAccModApl, {
-        nullable: true,
-        lazy: true,
-    })
-    @JoinColumn({ name: 'id_sweaccmodapl' })  // Se define el nombre de la FK en la BD
-    public idSweAccModApl?: Promise<SweAccModApl>;
-
     @ManyToOne(() => SweItemMenu, {
         nullable: true
     })
     @JoinColumn({ name: 'id_supitemmenu' })
     public idSupItemMenu?: SweItemMenu;
+
+    @Column({ name: 'roles_permitidos' })
+    public rolesPermitidos: string;
 
     @Column({ type: 'varchar', length: 255 })
     public creationuser: string;
@@ -57,8 +52,8 @@ export class SweItemMenu {
         title: string,
         description: string,
         idSupItemMenu: SweItemMenu,
-        idSweAccModApl: Promise<SweAccModApl>,
         endpoint: string,
+        rolesPermitidos: string,
         ordernumber: number,
         creationtimestamp: Date,
         creationuser: string,
@@ -69,8 +64,8 @@ export class SweItemMenu {
         this.title = title;
         this.description = description;
         this.idSupItemMenu = idSupItemMenu;
-        this.idSweAccModApl = idSweAccModApl;
         this.endpoint = endpoint;
+        this.rolesPermitidos = rolesPermitidos;
         this.ordernumber = ordernumber;
         this.creationtimestamp = creationtimestamp;
         this.creationuser = creationuser;
