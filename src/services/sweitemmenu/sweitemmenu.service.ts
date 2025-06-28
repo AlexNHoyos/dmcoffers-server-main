@@ -30,7 +30,7 @@ export class SweItemMenuService implements ISweItemMenuService {
                 item.description,
                 item.id_supitemmenu,
                 item.endpoint,
-                item.rolesPermitidos,
+                item.roles_permitidos,
                 item.ordernumber,
                 item.creationtimestamp,
                 item.creationuser,

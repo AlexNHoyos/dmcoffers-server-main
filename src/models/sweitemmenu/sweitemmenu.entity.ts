@@ -26,7 +26,7 @@ export class SweItemMenu {
     @JoinColumn({ name: 'id_supitemmenu' })
     public idSupItemMenu?: SweItemMenu;
 
-    @Column({ name: 'roles_permitidos' })
+    @Column({ type: 'varchar', name: 'roles_permitidos' })
     public rolesPermitidos: string;
 
     @Column({ type: 'varchar', length: 255 })
