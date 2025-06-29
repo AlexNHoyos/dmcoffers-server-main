@@ -27,7 +27,7 @@ export class SweItemMenu {
     public idSupItemMenu?: SweItemMenu;
 
     @Column({ type: 'varchar', name: 'roles_permitidos' })
-    public rolesPermitidos: string;
+    public roles_permitidos: string;
 
     @Column({ type: 'varchar', length: 255 })
     public creationuser: string;
@@ -53,7 +53,7 @@ export class SweItemMenu {
         description: string,
         idSupItemMenu: SweItemMenu,
         endpoint: string,
-        rolesPermitidos: string,
+        roles_permitidos: string,
         ordernumber: number,
         creationtimestamp: Date,
         creationuser: string,
@@ -65,7 +65,7 @@ export class SweItemMenu {
         this.description = description;
         this.idSupItemMenu = idSupItemMenu;
         this.endpoint = endpoint;
-        this.rolesPermitidos = rolesPermitidos;
+        this.roles_permitidos = roles_permitidos;
         this.ordernumber = ordernumber;
         this.creationtimestamp = creationtimestamp;
         this.creationuser = creationuser;
