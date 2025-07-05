@@ -49,9 +49,9 @@ export class AuthService implements IAuthService {
 
   }
 
-  async getAllUserRoles() {
-
-  }
+  /*   async getAllUserRoles() {
+  return await this._userRolAplService.get
+    } */
 
   async findOne(id: number): Promise<UserAuth | undefined> {
     return this._userAuthRepository.findOne(id);

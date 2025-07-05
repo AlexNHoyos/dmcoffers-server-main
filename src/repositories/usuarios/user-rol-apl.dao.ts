@@ -1,4 +1,4 @@
-import {  Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { AppDataSource } from '../../config/pg-database/db.js';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants.js';
@@ -7,16 +7,16 @@ import { UserRolApl } from '../../models/usuarios/user-rol-apl.entity.js';
 
 @injectable()
 export class UserRolRepository {
-  private _userRepo: Repository<UserRolApl>;
+  private _userRolRepo: Repository<UserRolApl>;
 
   constructor() {
-    this._userRepo = AppDataSource.getRepository(UserRolApl);
+    this._userRolRepo = AppDataSource.getRepository(UserRolApl);
   }
 
   async create(userRolApl: UserRolApl): Promise<UserRolApl> {
     try {
       // TypeORM gestiona automáticamente la transacción aquí
-      const createdUserRolApl = await this._userRepo.save(userRolApl);
+      const createdUserRolApl = await this._userRolRepo.save(userRolApl);
       return createdUserRolApl;
     } catch (error) {
       console.error(errorEnumUser.userNotCreated, error);
@@ -24,4 +24,13 @@ export class UserRolRepository {
     }
   }
 
+  async getAllRolsByIdUser(idUser: number): Promise<UserRolApl[] | undefined> {
+    try {
+      const userRols = await this._userRolRepo.findBy({ idUsrapl: idUser });
+      return userRols ?? undefined;
+    } catch (error) {
+      console.error(errorEnumUser.usuerHasNoRol, error);
+      throw new DatabaseErrorCustom(errorEnumUser.usuerHasNoRol, 500);
+    }
+  }
 }

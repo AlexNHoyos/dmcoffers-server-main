@@ -34,7 +34,7 @@ export class JuegoService implements IJuegoService {
     this.precioService = precioService;
   }
 
-  async create(entity: JuegoDto): Promise<JuegoDto>{
+  async create(entity: JuegoDto): Promise<JuegoDto> {
     return entity
   };
 
@@ -114,7 +114,7 @@ export class JuegoService implements IJuegoService {
       throw new Error('Failed to fetch cart games');
     }
   }
-  
+
   public async createGame(newJuego: JuegoDto, imagePath?: string): Promise<JuegoDto> {
     console.log(newJuego);
     this.validacionField(newJuego);
@@ -141,7 +141,7 @@ export class JuegoService implements IJuegoService {
     juegoToCreate.publisher = publisher;
     juegoToCreate.developer = developer;
     juegoToCreate.categorias = Promise.resolve(categorias);
-    
+
     if (imagePath) {
       if (!this.isValidImagePath(imagePath)) {
         throw new ValidationError('La imagen no tiene un formato válido', 400);
@@ -220,8 +220,8 @@ export class JuegoService implements IJuegoService {
     }
 
     if (juegoDto.image_path !== undefined) {
-    existingJuego.image_path = juegoDto.image_path;
-}
+      existingJuego.image_path = juegoDto.image_path;
+    }
     // Guardar el juego actualizado
     await this.juegoRepository.update(id, existingJuego);
 
@@ -322,5 +322,5 @@ export class JuegoService implements IJuegoService {
     return validExtensions.some((ext) => imagePath.endsWith(ext));
   }
 
-  
+
 }

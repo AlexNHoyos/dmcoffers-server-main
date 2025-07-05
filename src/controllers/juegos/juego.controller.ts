@@ -61,24 +61,24 @@ export class JuegoController {
     this.cartService = cartService;
     this.bibliotecaService = bibliotecaService;
   }
-  
- /* @httpPost('/upload-image', authenticateToken, upload.single('image'))
-  public async uploadImage(req: Request, res: Response, next: NextFunction) {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: 'No se proporcionó ninguna imagen' });
-    }
 
-    const imagePath = `/uploads/games/${req.file.filename}`; // o guarda solo el filename si prefieres
-
-    res.status(201).json({
-      message: 'Imagen subida con éxito',
-      imagePath,
-    });
-    } catch (error) {
-    next(error);
-    }
-  }*/
+  /* @httpPost('/upload-image', authenticateToken, upload.single('image'))
+   public async uploadImage(req: Request, res: Response, next: NextFunction) {
+   try {
+     if (!req.file) {
+       return res.status(400).json({ message: 'No se proporcionó ninguna imagen' });
+     }
+ 
+     const imagePath = `/uploads/games/${req.file.filename}`; // o guarda solo el filename si prefieres
+ 
+     res.status(201).json({
+       message: 'Imagen subida con éxito',
+       imagePath,
+     });
+     } catch (error) {
+     next(error);
+     }
+   }*/
 
   @httpGet('/')
   public async findAll(req: Request, res: Response, next: NextFunction) {
@@ -114,18 +114,18 @@ export class JuegoController {
     }
   }
   @httpGet('/biblioteca', authenticateToken)
-public async getBiblioteca(req: Request, res: Response, next: NextFunction) {
-  const userId = res.locals.userId;
+  public async getBiblioteca(req: Request, res: Response, next: NextFunction) {
+    const userId = res.locals.userId;
 
-  try {
-    const biblioteca = await this.bibliotecaService.getBiblioteca(userId);
-    console.log(biblioteca);
-    res.status(200).json(biblioteca);
+    try {
+      const biblioteca = await this.bibliotecaService.getBiblioteca(userId);
+      console.log(biblioteca);
+      res.status(200).json(biblioteca);
 
-  } catch (error) {
-    next(error);
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
   // Ruta para obtener la wishlist del usuario logeado
   @httpGet('/wishlist', authenticateToken)
@@ -141,38 +141,38 @@ public async getBiblioteca(req: Request, res: Response, next: NextFunction) {
     }
   }
 
-  
+
 
   //Endpoint para el checkout
   @httpPost('/cart/checkout', authenticateToken)
   public async checkoutCart(req: Request, res: Response, next: NextFunction) {
-  const userId = res.locals.userId;
-  try {
-    // Obtener juegos del carrito
-    const juegos = await this.cartService.getCart(userId);
-    
-    if (juegos.length === 0) {
-      return res.status(400).json({ message: 'El carrito está vacío' });
+    const userId = res.locals.userId;
+    try {
+      // Obtener juegos del carrito
+      const juegos = await this.cartService.getCart(userId);
+
+      if (juegos.length === 0) {
+        return res.status(400).json({ message: 'El carrito está vacío' });
+      }
+
+      // Simular agregar los juegos a la biblioteca del usuario
+      await this.cartService.checkout(userId); // esta lógica la creás ahora
+
+      res.status(200).json({ message: 'Compra realizada con éxito' });
+    } catch (error) {
+      next(error);
     }
-
-    // Simular agregar los juegos a la biblioteca del usuario
-    await this.cartService.checkout(userId); // esta lógica la creás ahora
-
-    res.status(200).json({ message: 'Compra realizada con éxito' });
-  } catch (error) {
-    next(error);
-  }
   }
 
 
   @httpGet('/cart', authenticateToken)
   public async getCart(req: Request, res: Response, next: NextFunction) {
-  const userId = res.locals.userId;
+    const userId = res.locals.userId;
 
-  try {
-    const carrito = await this.juegoService.findCartGames(userId);
-        res.status(200).json(carrito);
-    } 
+    try {
+      const carrito = await this.juegoService.findCartGames(userId);
+      res.status(200).json(carrito);
+    }
     catch (error) {
       console.error('Error al obtener el carrito:', error);
       next(error);
@@ -194,29 +194,29 @@ public async getBiblioteca(req: Request, res: Response, next: NextFunction) {
       next(error);
     }
   }
-  
+
   @httpPost('/', authenticateToken, upload.single('image'))
   public async create(req: Request, res: Response, next: NextFunction) {
 
     try {
-    if (!req.body.juego) {
-      throw new Error("No se recibió el campo 'juego' en el body.");
+      if (!req.body.juego) {
+        throw new Error("No se recibió el campo 'juego' en el body.");
+      }
+
+      const juegoData = JSON.parse(req.body.juego);
+
+      Object.assign(req.body, juegoData);
+
+      // Ejecutar validaciones
+      await validateInputData(createJuegoValidationRules)(req, res, next);
+
+      const imagePath = req.file ? `/uploads/games/${req.file.filename}` : undefined;
+      const newJuego = await this.juegoService.createGame(juegoData, imagePath);
+
+      //res.status(201).json(newJuego);
+    } catch (error) {
+      //next(error);
     }
-
-    const juegoData = JSON.parse(req.body.juego);
-   
-    Object.assign(req.body, juegoData);
-
-    // Ejecutar validaciones
-    await validateInputData(createJuegoValidationRules)(req, res, next);
-
-    const imagePath = req.file ? `/uploads/games/${req.file.filename}` : undefined;
-    const newJuego = await this.juegoService.createGame(juegoData, imagePath);
-
-    res.status(201).json(newJuego);
-  } catch (error) {
-    next(error);
-  }
   }
 
   @httpPatch('/:id', authenticateToken, upload.single('image'))
@@ -225,26 +225,26 @@ public async getBiblioteca(req: Request, res: Response, next: NextFunction) {
 
     try {
 
-    // Validar que venga el campo 'juego'
-    if (!req.body.juego) {
-      throw new Error("No se recibió el campo 'juego' en el body.");
-    }
+      // Validar que venga el campo 'juego'
+      if (!req.body.juego) {
+        throw new Error("No se recibió el campo 'juego' en el body.");
+      }
 
-    // Parsear los datos que vienen en JSON string
-    const juegoUpdates = JSON.parse(req.body.juego);
+      // Parsear los datos que vienen en JSON string
+      const juegoUpdates = JSON.parse(req.body.juego);
 
-    if (req.file) {
-      juegoUpdates.image_path = `/uploads/games/${req.file.filename}`;
-    }else{
-      console.log("No se cargó ninguna imagen")
-    }
+      if (req.file) {
+        juegoUpdates.image_path = `/uploads/games/${req.file.filename}`;
+      } else {
+        console.log("No se cargó ninguna imagen")
+      }
       console.log(juegoUpdates);
       const updatedJuego = await this.juegoService.update(id, juegoUpdates);
-    if (updatedJuego) {
+      if (updatedJuego) {
         res.status(200).json(updatedJuego);
-    } else {
+      } else {
         res.status(404).json({ message: 'Juego no encontrado' });
-    }
+      }
     } catch (error) {
       next(error);
     }
@@ -323,61 +323,61 @@ public async getBiblioteca(req: Request, res: Response, next: NextFunction) {
   //Endpoints para carrito
   @httpPost('/cart/:juegoId', authenticateToken)
   public async addToCart(req: Request, res: Response, next: NextFunction) {
-  const userId = res.locals.userId;
-  const juegoId = parseInt(req.params.juegoId, 10);
+    const userId = res.locals.userId;
+    const juegoId = parseInt(req.params.juegoId, 10);
 
-  try {
-    await this.cartService.addToCart(userId, juegoId);
-    res.status(201).json({ message: 'Juego agregado al carrito' });
-  } catch (error) {
-    next(error);
+    try {
+      await this.cartService.addToCart(userId, juegoId);
+      res.status(201).json({ message: 'Juego agregado al carrito' });
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
-@httpDelete('/cart/:juegoId', authenticateToken)
-public async removeFromCart(req: Request, res: Response, next: NextFunction) {
-  const userId = res.locals.userId;
-  const juegoId = parseInt(req.params.juegoId, 10);
+  @httpDelete('/cart/:juegoId', authenticateToken)
+  public async removeFromCart(req: Request, res: Response, next: NextFunction) {
+    const userId = res.locals.userId;
+    const juegoId = parseInt(req.params.juegoId, 10);
 
-  try {
-    await this.cartService.removeFromCart(userId, juegoId);
-    res.status(200).json({ message: 'Juego eliminado del carrito' });
-  } catch (error) {
-    next(error);
+    try {
+      await this.cartService.removeFromCart(userId, juegoId);
+      res.status(200).json({ message: 'Juego eliminado del carrito' });
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
-@httpGet('/cart/:juegoId', authenticateToken)
-public async checkIfInCart(req: Request, res: Response, next: NextFunction) {
-  const userId = res.locals.userId;
-  const juegoId = parseInt(req.params.juegoId, 10);
+  @httpGet('/cart/:juegoId', authenticateToken)
+  public async checkIfInCart(req: Request, res: Response, next: NextFunction) {
+    const userId = res.locals.userId;
+    const juegoId = parseInt(req.params.juegoId, 10);
 
-  try {
-    const isInCart = await this.cartService.isInCart(userId, juegoId);
-    res.status(200).json({ isInCart });
-  } catch (error) {
-    next(error);
+    try {
+      const isInCart = await this.cartService.isInCart(userId, juegoId);
+      res.status(200).json({ isInCart });
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
 
-//Endpoints para biblioteca
+  //Endpoints para biblioteca
 
 
 
-@httpGet('/biblioteca/:juegoId', authenticateToken)
-public async checkIfInBiblioteca(req: Request, res: Response, next: NextFunction) {
-  const userId = res.locals.userId;
-  const juegoId = parseInt(req.params.juegoId, 10);
+  @httpGet('/biblioteca/:juegoId', authenticateToken)
+  public async checkIfInBiblioteca(req: Request, res: Response, next: NextFunction) {
+    const userId = res.locals.userId;
+    const juegoId = parseInt(req.params.juegoId, 10);
 
-  try {
-    const isInBiblioteca = await this.bibliotecaService.isInBiblioteca(userId, juegoId);
-    res.status(200).json({ isInBiblioteca });
+    try {
+      const isInBiblioteca = await this.bibliotecaService.isInBiblioteca(userId, juegoId);
+      res.status(200).json({ isInBiblioteca });
 
-  } catch (error) {
-    next(error);
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
 
 }

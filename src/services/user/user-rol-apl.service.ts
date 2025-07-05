@@ -62,4 +62,8 @@ export class UserRolAplService implements IUserRolAplService {
 
         return userRolAsigned.rolApl;
     }
+
+    async getAllUserRoles(idUser: number): Promise<UserRolApl[] | undefined> {
+        return await this._userRolRepository.getAllRolsByIdUser(idUser);
+    }
 }

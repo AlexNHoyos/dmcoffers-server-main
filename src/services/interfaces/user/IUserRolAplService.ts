@@ -7,6 +7,4 @@ export interface IUserRolAplService {
   SearchUserCurrentRol(userRolAplList: UserRolApl[]): Promise<RolApl | undefined>
 
   AsignRolUser(user: User, rolToAsign?: string, currentRol?: RolApl): Promise<RolApl | undefined>
-
-  getAllUserRoles(): Promise<UserRolApl[] | undefined>
 }
