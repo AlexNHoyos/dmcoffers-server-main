@@ -26,6 +26,8 @@ import { CartService } from '../../services/juego/cart.service.js';
 import { BibliotecaService } from '../../services/juego/biblioteca.service.js';
 import multer from 'multer';
 import path from 'path';
+import { validateImageUpload } from '../../middleware/validation/validateImageUpload.js';
+import { parseJuegoField } from '../../middleware/validation/parseJuegoField.js';
 
 
 const storage = multer.diskStorage({
@@ -195,27 +197,16 @@ public async getBiblioteca(req: Request, res: Response, next: NextFunction) {
     }
   }
   
-  @httpPost('/', authenticateToken, upload.single('image'))
+  @httpPost('/', authenticateToken, upload.single('image'), parseJuegoField, validateImageUpload)
   public async create(req: Request, res: Response, next: NextFunction) {
 
     try {
-    if (!req.body.juego) {
-      throw new Error("No se recibió el campo 'juego' en el body.");
-    }
-
-    const juegoData = JSON.parse(req.body.juego);
-   
-    Object.assign(req.body, juegoData);
-
-    // Ejecutar validaciones
-    await validateInputData(createJuegoValidationRules)(req, res, next);
-
     const imagePath = req.file ? `/uploads/games/${req.file.filename}` : undefined;
-    const newJuego = await this.juegoService.createGame(juegoData, imagePath);
+    const newJuego = await this.juegoService.createGame(req.body, imagePath);
 
-    res.status(201).json(newJuego);
+    return res.status(201).json(newJuego);
   } catch (error) {
-    next(error);
+    return next(error);
   }
   }
 
