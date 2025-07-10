@@ -40,11 +40,25 @@ export const AppDataSource = new DataSource({
   database: process.env.POSTGRES_DB,
   synchronize: false, // tiene que estar en true momentaneamente se deja en false por cuestiones funcionales
   //logging: true,
-  entities: [
-    process.env.NODE_ENV === 'development'
-      ? 'src/models/**/*.ts' // en desarrollo
-      : 'dist/models/**/*.js', // después de compilar
-  ],
+  entities:
+    process.env.NODE_ENV === 'test'?[
+      Hosting,
+      User,
+      UserAuth,
+      Categorias,
+      Publisher,
+      SupportTicket,
+      Desarrollador,
+      UserRolApl,
+      RolApl,
+      Juego,
+      Oferta,
+      Precio
+    ]
+    :process.env.NODE_ENV === 'development'
+      ? ['src/models/**/*.ts'] // en desarrollo
+      : ['dist/models/**/*.js'], // después de compilar
+  
   migrations: ['src/migrations/**/*.js'],
   subscribers: ['src/subscribers/**/*.js'],
 });
