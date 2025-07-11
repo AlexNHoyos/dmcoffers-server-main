@@ -53,7 +53,7 @@ describe('User Service - Integration Tests', () => {
     const response = await request(app)
       .post('/api/users/register')
       .send({
-        id: rol.id ,
+        id: 4 ,
         username: 'testUser',
         realname: 'Test',
         surname: 'User',
