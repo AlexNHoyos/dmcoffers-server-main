@@ -21,6 +21,24 @@ export class UserRolAplService implements IUserRolAplService {
         this._rolAplRepository = rolAplRepository;
     }
 
+    async updateUserRoles(userId: number, roleIds: number[], updatedBy: string): Promise<RolApl[]> {
+        // Asigna nuevos roles
+        const result: RolApl[] = [];
+        for (const idRol of roleIds) {
+            const newUserRol = new UserRolApl();
+            newUserRol.idUsrapl = userId;
+            newUserRol.idRolapl = idRol;
+            newUserRol.status = true;
+            newUserRol.creationuser = updatedBy;
+            newUserRol.creationtimestamp = new Date();
+    
+            const created = await this._userRolRepository.create(newUserRol);
+            result.push(await created.rolApl!);
+        }
+    
+        return result;
+    }
+
     async SearchUserCurrentRol(userRolAplList: UserRolApl[]): Promise<RolApl | undefined>{
         
         const latestUserRol = userRolAplList.reduce((latest, current) => {
