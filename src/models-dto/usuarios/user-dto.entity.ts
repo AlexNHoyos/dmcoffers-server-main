@@ -1,5 +1,6 @@
 export class UserDto {
     idUser: number | undefined;
+    idRolApl: number | undefined; //Nuevo
     rolDesc: string | undefined;
     realname: string | undefined;
     surname: string | undefined;
@@ -15,6 +16,7 @@ export class UserDto {
 
     constructor(
         idUser?: number,
+        idRolApl?: number, //Nuevo
         rolDesc?: string,
         realname?: string,
         surname?: string,
@@ -30,6 +32,7 @@ export class UserDto {
 
     ) {
         this.idUser = idUser;
+        this.idRolApl = idRolApl; //Nuevo
         this.rolDesc = rolDesc;
         this.realname = realname;
         this.surname = surname;

@@ -39,18 +39,17 @@ export class UserRolAplService implements IUserRolAplService {
 
     async AsignRolUser(user: User, rolToAsign?: string, currentRol?: RolApl): Promise<RolApl | undefined> {
         let rolIdToAssign: number | undefined;
-
+        
         if (rolToAsign) {
             const rol = await this._rolAplRepository.findByRolName(rolToAsign);
             rolIdToAssign = rol?.id;
-        } else if (idRolapl) {
-            rolIdToAssign = idRolapl;
-        } else if (currentRol) {
+        } else if (!currentRol) {
+            const defaultRol = await this._rolAplRepository.findByRolName('Usuario');
+            rolIdToAssign = defaultRol?.id; //Cambio
+        } else { 
             rolIdToAssign = currentRol.id;
-        } else {
-            rolIdToAssign = userRolIdCons.usuarioTienda;
         }
-
+    
         const newUserRol = new UserRolApl();
         newUserRol.id = undefined;
         newUserRol.idRolapl = rolIdToAssign;
@@ -58,10 +57,10 @@ export class UserRolAplService implements IUserRolAplService {
         newUserRol.creationuser = user.creationuser;
         newUserRol.creationtimestamp = new Date();
         newUserRol.status = true;
-
+    
         // Guarda el nuevo rol en la base de datos
         const userRolAsigned = await this._userRolRepository.create(newUserRol);
-
+    
         return userRolAsigned.rolApl;
     }
 }

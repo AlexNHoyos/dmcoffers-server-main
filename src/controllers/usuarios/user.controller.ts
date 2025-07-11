@@ -58,8 +58,22 @@ export class UserController {
     public async create(req: Request, res: Response, next: NextFunction) {
         console.log(req.body);
 
-        const newUser = req.body;
-        newUser.password = this.authCryptography.decrypt(newUser.password);
+        const newUser = { //req.body solamente
+            idUser: undefined,
+            idRolApl: req.body.idRolApl,
+            rolDesc: undefined,
+            realname: req.body.realname,
+            surname: req.body.surname,
+            username: req.body.username,
+            birth_date: req.body.birth_date,
+            creationuser: req.body.creationuser,
+            creationtimestamp: undefined,
+            password: this.authCryptography.decrypt(req.body.password),
+            status: req.body.status,
+            delete_date: req.body.delete_date,
+            modificationuser: undefined,
+            modificationtimestamp: undefined,
+        };
 
         try {
             const createdUser = await this._userService.create(newUser);

@@ -48,6 +48,7 @@ export class UserService implements IUserService {
 
         const userOutput: UserDto = {
           idUser: user.id,
+          idRolApl: user.currentRolId, //Nuevo
           rolDesc: currentRol?.description,
           realname: user.realname,
           surname: user.surname,
@@ -76,6 +77,7 @@ export class UserService implements IUserService {
     );
     const userOutput: UserDto = {
       idUser: user.id,
+      idRolApl: user.currentRolId, //Nuevo
       rolDesc: currentRol?.description,
       realname: user.realname,
       surname: user.surname,
@@ -104,10 +106,14 @@ export class UserService implements IUserService {
 
     const userCreated = await this._userRepository.registerUser(userToCreate);
 
-    const rolAsigned = await this._userRolAplService.AsignRolUser(userCreated);
+    const rolAsigned = await this._userRolAplService.AsignRolUser(
+      userCreated,
+      newUser.idRolApl !== undefined ? String(newUser.idRolApl) : undefined
+    );
 
     const userOutput: UserDto = {
       idUser: userCreated?.id,
+      idRolApl: userCreated?.currentRolId, //Nuevo
       rolDesc: rolAsigned?.description,
       realname: userCreated?.realname,
       surname: userCreated?.surname,
