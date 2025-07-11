@@ -7,4 +7,6 @@ export interface IUserRolAplService {
   SearchUserCurrentRol(userRolAplList: UserRolApl[]): Promise<RolApl | undefined>
 
   AsignRolUser(user: User, rolToAsign?: string, currentRol?: RolApl): Promise<RolApl | undefined>
+
+  updateUserRoles(userId: number, roleIds: number[], updatedByUser: string): Promise<RolApl[]>;
 }
