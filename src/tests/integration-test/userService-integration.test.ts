@@ -10,6 +10,7 @@ import { AppDataSource } from '../../config/pg-database/db.js';
 import { UserRolApl } from '../../models/usuarios/user-rol-apl.entity.js';
 import { RolApl } from '../../models/roles/rol-apl.entity.js';
 import { id } from 'inversify';
+import { response } from 'express';
 
 
 
@@ -68,4 +69,13 @@ describe('User Service - Integration Tests', () => {
     expect(response.body).toHaveProperty('idUser');
     expect(response.body.username).toBe('testUser');
   });
+
+  it('Debería devolver todos los usuarios', async () =>  {
+    const response = await request(app).get('/api/users/findAll');
+      console.log(response.body);
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBeGreaterThanOrEqual(0);
+  })
 });
