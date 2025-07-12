@@ -33,4 +33,22 @@ export class UserRolRepository {
       throw new DatabaseErrorCustom(errorEnumUser.usuerHasNoRol, 500);
     }
   }
+  async update(id: number, updated: Partial<UserRolApl>): Promise<UserRolApl> {
+    try {
+      // Excluye propiedades que no son columnas
+      const cleanData: Partial<UserRolApl> = {
+        idUsrapl: updated.idUsrapl,
+        idRolapl: updated.idRolapl,
+        status: updated.status,
+        creationtimestamp: new Date(),
+      };
+
+      await this._userRolRepo.update(id, cleanData);
+      return await this._userRolRepo.findOneByOrFail({ id });
+    } catch (error) {
+      console.error(errorEnumUser.userNotUpdated, error);
+      throw new DatabaseErrorCustom(errorEnumUser.userNotUpdated, 500);
+    }
+  }
+
 }

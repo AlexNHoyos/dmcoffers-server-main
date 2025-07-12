@@ -7,8 +7,12 @@ export const validateInputData = (validations: ValidationChain[]) => {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      const error = new Error('Error de validación');
+      (error as any).status = 400;
+      (error as any).details = errors.array();
+      throw error;
     }
+
     next();
   };
   

@@ -26,6 +26,8 @@ import { CartService } from '../../services/juego/cart.service.js';
 import { BibliotecaService } from '../../services/juego/biblioteca.service.js';
 import multer from 'multer';
 import path from 'path';
+import { validateImageUpload } from '../../middleware/validation/validateImageUpload.js';
+import { parseJuegoField } from '../../middleware/validation/parseJuegoField.js';
 
 
 const storage = multer.diskStorage({
@@ -213,13 +215,13 @@ export class JuegoController {
       const imagePath = req.file ? `/uploads/games/${req.file.filename}` : undefined;
       const newJuego = await this.juegoService.createGame(juegoData, imagePath);
 
-      //res.status(201).json(newJuego);
+      res.status(201).json(newJuego);
     } catch (error) {
-      //next(error);
+      next(error);
     }
   }
 
-  @httpPatch('/:id', authenticateToken, upload.single('image'))
+  @httpPatch('/:id', authenticateToken, upload.single('image'), parseJuegoField, validateImageUpload)
   public async update(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
 
