@@ -197,27 +197,16 @@ export class JuegoController {
     }
   }
 
-  @httpPost('/', authenticateToken, upload.single('image'))
+  @httpPost('/', authenticateToken, upload.single('image'), parseJuegoField, validateImageUpload)
   public async create(req: Request, res: Response, next: NextFunction) {
 
     try {
-      if (!req.body.juego) {
-        throw new Error("No se recibió el campo 'juego' en el body.");
-      }
-
-      const juegoData = JSON.parse(req.body.juego);
-
-      Object.assign(req.body, juegoData);
-
-      // Ejecutar validaciones
-      await validateInputData(createJuegoValidationRules)(req, res, next);
-
       const imagePath = req.file ? `/uploads/games/${req.file.filename}` : undefined;
-      const newJuego = await this.juegoService.createGame(juegoData, imagePath);
+      const newJuego = await this.juegoService.createGame(req.body, imagePath);
 
-      res.status(201).json(newJuego);
+      return res.status(201).json(newJuego);
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
@@ -226,22 +215,13 @@ export class JuegoController {
     const id = parseInt(req.params.id, 10);
 
     try {
-
-      // Validar que venga el campo 'juego'
-      if (!req.body.juego) {
-        throw new Error("No se recibió el campo 'juego' en el body.");
-      }
-
-      // Parsear los datos que vienen en JSON string
-      const juegoUpdates = JSON.parse(req.body.juego);
-
+      // Si hay imagen, setear la ruta
       if (req.file) {
-        juegoUpdates.image_path = `/uploads/games/${req.file.filename}`;
+        req.body.image_path = `/uploads/games/${req.file.filename}`;
       } else {
         console.log("No se cargó ninguna imagen")
       }
-      console.log(juegoUpdates);
-      const updatedJuego = await this.juegoService.update(id, juegoUpdates);
+      const updatedJuego = await this.juegoService.update(id, req.body);
       if (updatedJuego) {
         res.status(200).json(updatedJuego);
       } else {

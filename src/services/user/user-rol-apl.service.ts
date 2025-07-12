@@ -40,6 +40,7 @@ export class UserRolAplService implements IUserRolAplService {
     }
 
     async SearchUserCurrentRol(userRolAplList: UserRolApl[]): Promise<RolApl | undefined> {
+
         const latestUserRol = userRolAplList.reduce((latest, current) => {
             const latestDate = new Date(latest.creationtimestamp ?? 0); // Si es undefined, usa 0 como fecha predeterminada
             const currentDate = new Date(current.creationtimestamp ?? 0);
