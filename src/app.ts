@@ -9,7 +9,6 @@ import { fileURLToPath } from 'url';
 import errorHandler from './middleware/errorHandler/errorHandler.js';
 
 import swaggerDocs from './swagger.js';
-import commonRouter from './routes/common.routes.js';
 import { InversifyExpressServer } from 'inversify-express-utils';
 import { container } from './config/dependency-injection/inversify.config.js';
 
@@ -26,7 +25,7 @@ server.setConfig((app) => {
 
   //app.use(commonRouter);
 
-   app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+  app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
   //ruta para utilizar documentacion de swagger
   swaggerDocs(app);

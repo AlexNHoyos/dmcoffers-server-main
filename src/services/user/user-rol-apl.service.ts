@@ -21,10 +21,6 @@ export class UserRolAplService implements IUserRolAplService {
         this._rolAplRepository = rolAplRepository;
     }
 
-<<<<<<< HEAD
-    async SearchUserCurrentRol(userRolAplList: UserRolApl[]): Promise<RolApl | undefined> {
-
-=======
     async updateUserRoles(userId: number, roleIds: number[], updatedBy: string): Promise<RolApl[]> {
         // Asigna nuevos roles
         const result: RolApl[] = [];
@@ -35,17 +31,15 @@ export class UserRolAplService implements IUserRolAplService {
             newUserRol.status = true;
             newUserRol.creationuser = updatedBy;
             newUserRol.creationtimestamp = new Date();
-    
+
             const created = await this._userRolRepository.create(newUserRol);
             result.push(await created.rolApl!);
         }
-    
+
         return result;
     }
 
-    async SearchUserCurrentRol(userRolAplList: UserRolApl[]): Promise<RolApl | undefined>{
-        
->>>>>>> develop
+    async SearchUserCurrentRol(userRolAplList: UserRolApl[]): Promise<RolApl | undefined> {
         const latestUserRol = userRolAplList.reduce((latest, current) => {
             const latestDate = new Date(latest.creationtimestamp ?? 0); // Si es undefined, usa 0 como fecha predeterminada
             const currentDate = new Date(current.creationtimestamp ?? 0);

@@ -9,39 +9,23 @@ import { authenticateToken, authorizeRol } from '../../middleware/auth/authToken
 import { OkNegotiatedContentResult } from 'inversify-express-utils/lib/results/OkNegotiatedContentResult.js';
 import { JsonResult } from 'inversify-express-utils/lib/results/JsonResult.js';
 import { AuthCryptography } from '../../middleware/auth/authCryptography.js';
-<<<<<<< HEAD
-import { IUserRolAplService } from '../../services/interfaces/user/IUserRolAplService.js';
-import { UserRolAplService } from '../../services/user/user-rol-apl.service.js';
-=======
 import { UserRolAplService } from '../../services/user/user-rol-apl.service.js';
 import { IUserRolAplService } from '../../services/interfaces/user/IUserRolAplService.js';
->>>>>>> develop
 
 @controller('/api/users')
 export class UserController {
     private _userService: IUserService;
-<<<<<<< HEAD
-    private _userRolService: IUserRolAplService;
-=======
     private _userRolAplService: IUserRolAplService;
->>>>>>> develop
 
     authCryptography: AuthCryptography = new AuthCryptography();
 
 
     constructor(
         @inject(UserService) userService: IUserService,
-<<<<<<< HEAD
-        @inject(UserRolAplService) userRolService: IUserRolAplService,
-    ) {
-        this._userService = userService;
-        this._userRolService = userRolService;
-=======
         @inject(UserRolAplService) userRolAplService: IUserRolAplService,
     ) {
         this._userService = userService;
         this._userRolAplService = userRolAplService;
->>>>>>> develop
     }
 
     @httpGet('/findall')
@@ -143,13 +127,12 @@ export class UserController {
         }
     };
 
-<<<<<<< HEAD
     @httpGet('/getUserRolsByIdUser/:idUser', validateInputData(getAllUserRolsValidationRules))
     public async getAllUserRoles(req: Request, res: Response, next: NextFunction) {
         const idUser = parseInt(req.params.idUser, 10);
 
         try {
-            const userRols = await this._userRolService.getAllUserRols(idUser);
+            const userRols = await this._userRolAplService.getAllUserRols(idUser);
             if (userRols) {
                 res.status(200).json(userRols);
             } else {
@@ -159,22 +142,20 @@ export class UserController {
             next(error);
         }
     };
-=======
     @httpPut('/:id/roles', authenticateToken, authorizeRol('admin'))
     public async updateUserRoles(req: Request, res: Response, next: NextFunction) {
-    const id = parseInt(req.params.id, 10);
-    const roleIds: number[] = req.body.roleIds;
+        const id = parseInt(req.params.id, 10);
+        const roleIds: number[] = req.body.roleIds;
 
-    try {
-        const updatedRoles = await this._userRolAplService.updateUserRoles(
-        id,
-        roleIds,
-            'admin'
-        );
-        res.status(200).json(updatedRoles);
-    } catch (error) {
-        next(error);
+        try {
+            const updatedRoles = await this._userRolAplService.updateUserRoles(
+                id,
+                roleIds,
+                'admin'
+            );
+            res.status(200).json(updatedRoles);
+        } catch (error) {
+            next(error);
+        }
     }
-    }
->>>>>>> develop
 }
