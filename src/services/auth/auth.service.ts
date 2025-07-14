@@ -14,6 +14,7 @@ import { User } from '../../models/usuarios/user.entity.js';
 import { UserRolAplService } from '../user/user-rol-apl.service.js';
 import { IUserRolAplService } from '../interfaces/user/IUserRolAplService.js';
 import { IUserAuthRepository } from '../../repositories/interfaces/user/IUserAuthRepository.js';
+import nodemailer from 'nodemailer'; 
 
 @injectable()
 export class AuthService implements IAuthService {
@@ -30,6 +31,24 @@ export class AuthService implements IAuthService {
     this._userAuthRepository = userAuthRepository;
     this._passwordService = passwordService;
     this._userRolAplService = userRolAplService;
+  }
+  async sendResetPass(email: string, token: string): Promise<void> {
+    const resetLink = 'http://localhost:4200/reset-password/${token}';
+
+    const trasporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth:{
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    await trasporter.sendMail({
+      from: "<no-reply@dmcoffers.com>",
+      to: email,
+      subject: 'Recuperar contraseña',
+      html:'<h3>Recupera tu contraseña</h3><br><p>Haz click en el siguient enlace:</p> <a href="${resetLink}">${resetLink}></a><p>Este enlace expirará en una hora</p>',
+    })
   }
  
   async login (user: User , password: string){

@@ -11,4 +11,6 @@ export interface IUserService extends IBaseService<User | UserDto> {
 
   updateUserByAdmin(id: number, user: User, rolToAsign?: string): Promise<User | undefined> ;
 
+  updatePassword(id: number, newPassword:string): Promise<void>; //Nuevo
+
 }

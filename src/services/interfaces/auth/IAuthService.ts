@@ -6,4 +6,6 @@ export interface IAuthService {
   
   login(user: User, password: string): Promise <string>;
 
+  sendResetPass(email: string, token:string): Promise<void>; //Nuevo
+
 }

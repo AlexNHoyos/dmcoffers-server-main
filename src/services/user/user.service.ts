@@ -31,6 +31,10 @@ export class UserService implements IUserService {
     this._passwordService = passwordService;
     this._userRolAplService = userRolAplService;
   }
+  //Nuevo
+  updatePassword(id: number, newPassword: string): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
 
   async findAll(): Promise<UserDto[]> {
     const usersList = await this._userRepository.findAll();
@@ -59,6 +63,7 @@ export class UserService implements IUserService {
           password: user.userauth?.password,
           status: user.status,
           delete_date: user.delete_date,
+          email: undefined
         };
 
         return userOutput;
@@ -88,6 +93,7 @@ export class UserService implements IUserService {
       password: user.userauth?.password,
       status: user.status,
       delete_date: user.delete_date,
+      email: undefined
     };
     return userOutput;
   }
@@ -114,6 +120,7 @@ export class UserService implements IUserService {
     const userOutput: UserDto = {
       idUser: userCreated?.id,
       idRolApl: userCreated?.currentRolId, //Nuevo
+      email: undefined,
       rolDesc: rolAsigned?.description,
       realname: userCreated?.realname,
       surname: userCreated?.surname,
@@ -242,26 +249,25 @@ export class UserService implements IUserService {
   ) {
     const userToUpdate: User = {
       id: oldUser.id,
-      realname:
-        userWithChanges.realname && userWithChanges.realname.trim() !== ''
-          ? userWithChanges.realname
-          : oldUser.realname,
-      surname:
-        userWithChanges.surname && userWithChanges.surname.trim() !== ''
-          ? userWithChanges.surname
-          : oldUser.surname,
-      username:
-        userWithChanges.username && userWithChanges.username.trim() !== ''
-          ? userWithChanges.username
-          : oldUser.username,
+      realname: userWithChanges.realname && userWithChanges.realname.trim() !== ''
+        ? userWithChanges.realname
+        : oldUser.realname,
+      email: undefined,
+      surname: userWithChanges.surname && userWithChanges.surname.trim() !== ''
+        ? userWithChanges.surname
+        : oldUser.surname,
+      username: userWithChanges.username && userWithChanges.username.trim() !== ''
+        ? userWithChanges.username
+        : oldUser.username,
       birth_date: userWithChanges.birth_date ?? oldUser.birth_date,
       delete_date: userWithChanges.delete_date ?? oldUser.delete_date,
       status: userWithChanges.status ?? oldUser.status,
       creationuser: oldUser.creationuser, // No debe cambiar en la actualización
       creationtimestamp: oldUser.creationtimestamp, // No debe cambiar en la actualización
-      modificationuser:
-        userWithChanges.modificationuser ?? oldUser?.modificationuser,
-      modificationtimestamp: new Date(), // Fecha de modificación actual
+      modificationuser: userWithChanges.modificationuser ?? oldUser?.modificationuser,
+      modificationtimestamp: new Date(),
+      resetPasswordToken: undefined,
+      resetPasswordExpires: undefined
     };
     return userToUpdate;
   }

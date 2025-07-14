@@ -46,4 +46,24 @@ export class AuthController {
       next(error);
     }
   }
+
+  @httpPost('/forgot-password')
+  public async forgotPassword(req: Request, res:Response, next:NextFunction){
+    const {email} = req.body;
+
+    try{
+      //Busca el usuario por el email
+      const user = await this._userService.findByUserName(email);
+      if(!user){
+        return res.json({ message: 'Si existe se envía un correo de recuperación'});
+      }
+
+      //Genero un token aleatorio
+      const crypto = await import('crypto');
+      const token = crypto.randomBytes(32).toString('hex');
+      const expires = new Date(Date.now() + 60*60*1000);
+    
+
+    }
+  }
 }
