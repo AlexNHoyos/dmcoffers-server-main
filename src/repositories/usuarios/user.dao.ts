@@ -15,6 +15,9 @@ export class UserRepository implements IUserRepository {
   constructor() {
     this._userRepo = AppDataSource.getRepository(User);
   }
+  findOneby(token: string): Promise<User | null> {
+    throw new Error('Method not implemented.');
+  }
 
   async findAll(): Promise<User[]> {
     try {

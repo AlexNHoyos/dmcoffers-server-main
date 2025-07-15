@@ -8,5 +8,7 @@ export interface IUserRepository extends IBaseRepository<User> {
     findByUserName(userName: string): Promise<User | undefined>;
    
     registerUser( user: User): Promise<User>; 
+
+    findOneby(token: string):Promise<User | null>
   }
   

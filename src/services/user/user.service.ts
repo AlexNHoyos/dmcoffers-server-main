@@ -31,6 +31,15 @@ export class UserService implements IUserService {
     this._passwordService = passwordService;
     this._userRolAplService = userRolAplService;
   }
+
+  //Nuevo
+  async findByResetToken(token: string): Promise<User | null> {
+    return await this._userRepository.findOneby(token);
+  }
+  //Nuevo
+  async findByEmail(email: string): Promise<User | null>{
+    return await this._userRepository.findOneby(email);
+  }
   //Nuevo
   updatePassword(id: number, newPassword: string): Promise<void> {
     throw new Error('Method not implemented.');
