@@ -6,6 +6,24 @@ import { IUserRepository } from '../interfaces/user/IUserRepository.js';
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
 
 export class UserRepository implements IUserRepository {
+  async findOneby(token: string): Promise<User | null> {
+    try {
+      const result = await pool.query(
+        'SELECT * FROM swe_usrapl su WHERE su.reset_token = $1',
+        [token]
+      );
+      if (result.rows.length > 0) {
+        const user = result.rows[0] as User;
+        return user;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error(errorEnumUser.userIndicatedNotFound, error);
+      throw new DatabaseErrorCustom(errorEnumUser.userIndicatedNotFound, 500);
+    }
+  }
+
   async findAll() {
     try {
       const result = await pool.query(

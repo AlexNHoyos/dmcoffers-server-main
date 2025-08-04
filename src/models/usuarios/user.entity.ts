@@ -46,10 +46,10 @@ export class User {
   @Column({ name: 'creationuser', type: 'varchar' })
   public creationuser: string | undefined;
         //Nuevo
-  @Column({ name: 'resetPasswordToken', nullable:true})
+  @Column({ name: 'resetPasswordToken', type: 'varchar', })
   public resetPasswordToken: string | undefined;
 
-  @Column({name: 'resetPasswordExpires', type: 'timestamp', nullable:true})
+  @Column({name: 'resetPasswordExpires', type: 'timestamp'})
   public resetPasswordExpires: Date | undefined; 
         //
   @CreateDateColumn()
