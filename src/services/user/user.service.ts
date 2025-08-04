@@ -41,8 +41,15 @@ export class UserService implements IUserService {
     return await this._userRepository.findOneby(email);
   }
   //Nuevo
-  updatePassword(id: number, newPassword: string): Promise<void> {
-    throw new Error('Method not implemented.');
+  async updatePassword(userid: number, newPassword: string): Promise<void> {
+    const user = await this._userRepository.findOne(userid);
+    if (!user) throw new Error('Usuario no encontrado');
+
+    if (!user.userauth) {
+      throw new Error('La información de autenticación del usuario no está disponible');
+    }
+    user.userauth.password = await this._passwordService.hashPassword(newPassword);
+    await this._userRepository.update(userid, user);
   }
 
   async findAll(): Promise<UserDto[]> {

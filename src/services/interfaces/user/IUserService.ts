@@ -14,3 +14,5 @@ export interface IUserService extends IBaseService<User | UserDto> {
 
   findByResetToken(token: string): Promise<User | null>;
 }
+
+
