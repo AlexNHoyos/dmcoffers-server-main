@@ -59,6 +59,7 @@ export class UserRepository implements IUserRepository {
       realname,
       surname,
       username,
+      email, // Agregado
       birth_date,
       delete_date,
       creationuser,
@@ -66,13 +67,14 @@ export class UserRepository implements IUserRepository {
       status,
     } = user;
     const query = `INSERT INTO swe_usrapl 
-                (realname, surname, username, birth_date, delete_date, creationuser, creationtimestamp, status) 
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+                (realname, surname, username, email, birth_date, delete_date, creationuser, creationtimestamp, status) 
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
                 RETURNING *;`;
     const values = [
       realname,
       surname,
       username,
+      email, // Agregado
       birth_date,
       delete_date,
       creationuser,
@@ -203,14 +205,15 @@ export class UserRepository implements IUserRepository {
 
         // Insertar el usuario
         const userInsertQuery = `
-            INSERT INTO swe_usrapl (realname, surname, username, birth_date, delete_date, creationuser, creationtimestamp, status) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+            INSERT INTO swe_usrapl (realname, surname, username, email, birth_date, delete_date, creationuser, creationtimestamp, status) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
             RETURNING *;
         `;
         const userValues = [
             user.realname,
             user.surname,
             user.username,
+            user.email,
             user.birth_date,
             user.delete_date,
             user.creationuser,

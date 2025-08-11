@@ -62,7 +62,7 @@ export class UserController {
             idUser: undefined,
             idRolApl: req.body.idRolApl,
             rolDesc: undefined,
-            email : undefined, //Agregado
+            email : req.body.email, //Agregado
             realname: req.body.realname,
             surname: req.body.surname,
             username: req.body.username,

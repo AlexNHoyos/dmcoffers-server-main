@@ -136,7 +136,7 @@ export class UserService implements IUserService {
     const userOutput: UserDto = {
       idUser: userCreated?.id,
       idRolApl: userCreated?.currentRolId, //Nuevo
-      email: undefined,
+      email: userCreated?.email, // Agregado
       rolDesc: rolAsigned?.description,
       realname: userCreated?.realname,
       surname: userCreated?.surname,
@@ -246,6 +246,9 @@ export class UserService implements IUserService {
     userToCreate.realname = newUser.realname;
     userToCreate.surname = newUser.surname;
     userToCreate.username = newUser.username;
+    userToCreate.email = newUser.email; // Agregado
+    userToCreate.resetPasswordToken = undefined;
+    userToCreate.resetPasswordExpires = undefined;
     userToCreate.birth_date = newUser.birth_date;
     userToCreate.delete_date = newUser.delete_date;
     userToCreate.status = newUser.status;

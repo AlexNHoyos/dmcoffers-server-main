@@ -34,7 +34,7 @@ export class User {
   @Column({ name: 'username', type: 'varchar' })
   public username: string | undefined;
 
-  @Column({ name: 'email', type: 'varchar' }) //Agregado
+  @Column({ name: 'email', type: 'varchar', length: 255 }) //Agregado
   public email: string | undefined;
 
   @Column({ name: 'birth_date', type: 'timestamp' })
@@ -46,10 +46,10 @@ export class User {
   @Column({ name: 'creationuser', type: 'varchar' })
   public creationuser: string | undefined;
         //Nuevo
-  @Column({ name: 'resetPasswordToken', type: 'varchar', })
+  @Column({ name: 'reset_password_token', type: 'varchar', })
   public resetPasswordToken: string | undefined;
 
-  @Column({name: 'resetPasswordExpires', type: 'timestamp'})
+  @Column({name: 'reset_password_expires', type: 'timestamp'})
   public resetPasswordExpires: Date | undefined; 
         //
   @CreateDateColumn()
@@ -100,6 +100,7 @@ export class User {
     realname?: string,
     surname?: string,
     username?: string,
+    email?: string, // Agregado
     birth_date?: Date,
     delete_date?: Date,
     creationuser?: string,
@@ -112,6 +113,7 @@ export class User {
     this.realname = realname;
     this.surname = surname;
     this.username = username;
+    this.email = email; // Agregado
     this.birth_date = birth_date;
     this.delete_date = delete_date;
     this.creationuser = creationuser;
