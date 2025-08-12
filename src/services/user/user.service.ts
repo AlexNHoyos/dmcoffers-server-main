@@ -149,11 +149,7 @@ export class UserService implements IUserService {
     return isUserNameOcuped;
   }
 
-  async updateUserByAdmin(
-    id: number,
-    userInput: User,
-    rolToAsign: string
-  ): Promise<User | undefined> {
+  async updateUserByAdmin(id: number, userInput: User, rolToAsign: string): Promise<User | undefined> {
     //let userNameAlreadyExist = false;
     const oldUser = await this._userRepository.findOne(id);
     if (!oldUser) {
@@ -189,11 +185,7 @@ export class UserService implements IUserService {
     if (
       rolToAsign !== currentRol?.description /*&& rolToAsign.trim() !== ''*/
     ) {
-      const rolAsigned = await this._userRolAplService.AsignRolUser(
-        userUpdated,
-        rolToAsign,
-        currentRol
-      );
+      const rolAsigned = await this._userRolAplService.AsignRolUser(userUpdated, rolToAsign, currentRol);
 
       userUpdated.currentRolId = rolAsigned?.id;
       userUpdated.currentRolDescription = rolAsigned?.description;
@@ -205,13 +197,9 @@ export class UserService implements IUserService {
   private async initializeUser(newUser: UserDto) {
     newUser.creationtimestamp = new Date();
 
-    newUser.password = (await this._passwordService.validatePassword(
-      newUser.password!
-    ))
-      ? await this._passwordService.hashPassword(newUser.password!)
-      : (() => {
-          throw new ValidationError('La Contraseña es inválida');
-        })();
+    newUser.password = (await this._passwordService.validatePassword(newUser.password!))
+                       ? await this._passwordService.hashPassword(newUser.password!)
+                       : (() => { throw new ValidationError('La Contraseña es inválida');})();
 
     const newUserAuth: UserAuth = new UserAuth(
       newUser.password!,

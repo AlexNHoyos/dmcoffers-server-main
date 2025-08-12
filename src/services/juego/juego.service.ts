@@ -34,6 +34,10 @@ export class JuegoService implements IJuegoService {
     this.precioService = precioService;
   }
 
+  async create(entity: JuegoDto): Promise<JuegoDto> {
+    return entity
+  };
+
   async findAll(): Promise<JuegoDto[]> {
     const juegos = await this.juegoRepository.findAll();
     const juegosDto: JuegoDto[] = await Promise.all(
@@ -92,7 +96,27 @@ export class JuegoService implements IJuegoService {
     }
   }
 
-  async create(newJuego: JuegoDto): Promise<JuegoDto> {
+  public async findCartGames(userId: number): Promise<JuegoDto[]> {
+    try {
+      const cartGames = await this.juegoRepository.findCartGames(
+        userId
+      );
+
+      // Devolver los juegos en formato DTO
+      return await Promise.all(
+        cartGames.map(async (juego) => {
+          const lastPrice = await this.precioService.getLastPrice(juego.id!);
+          return this.convertToDto(juego, lastPrice?.price);
+        })
+      );
+    } catch (error) {
+      console.error('Error al obtener los juegos del carrito:', error);
+      throw new Error('Failed to fetch cart games');
+    }
+  }
+
+  public async createGame(newJuego: JuegoDto, imagePath?: string): Promise<JuegoDto> {
+    console.log(newJuego);
     this.validacionField(newJuego);
 
     const [publisher, developer, categorias] = await Promise.all([
@@ -117,6 +141,13 @@ export class JuegoService implements IJuegoService {
     juegoToCreate.publisher = publisher;
     juegoToCreate.developer = developer;
     juegoToCreate.categorias = Promise.resolve(categorias);
+
+    if (imagePath) {
+      if (!this.isValidImagePath(imagePath)) {
+        throw new ValidationError('La imagen no tiene un formato válido', 400);
+      }
+      juegoToCreate.image_path = imagePath;
+    }
 
     // Guardar el juego en la base de datos
     const juegoCreado = await this.juegoRepository.create(juegoToCreate);
@@ -187,6 +218,10 @@ export class JuegoService implements IJuegoService {
           console.error('Error al registrar nuevo precio:', error);
         });
     }
+
+    if (juegoDto.image_path !== undefined) {
+      existingJuego.image_path = juegoDto.image_path;
+    }
     // Guardar el juego actualizado
     await this.juegoRepository.update(id, existingJuego);
 
@@ -215,6 +250,7 @@ export class JuegoService implements IJuegoService {
       publisherName: juego.publisher?.publishername,
       developerName: juego.developer?.developername,
       categoriasNames: categorias?.map((categoria) => categoria.description),
+      image_path: juego.image_path
     };
   }
 
@@ -276,6 +312,15 @@ export class JuegoService implements IJuegoService {
       publisherName: juego.publisher?.publishername,
       developerName: juego.developer?.developername,
       categoriasNames: categorias?.map((categoria) => categoria.description),
+      image_path: juego.image_path,
     };
   }
+
+  // Método para validar la ruta de la imagen
+  private isValidImagePath(imagePath: string): boolean {
+    const validExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+    return validExtensions.some((ext) => imagePath.endsWith(ext));
+  }
+
+
 }

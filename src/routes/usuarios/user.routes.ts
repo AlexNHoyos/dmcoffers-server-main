@@ -6,6 +6,7 @@ import { container } from '../../config/dependency-injection/inversify.config.js
 
 const userRouter = Router();
 const userController = container.get<UserController>(UserController);
+const userRolController = container.get<UserController>(UserController);
 
 userRouter.get('/findall', userController.findAll.bind(userController));
 
@@ -16,6 +17,15 @@ userRouter.get(
     .isInt({ min: 1 })
     .withMessage('Formato de ID invalido!!!!!!!'),
   userController.findOne.bind(userController)
+);
+
+userRouter.get(
+  '/:idUser',
+  param('idUser')
+    .notEmpty()
+    .isInt({ min: 1 })
+    .withMessage('Formato de ID invalido!'),
+  userRolController.getAllUserRoles.bind(userRolController)
 );
 
 userRouter.post(

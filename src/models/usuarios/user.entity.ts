@@ -82,6 +82,22 @@ export class User {
     lazy: true
   })
 
+  @ManyToMany(() => Juego, (juego) => juego.enCarritoDe)
+  @JoinTable({
+    name: 'pub_cart_game',
+    joinColumn: { name: 'id_user', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'id_game', referencedColumnName: 'id' },
+  })
+  public cart?: Juego[];
+
+  @ManyToMany(() => Juego, (juego) => juego.compradoPor)
+  @JoinTable({
+    name: 'pub_user_game',
+    joinColumn: { name: 'id_user', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'id_game', referencedColumnName: 'id' },
+  })
+  public biblioteca?: Juego[];
+
   public ticketlist?: Promise<SupportTicket[]>
 
   constructor(
