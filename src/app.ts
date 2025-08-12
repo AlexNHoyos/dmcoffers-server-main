@@ -3,7 +3,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 
-import errorHandler from './middleware/errorHandler/errorHandler';
+import errorHandler from './middleware/errorHandler/errorHandler.js';
 
 import 'reflect-metadata';
 
