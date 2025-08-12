@@ -15,6 +15,7 @@ import { UserRolAplService } from '../user/user-rol-apl.service.js';
 import { IUserRolAplService } from '../interfaces/user/IUserRolAplService.js';
 import { IUserAuthRepository } from '../../repositories/interfaces/user/IUserAuthRepository.js';
 import nodemailer from 'nodemailer'; 
+import { info } from 'console';
 
 @injectable()
 export class AuthService implements IAuthService {
@@ -43,12 +44,14 @@ export class AuthService implements IAuthService {
       },
     });
 
-    await trasporter.sendMail({
+    const info = await trasporter.sendMail({
       from: "<no-reply@dmcoffers.com>",
       to: email,
       subject: 'Recuperar contraseña',
       html:'<h3>Recupera tu contraseña</h3><br><p>Haz click en el siguient enlace:</p> <a href="${resetLink}">${resetLink}></a><p>Este enlace expirará en una hora</p>',
     })
+    console.log('Mensaje enviado: %s', info.messageId);
+    console.log('Vista previa: %s', nodemailer.getTestMessageUrl(info));
   }
  
   async login (user: User , password: string){
