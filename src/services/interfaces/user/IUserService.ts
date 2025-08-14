@@ -8,9 +8,13 @@ export interface IUserService extends IBaseService<User | UserDto> {
 
   findByUserName(userName: string): Promise<User | undefined>;
 
-  updateUserByAdmin(id: number, user: User, rolToAsign?: string): Promise<User | undefined> ;
+  findByEmail(email: string): Promise<User | undefined>;//Nuevo
+
+  updateUserByAdmin(id: number, user: User, rolToAsign?: string): Promise<User | undefined>;
 
   updatePassword(id: number, newPassword:string): Promise<void>; //Nuevo
+
+  sendResetPass(email: string, token: string): Promise<void>; //Nuevo
 
   findByResetToken(token: string): Promise<User | null>;
 }

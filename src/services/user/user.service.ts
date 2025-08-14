@@ -31,14 +31,18 @@ export class UserService implements IUserService {
     this._passwordService = passwordService;
     this._userRolAplService = userRolAplService;
   }
+  sendResetPass(email: string, token: string): Promise<void> {
+    return this._userRepository.sendResetPass(email, token);
+  }
 
   //Nuevo
   async findByResetToken(token: string): Promise<User | null> {
     return await this._userRepository.findOneby(token);
   }
   //Nuevo
-  async findByEmail(email: string): Promise<User | null>{
-    return await this._userRepository.findOneby(email);
+  async findByEmail(email: string): Promise<User | undefined> {
+    const user = await this._userRepository.findByEmail(email);
+    return user === null ? undefined : user;
   }
   //Nuevo
   async updatePassword(userid: number, newPassword: string): Promise<void> {

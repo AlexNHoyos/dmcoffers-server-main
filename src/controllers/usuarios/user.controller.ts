@@ -4,11 +4,12 @@ import { IUserService } from '../../services/interfaces/user/IUserService.js';
 import { inject } from 'inversify';
 import { controller, httpDelete, httpGet, httpPost, httpPut } from 'inversify-express-utils';
 import { validateInputData } from '../../middleware/validation/validation-middleware.js';
-import { createUserValidationRules, deleteUserValidationRules, getUserValidationRules, updateUserByAdminValidationRules, updateUserValidationRules } from '../../middleware/validation/validations-rules/user-validations.js';
+import { createUserValidationRules, deleteUserValidationRules, forgotPasswordValidationRules, getUserValidationRules, resetPasswordValidationRules, updateUserByAdminValidationRules, updateUserValidationRules } from '../../middleware/validation/validations-rules/user-validations.js';
 import { authenticateToken, authorizeRol } from '../../middleware/auth/authToken.js';
 import { OkNegotiatedContentResult } from 'inversify-express-utils/lib/results/OkNegotiatedContentResult.js';
 import { JsonResult } from 'inversify-express-utils/lib/results/JsonResult.js';
 import { AuthCryptography } from '../../middleware/auth/authCryptography.js';
+import { ValidationError } from '../../middleware/errorHandler/validationError.js';
 
 @controller('/api/users')
 export class UserController {
@@ -101,6 +102,73 @@ export class UserController {
             next(error);
         }
     };
+
+    //Nuevo método para restablecer la contraseña
+  @httpPost('/forgot-password', validateInputData(forgotPasswordValidationRules))
+  public async forgotPassword(req: Request, res:Response, next:NextFunction){
+    const {email} = req.body;
+
+    try{
+      //Busca el usuario por el email
+      const user = await this._userService.findByEmail(email);
+      console.log(user);
+      console.log(email);
+      if(user){
+      //Genero un token aleatorio
+      const crypto = await import('crypto');
+      const token = crypto.randomBytes(32).toString('hex');
+      const expires = new Date(Date.now() + 60*60*1000);  
+
+      user.resetPasswordToken = token;
+      user.resetPasswordExpires = expires;
+
+      if (!user.id) {
+        throw new ValidationError('Usuario no tiene un ID válido');
+      }
+      await this._userService.update(user.id, user);
+
+      if (!user.email) {
+        throw new ValidationError('Usuario no tiene un email válido');
+      }
+      await this._userService.sendResetPass(user.email, token);
+      }
+
+      return res.json({ message:"Si existe, se envio un correo electrónico de recuperación" });
+    } catch(error){
+      next(error);
+    }
+  }
+
+  @httpPost('/reset-password', validateInputData(resetPasswordValidationRules))
+  public async resetPass(req:Request, res:Response, next:NextFunction){
+    const {token, newPassword} = req.body;
+
+    try{
+      const user = await this._userService.findByResetToken(token);
+
+      if (
+        !user ||
+        !user.resetPasswordExpires ||
+        user.resetPasswordExpires < new Date()
+      ) {
+        throw new ValidationError('Token invalido o expirado');
+      }
+
+      if (user.id === undefined) {
+        throw new ValidationError('Usuario no tiene un ID válido');
+      }
+      await this._userService.updatePassword(user.id, newPassword);
+
+      user.resetPasswordExpires = undefined;
+      user.resetPasswordToken = undefined;
+
+      await this._userService.update(user.id,user);
+
+      return res.json({ message: 'Contraseña actualizada correctamente'});
+    } catch(error) {
+      next(error);
+    }
+  }
 
     @httpDelete('/:id', authenticateToken, validateInputData(deleteUserValidationRules))
     public async remove(req: Request, res: Response, next: NextFunction) {

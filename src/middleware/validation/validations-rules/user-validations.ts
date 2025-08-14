@@ -6,6 +6,24 @@ export const getUserValidationRules = [
     .isInt({ min: 1 })
     .withMessage('Formato de ID invalido'),
 ];
+//Nuevo
+export const forgotPasswordValidationRules = [
+  body('email')
+    .notEmpty()
+    .isEmail()
+    .withMessage('Formato de email invalido'),
+];
+
+//Nuevo
+export const resetPasswordValidationRules = [
+  body('token')
+    .notEmpty()
+    .withMessage('Token es requerido'),
+  body('newPassword')
+    .notEmpty()
+    .isString()
+    .withMessage('Nueva contraseña es requerida'),
+];
 
 export const createUserValidationRules = [
   body('realname')

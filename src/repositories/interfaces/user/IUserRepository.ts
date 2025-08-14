@@ -9,6 +9,10 @@ export interface IUserRepository extends IBaseRepository<User> {
    
     registerUser( user: User): Promise<User>; 
 
+    findByEmail(email: string): Promise<User | undefined>;
+
     findOneby(token: string):Promise<User | null>
+
+    sendResetPass(email: string, token: string): Promise<void>;
   }
   

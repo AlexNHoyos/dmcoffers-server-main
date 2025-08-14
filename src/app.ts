@@ -10,7 +10,7 @@ import 'reflect-metadata';
 import swaggerDocs from './swagger';
 import commonRouter from './routes/common.routes.js';
 import { InversifyExpressServer } from 'inversify-express-utils';
-import { container } from './config/dependency-injection/inversify.config';
+import { container } from './config/dependency-injection/inversify.config.js';
 
 if (process.env.NODE_ENV !== 'test') {
   import ('./swagger.js');

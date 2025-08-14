@@ -4,12 +4,32 @@ import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError
 import { errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants.js';
 import { IUserRepository } from '../interfaces/user/IUserRepository.js';
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
+import nodemailer from 'nodemailer';
 
 export class UserRepository implements IUserRepository {
+
+  async findByEmail(email: string): Promise<User | undefined> {
+    try {
+      const result = await pool.query(
+        'SELECT * FROM swe_usrapl su WHERE su.email = $1',
+        [email]
+      );
+      if (result.rows.length > 0) {
+        const user = result.rows[0] as User;
+        return user;
+      } else {
+        return undefined;
+      }
+    } catch (error) {
+      console.error(errorEnumUser.userIndicatedNotFound, error);
+      throw new DatabaseErrorCustom(errorEnumUser.userIndicatedNotFound, 500);
+    }
+  }
+
   async findOneby(token: string): Promise<User | null> {
     try {
       const result = await pool.query(
-        'SELECT * FROM swe_usrapl su WHERE su.reset_token = $1',
+        'SELECT * FROM swe_usrapl su WHERE su.reset_password_token = $1',
         [token]
       );
       if (result.rows.length > 0) {
@@ -23,6 +43,33 @@ export class UserRepository implements IUserRepository {
       throw new DatabaseErrorCustom(errorEnumUser.userIndicatedNotFound, 500);
     }
   }
+
+  //Nuevo
+  async sendResetPass(email: string, token: string): Promise<void> {
+      const resetLink = `http://localhost:4200/reset-password/${token}`;
+
+      const trasporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth:{
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+  
+      const info = await trasporter.sendMail({
+        from: `"DMCOFFERS" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: 'Recuperar contraseña',
+        html:'<h3>Recupera tu contraseña</h3><br><p>Haz click en el siguient enlace:</p> <a href="${resetLink}">${resetLink}></a><p>Este enlace expirará en una hora</p>',
+      })
+      try{
+        console.log('Mensaje enviado: %s', info.messageId);
+        console.log('Vista previa: %s', nodemailer.getTestMessageUrl(info));
+      }
+      catch(error){
+        console.error('Error al enviar el correo electrónico de recuperación:', error);
+      }
+    }
 
   async findAll() {
     try {

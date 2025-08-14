@@ -15,6 +15,17 @@ export class UserRepository implements IUserRepository {
   constructor() {
     this._userRepo = AppDataSource.getRepository(User);
   }
+  findByEmail(email: string): Promise<User | undefined> {
+    return this._userRepo.findOne({ where: { email } }).then(user => user ?? undefined);
+  }
+  async sendResetPass(email: string, token: string): Promise<void> {
+    try {
+      await this._userRepo.update({ email }, { resetPasswordToken: token });
+    } catch (error) {
+      console.error(errorEnumUser.userNotUpdated, error);
+      throw new DatabaseErrorCustom(errorEnumUser.userNotUpdated, 500);
+    }
+  }
   findOneby(token: string): Promise<User | null> {
     throw new Error('Method not implemented.');
   }
