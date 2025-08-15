@@ -18,6 +18,7 @@ export class UserController {
     authCryptography: AuthCryptography = new AuthCryptography();
 
 
+
     constructor(
         @inject(UserService) userService: IUserService,
     ) {
@@ -106,13 +107,13 @@ export class UserController {
     //Nuevo método para restablecer la contraseña
   @httpPost('/forgot-password', validateInputData(forgotPasswordValidationRules))
   public async forgotPassword(req: Request, res:Response, next:NextFunction){
-    const {email} = req.body;
 
+    const {email} = req.body;
     try{
       //Busca el usuario por el email
       const user = await this._userService.findByEmail(email);
-      console.log(user);
-      console.log(email);
+      console.log(`Usuario encontrado: ${user}`);
+
       if(user){
       //Genero un token aleatorio
       const crypto = await import('crypto');
@@ -122,17 +123,19 @@ export class UserController {
       user.resetPasswordToken = token;
       user.resetPasswordExpires = expires;
 
+
       if (!user.id) {
         throw new ValidationError('Usuario no tiene un ID válido');
       }
+
       await this._userService.update(user.id, user);
 
       if (!user.email) {
         throw new ValidationError('Usuario no tiene un email válido');
       }
+
       await this._userService.sendResetPass(user.email, token);
       }
-
       return res.json({ message:"Si existe, se envio un correo electrónico de recuperación" });
     } catch(error){
       next(error);
@@ -142,15 +145,13 @@ export class UserController {
   @httpPost('/reset-password', validateInputData(resetPasswordValidationRules))
   public async resetPass(req:Request, res:Response, next:NextFunction){
     const {token, newPassword} = req.body;
+    console.log(`Entrando a resetPass con ${token}`);
 
     try{
       const user = await this._userService.findByResetToken(token);
+      console.log(`Usuario encontrado: ${user} por ${token}`);
 
-      if (
-        !user ||
-        !user.resetPasswordExpires ||
-        user.resetPasswordExpires < new Date()
-      ) {
+      if (!user) {
         throw new ValidationError('Token invalido o expirado');
       }
 

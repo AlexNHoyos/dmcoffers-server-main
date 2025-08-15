@@ -46,7 +46,7 @@ export class User {
   @Column({ name: 'creationuser', type: 'varchar' })
   public creationuser: string | undefined;
         //Nuevo
-  @Column({ name: 'reset_password_token', type: 'varchar', })
+  @Column({ name: 'reset_password_token', type: 'varchar', length: 255 })
   public resetPasswordToken: string | undefined;
 
   @Column({name: 'reset_password_expires', type: 'timestamp'})

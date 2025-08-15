@@ -13,6 +13,6 @@ export interface IUserRepository extends IBaseRepository<User> {
 
     findOneby(token: string):Promise<User | null>
 
-    sendResetPass(email: string, token: string): Promise<void>;
+    sendResetPassword(email: string, token: string): Promise<void>;
   }
   

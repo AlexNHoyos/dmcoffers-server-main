@@ -45,31 +45,32 @@ export class UserRepository implements IUserRepository {
   }
 
   //Nuevo
-  async sendResetPass(email: string, token: string): Promise<void> {
-      const resetLink = `http://localhost:4200/reset-password/${token}`;
+  async sendResetPassword(email: string, token: string): Promise<void> {
+    const resetLink = `http://localhost:4200/reset-password/${token}`;
 
-      const trasporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth:{
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-      });
-  
-      const info = await trasporter.sendMail({
-        from: `"DMCOFFERS" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: 'Recuperar contraseña',
-        html:'<h3>Recupera tu contraseña</h3><br><p>Haz click en el siguient enlace:</p> <a href="${resetLink}">${resetLink}></a><p>Este enlace expirará en una hora</p>',
-      })
-      try{
-        console.log('Mensaje enviado: %s', info.messageId);
-        console.log('Vista previa: %s', nodemailer.getTestMessageUrl(info));
-      }
-      catch(error){
-        console.error('Error al enviar el correo electrónico de recuperación:', error);
-      }
+    console.log(`Entrando a sendResetPassword con ${email} y ${token}`);
+
+    const trasporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const info = await trasporter.sendMail({
+      from: `"DMCOFFERS" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Recuperar contraseña',
+      html: `<h3>Recupera tu contraseña</h3><br><p>Haz click en el siguient enlace:</p> <a href="${resetLink}">${resetLink}</a><p>Este enlace expirará en una hora</p>`,
+    });
+    try {
+      console.log('Mensaje enviado: %s', info.messageId);
+      console.log('Vista previa: %s', nodemailer.getTestMessageUrl(info));
+    } catch (error) {
+      console.error('Error al enviar el correo electrónico de recuperación:', error);
     }
+  }
 
   async findAll() {
     try {

@@ -96,7 +96,7 @@ container.bind<IDesarrolladoresService>(DesarrolladoresService).to(Desarrollador
 container.bind<IPrecioService>(PrecioService).to(PrecioService);
 container.bind<IWishlistService>(WishlistService).to(WishlistService);
 container.bind<ISweItemMenuService>(SweItemMenuService).to(SweItemMenuService);
-container.bind<IUserRepository>(UserRepository).toSelf();
+container.bind<IUserRepository>(UserRepository).to(UserRepository);
 container.bind<IUserAuthRepository>(UserAuthRepository).toSelf();
 
 export { container };

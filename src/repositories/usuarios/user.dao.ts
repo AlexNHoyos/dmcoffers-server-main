@@ -18,7 +18,7 @@ export class UserRepository implements IUserRepository {
   findByEmail(email: string): Promise<User | undefined> {
     return this._userRepo.findOne({ where: { email } }).then(user => user ?? undefined);
   }
-  async sendResetPass(email: string, token: string): Promise<void> {
+  async sendResetPassword(email: string, token: string): Promise<void> {
     try {
       await this._userRepo.update({ email }, { resetPasswordToken: token });
     } catch (error) {
