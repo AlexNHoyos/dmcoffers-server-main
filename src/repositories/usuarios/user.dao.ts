@@ -27,7 +27,13 @@ export class UserRepository implements IUserRepository {
     }
   }
   findOneby(token: string): Promise<User | null> {
-    throw new Error('Method not implemented.');
+    console.log(`Buscando usuario por token: ${token}`);
+    return this._userRepo.findOneBy({ resetPasswordToken: token }).then(user => {
+      if (user) {
+        console.log(`Usuario encontrado por token: ${token}`);
+      }
+      return user;
+    });
   }
 
   async findAll(): Promise<User[]> {
