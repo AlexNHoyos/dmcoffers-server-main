@@ -149,7 +149,7 @@ export class UserController {
 
     try{
       const user = await this._userService.findByResetToken(token);
-      console.log(`Usuario encontrado: ${user} por ${token}`);
+      console.log(`Usuario encontrado: ${user?.id} por ${token}`);
 
       if (!user) {
         throw new ValidationError('Token invalido o expirado');
@@ -158,12 +158,8 @@ export class UserController {
       if (user.id === undefined) {
         throw new ValidationError('Usuario no tiene un ID válido');
       }
+      
       await this._userService.updatePassword(user.id, newPassword);
-
-      user.resetPasswordExpires = undefined;
-      user.resetPasswordToken = undefined;
-
-      await this._userService.update(user.id,user);
 
       return res.json({ message: 'Contraseña actualizada correctamente'});
     } catch(error) {

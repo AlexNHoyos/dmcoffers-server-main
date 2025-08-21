@@ -7,14 +7,33 @@ import { IUserRepository } from '../interfaces/user/IUserRepository.js';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants.js';
 import { injectable } from 'inversify';
+import { IUserAuthRepository } from '../../repositories/interfaces/user/IUserAuthRepository.js';
 
 @injectable()
 export class UserRepository implements IUserRepository {
   private _userRepo: Repository<User>;
+  private _userAuthRepo: Repository<UserAuth>;
 
   constructor() {
     this._userRepo = AppDataSource.getRepository(User);
+    this._userAuthRepo = AppDataSource.getRepository(UserAuth);
   }
+async updatePass(userid: number, newPassword: string): Promise<void> {
+    const user = await this._userRepo.findOne({
+      where: { id: userid },
+      relations: ['userauth']
+    });
+    console.log(`Actualizando contraseña para el usuario con ID: ${userid}`);
+    if (!user) {
+      throw new DatabaseErrorCustom(errorEnumUser.userIndicatedNotFound, 404);
+    }
+
+    if (user.userauth && user.userauth.id !== undefined) {
+      user.userauth.password = newPassword;
+      await this._userAuthRepo.update(user.userauth.id, user.userauth);
+    }
+  }
+
   findByEmail(email: string): Promise<User | undefined> {
     return this._userRepo.findOne({ where: { email } }).then(user => user ?? undefined);
   }

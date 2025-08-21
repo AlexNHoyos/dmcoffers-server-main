@@ -306,12 +306,34 @@ export class UserRepository implements IUserRepository {
       client.release();
     }
   }
+//Nuevo
+  async updatePass(userid: number, newPassword: string): Promise<void> {
+    const client = await pool.connect();
+    console.log(`Entrando a updatePass con userid: ${userid} y newPassword: ${newPassword}`);
+    const user = {userid, newPassword };
+    try {
+      await client.query('BEGIN');
 
+      const query = `
+        UPDATE swe_usrauth
+        SET password = $2, 
+        WHERE id_usrapl = $1
+        RETURNING *;
+      `;
+      const values = [
+        user.userid,
+        user.newPassword,
+      ];
 
+      const result = await client.query(query, values);
+      await client.query('COMMIT');
+      return result.rows[0];
+    } catch (error) {
+      await client.query('ROLLBACK');
+      console.error(errorEnumUser.userNotUpdated, error);
+      throw new DatabaseErrorCustom(errorEnumUser.userNotUpdated, 500);
+    } finally {
+      client.release();
+    }
+  }
 }
-
-
-
-
-
-

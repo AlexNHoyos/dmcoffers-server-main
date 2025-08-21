@@ -26,7 +26,7 @@ export class UserService implements IUserService {
   constructor(
     @inject(UserRepository) userRepository: IUserRepository,
     @inject(PasswordService) passwordService: IPasswordService,
-    @inject(UserRolAplService) userRolAplService: IUserRolAplService
+    @inject(UserRolAplService) userRolAplService: IUserRolAplService,
   ) {
     this._userRepository = userRepository;
     this._passwordService = passwordService;
@@ -75,13 +75,15 @@ export class UserService implements IUserService {
   //Nuevo
   async updatePassword(userid: number, newPassword: string): Promise<void> {
     const user = await this._userRepository.findOne(userid);
+
     if (!user) throw new Error('Usuario no encontrado');
 
     if (!user.userauth) {
       throw new Error('La información de autenticación del usuario no está disponible');
     }
-    user.userauth.password = await this._passwordService.hashPassword(newPassword);
-    await this._userRepository.update(userid, user);
+    console.log(`Actualizando contraseña para el usuario con ID: ${userid}`);
+    newPassword = await this._passwordService.hashPassword(newPassword);
+    await this._userRepository.updatePass(userid, newPassword);
   }
 
   async findAll(): Promise<UserDto[]> {
