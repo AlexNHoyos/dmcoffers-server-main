@@ -64,14 +64,14 @@ export class UserRolAplService implements IUserRolAplService {
         } else if (!currentRol) {
             /*const defaultRol = await this._rolAplRepository.findByRolName('Usuario');
             rolIdToAssign = defaultRol?.id; //Cambio*/
-            rolIdToAssign = userRolIdCons.usuarioTienda;
+            rolToAsign = userRolIdCons.usuarioTienda;
         } else { 
-            rolIdToAssign = currentRol.id;
+            rolToAsign = currentRol.id;
         }
 
         const newUserRol = new UserRolApl();
         newUserRol.id = undefined;
-        newUserRol.idRolapl = rolIdToAssign;
+        newUserRol.idRolapl = rolToAsign;
         newUserRol.idUsrapl = user.id;
         newUserRol.creationuser = user.creationuser;
         newUserRol.creationtimestamp = new Date();

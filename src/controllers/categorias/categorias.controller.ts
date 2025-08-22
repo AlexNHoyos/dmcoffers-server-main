@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { authenticateToken } from '../../middleware/auth/authToken';
+import { authenticateToken } from '../../middleware/auth/authToken.js';
 import { controller, httpDelete, httpGet, httpPost, httpPut } from 'inversify-express-utils';
 import { CategoriasService } from '../../services/categorias/categorias.service.js';
 import { ICategoriasService } from '../../services/interfaces/categorias/ICategoriasService.js';
