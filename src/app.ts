@@ -3,19 +3,16 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import errorHandler from './middleware/errorHandler/errorHandler.js';
 
 import 'reflect-metadata';
 
 import swaggerDocs from './swagger';
-import commonRouter from './routes/common.routes.js';
 import { InversifyExpressServer } from 'inversify-express-utils';
 import { container } from './config/dependency-injection/inversify.config.js';
-
-if (process.env.NODE_ENV !== 'test') {
-  import ('./swagger.js');
-}
-
 
 // Inicializar el servidor con Inversify y Express
 const server = new InversifyExpressServer(container);
@@ -26,7 +23,7 @@ server.setConfig(async (app) => {
   app.use(cors());
 
   //app.use(commonRouter);
-  console.log('NODE_ENV actual:', process.env.NODE_ENV);
+
   //ruta para utilizar documentacion de swagger
   // Solo cargar Swagger si no estamos en el entorno de prueba para UnitTesting o Integration Testing
   let swaggerDocs: any;

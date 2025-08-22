@@ -22,19 +22,65 @@ import {
   updateJuegoValidationRules,
 } from '../../middleware/validation/validations-rules/juego-validations.js';
 import { WishlistService } from '../../services/juego/wishlist.service.js';
+import { CartService } from '../../services/juego/cart.service.js';
+import { BibliotecaService } from '../../services/juego/biblioteca.service.js';
+import multer from 'multer';
+import path from 'path';
+import { validateImageUpload } from '../../middleware/validation/validateImageUpload.js';
+import { parseJuegoField } from '../../middleware/validation/parseJuegoField.js';
+
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/games'); // Carpeta donde se guardan las imagenes de los juegos
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const baseName = path.basename(file.originalname, ext).replace(/\s+/g, '_');
+    const uniqueSuffix = Date.now();
+    cb(null, `${baseName}-${uniqueSuffix}${ext}`);
+  },
+});
+
+const upload = multer({ storage });
 
 @controller('/api/juegos')
 export class JuegoController {
   private juegoService: IJuegoService;
   private wishlistService: WishlistService;
+  private cartService: CartService;
+  private bibliotecaService: BibliotecaService;
 
   constructor(
     @inject(JuegoService) juegoService: IJuegoService,
-    @inject(WishlistService) wishlistService: WishlistService
+    @inject(WishlistService) wishlistService: WishlistService,
+    @inject(CartService) cartService: CartService,
+    @inject(BibliotecaService) bibliotecaService: BibliotecaService,
+
   ) {
     this.juegoService = juegoService;
     this.wishlistService = wishlistService;
+    this.cartService = cartService;
+    this.bibliotecaService = bibliotecaService;
   }
+
+  /* @httpPost('/upload-image', authenticateToken, upload.single('image'))
+   public async uploadImage(req: Request, res: Response, next: NextFunction) {
+   try {
+     if (!req.file) {
+       return res.status(400).json({ message: 'No se proporcionó ninguna imagen' });
+     }
+ 
+     const imagePath = `/uploads/games/${req.file.filename}`; // o guarda solo el filename si prefieres
+ 
+     res.status(201).json({
+       message: 'Imagen subida con éxito',
+       imagePath,
+     });
+     } catch (error) {
+     next(error);
+     }
+   }*/
 
   @httpGet('/')
   public async findAll(req: Request, res: Response, next: NextFunction) {
@@ -69,6 +115,19 @@ export class JuegoController {
       next(error);
     }
   }
+  @httpGet('/biblioteca', authenticateToken)
+  public async getBiblioteca(req: Request, res: Response, next: NextFunction) {
+    const userId = res.locals.userId;
+
+    try {
+      const biblioteca = await this.bibliotecaService.getBiblioteca(userId);
+      console.log(biblioteca);
+      res.status(200).json(biblioteca);
+
+    } catch (error) {
+      next(error);
+    }
+  }
 
   // Ruta para obtener la wishlist del usuario logeado
   @httpGet('/wishlist', authenticateToken)
@@ -77,18 +136,47 @@ export class JuegoController {
 
     try {
       const wishlist = await this.juegoService.findWishlistGames(userId);
-
-      if (wishlist.length === 0) {
-        res
-          .status(404)
-          .json({
-            message: 'Este usuario no tiene juegos en su lista de deseados.',
-          });
-      } else {
-        res.status(200).json(wishlist);
-      }
+      res.status(200).json(wishlist);
     } catch (error) {
       console.error('Error al obtener la wishlist:', error);
+      next(error);
+    }
+  }
+
+
+
+  //Endpoint para el checkout
+  @httpPost('/cart/checkout', authenticateToken)
+  public async checkoutCart(req: Request, res: Response, next: NextFunction) {
+    const userId = res.locals.userId;
+    try {
+      // Obtener juegos del carrito
+      const juegos = await this.cartService.getCart(userId);
+
+      if (juegos.length === 0) {
+        return res.status(400).json({ message: 'El carrito está vacío' });
+      }
+
+      // Simular agregar los juegos a la biblioteca del usuario
+      await this.cartService.checkout(userId); // esta lógica la creás ahora
+
+      res.status(200).json({ message: 'Compra realizada con éxito' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+
+  @httpGet('/cart', authenticateToken)
+  public async getCart(req: Request, res: Response, next: NextFunction) {
+    const userId = res.locals.userId;
+
+    try {
+      const carrito = await this.juegoService.findCartGames(userId);
+      res.status(200).json(carrito);
+    }
+    catch (error) {
+      console.error('Error al obtener el carrito:', error);
       next(error);
     }
   }
@@ -109,25 +197,31 @@ export class JuegoController {
     }
   }
 
-  @httpPost('/', authenticateToken, validateInputData(createJuegoValidationRules))
+  @httpPost('/', authenticateToken, upload.single('image'), parseJuegoField, validateImageUpload)
   public async create(req: Request, res: Response, next: NextFunction) {
-    const newJuego = req.body;
 
     try {
-      const createdJuego = await this.juegoService.create(newJuego);
-      res.status(201).json(createdJuego);
+      const imagePath = req.file ? `/uploads/games/${req.file.filename}` : undefined;
+      const newJuego = await this.juegoService.createGame(req.body, imagePath);
+
+      return res.status(201).json(newJuego);
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
-  @httpPatch('/:id', authenticateToken, validateInputData(updateJuegoValidationRules))
+  @httpPatch('/:id', authenticateToken, upload.single('image'), parseJuegoField, validateImageUpload)
   public async update(req: Request, res: Response, next: NextFunction) {
     const id = parseInt(req.params.id, 10);
-    const juegoUpdates = req.body;
 
     try {
-      const updatedJuego = await this.juegoService.update(id, juegoUpdates);
+      // Si hay imagen, setear la ruta
+      if (req.file) {
+        req.body.image_path = `/uploads/games/${req.file.filename}`;
+      } else {
+        console.log("No se cargó ninguna imagen")
+      }
+      const updatedJuego = await this.juegoService.update(id, req.body);
       if (updatedJuego) {
         res.status(200).json(updatedJuego);
       } else {
@@ -207,4 +301,65 @@ export class JuegoController {
       next(error);
     }
   }
+
+  //Endpoints para carrito
+  @httpPost('/cart/:juegoId', authenticateToken)
+  public async addToCart(req: Request, res: Response, next: NextFunction) {
+    const userId = res.locals.userId;
+    const juegoId = parseInt(req.params.juegoId, 10);
+
+    try {
+      await this.cartService.addToCart(userId, juegoId);
+      res.status(201).json({ message: 'Juego agregado al carrito' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @httpDelete('/cart/:juegoId', authenticateToken)
+  public async removeFromCart(req: Request, res: Response, next: NextFunction) {
+    const userId = res.locals.userId;
+    const juegoId = parseInt(req.params.juegoId, 10);
+
+    try {
+      await this.cartService.removeFromCart(userId, juegoId);
+      res.status(200).json({ message: 'Juego eliminado del carrito' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @httpGet('/cart/:juegoId', authenticateToken)
+  public async checkIfInCart(req: Request, res: Response, next: NextFunction) {
+    const userId = res.locals.userId;
+    const juegoId = parseInt(req.params.juegoId, 10);
+
+    try {
+      const isInCart = await this.cartService.isInCart(userId, juegoId);
+      res.status(200).json({ isInCart });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+
+  //Endpoints para biblioteca
+
+
+
+  @httpGet('/biblioteca/:juegoId', authenticateToken)
+  public async checkIfInBiblioteca(req: Request, res: Response, next: NextFunction) {
+    const userId = res.locals.userId;
+    const juegoId = parseInt(req.params.juegoId, 10);
+
+    try {
+      const isInBiblioteca = await this.bibliotecaService.isInBiblioteca(userId, juegoId);
+      res.status(200).json({ isInBiblioteca });
+
+    } catch (error) {
+      next(error);
+    }
+  }
+
+
 }

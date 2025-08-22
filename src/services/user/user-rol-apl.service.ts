@@ -14,19 +14,37 @@ export class UserRolAplService implements IUserRolAplService {
     private _rolAplRepository: RolAplRepository;
 
     constructor(
-     @inject(UserRolRepository) userRolAplService: UserRolRepository,
-     @inject(RolAplRepository) rolAplRepository: RolAplRepository,
-    ){
+        @inject(UserRolRepository) userRolAplService: UserRolRepository,
+        @inject(RolAplRepository) rolAplRepository: RolAplRepository,
+    ) {
         this._userRolRepository = userRolAplService;
         this._rolAplRepository = rolAplRepository;
     }
 
-    async SearchUserCurrentRol(userRolAplList: UserRolApl[]): Promise<RolApl | undefined>{
-        
+    async updateUserRoles(userId: number, roleIds: number[], updatedBy: string): Promise<RolApl[]> {
+        // Asigna nuevos roles
+        const result: RolApl[] = [];
+        for (const idRol of roleIds) {
+            const newUserRol = new UserRolApl();
+            newUserRol.idUsrapl = userId;
+            newUserRol.idRolapl = idRol;
+            newUserRol.status = true;
+            newUserRol.creationuser = updatedBy;
+            newUserRol.creationtimestamp = new Date();
+
+            const created = await this._userRolRepository.create(newUserRol);
+            result.push(await created.rolApl!);
+        }
+
+        return result;
+    }
+
+    async SearchUserCurrentRol(userRolAplList: UserRolApl[]): Promise<RolApl | undefined> {
+
         const latestUserRol = userRolAplList.reduce((latest, current) => {
             const latestDate = new Date(latest.creationtimestamp ?? 0); // Si es undefined, usa 0 como fecha predeterminada
             const currentDate = new Date(current.creationtimestamp ?? 0);
-            
+
             return latestDate > currentDate ? latest : current;
         }, userRolAplList[0]);
 
@@ -37,12 +55,12 @@ export class UserRolAplService implements IUserRolAplService {
         return await latestUserRol.rolApl;
     }
 
-    async AsignRolUser(user: User, rolToAsign?: string, currentRol?: RolApl): Promise<RolApl | undefined> {
-        let rolIdToAssign: number | undefined;
-        
-        if (rolToAsign) {
-            const rol = await this._rolAplRepository.findByRolName(rolToAsign);
-            rolIdToAssign = rol?.id;
+    async AsignRolUser(user: User, rolName?: string, currentRol?: RolApl): Promise<RolApl | undefined> {
+        let rolToAsign: number | undefined;
+
+        if (rolName) {
+            const rol = await this._rolAplRepository.findByRolName(rolName);
+            rolToAsign = rol?.id;
         } else if (!currentRol) {
             /*const defaultRol = await this._rolAplRepository.findByRolName('Usuario');
             rolIdToAssign = defaultRol?.id; //Cambio*/
@@ -50,7 +68,7 @@ export class UserRolAplService implements IUserRolAplService {
         } else { 
             rolIdToAssign = currentRol.id;
         }
-    
+
         const newUserRol = new UserRolApl();
         newUserRol.id = undefined;
         newUserRol.idRolapl = rolIdToAssign;
@@ -58,10 +76,26 @@ export class UserRolAplService implements IUserRolAplService {
         newUserRol.creationuser = user.creationuser;
         newUserRol.creationtimestamp = new Date();
         newUserRol.status = true;
-    
+
         // Guarda el nuevo rol en la base de datos
         const userRolAsigned = await this._userRolRepository.create(newUserRol);
-    
+
         return userRolAsigned.rolApl;
+    }
+
+    async getAllUserRols(idUser: number): Promise<number[] | undefined> {
+
+        let userRols: any = await this._userRolRepository.getAllRolsByIdUser(idUser);
+        let rolArray: number[] = [];
+        if (userRols != undefined) {
+            userRols.forEach((ur: UserRolApl) => {
+                if (ur.idRolapl != undefined) {
+                    rolArray.push(ur.idRolapl);
+                }
+            });
+            return rolArray;
+        } else {
+            return undefined;
+        }
     }
 }

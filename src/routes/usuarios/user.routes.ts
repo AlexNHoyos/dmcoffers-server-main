@@ -6,6 +6,7 @@ import { validateInputData } from '../../middleware/validation/validation-middle
 
 const userRouter = Router();
 const userController = container.get<UserController>(UserController);
+const userRolController = container.get<UserController>(UserController);
 
 userRouter.get('/findall', userController.findAll.bind(userController));
 
@@ -34,6 +35,15 @@ userRouter.post('/reset-password',[
     .isString()
     .withMessage('Nueva contraseña es requerida'),
 ], userController.resetPass.bind(userController));
+
+userRouter.get(
+  '/:idUser',
+  param('idUser')
+    .notEmpty()
+    .isInt({ min: 1 })
+    .withMessage('Formato de ID invalido!'),
+  userRolController.getAllUserRoles.bind(userRolController)
+);
 
 userRouter.post(
   '/register',

@@ -11,7 +11,7 @@ import { createSupportTicketDescriptionValidationRules, createSupportTicketValid
 
 
     
-@controller('/api/supportTicket', authenticateToken)
+@controller('/api/supportTicket')
 export class SupportTicketController {
 
     private _supportTicketService: ISupportTicketService;
@@ -24,7 +24,7 @@ export class SupportTicketController {
         this._supportTicketService = supportTicketService;
     }
 
-    @httpGet('/findall')
+    @httpGet('/findall', authenticateToken)
     public async findAll(req: Request, res: Response, next: NextFunction) {
         try {
             const supportTicket = await this._supportTicketService.findAll();
@@ -38,7 +38,7 @@ export class SupportTicketController {
         }
     };
 
-    @httpGet('/:id', validateInputData(getSupportTicketValidationRules))
+    @httpGet('/:id', validateInputData(getSupportTicketValidationRules), authenticateToken)
     public async findOne(req: Request, res: Response, next: NextFunction) {
        
         const id = parseInt(req.params.id, 10);
@@ -59,6 +59,7 @@ export class SupportTicketController {
     public async create(req: Request, res: Response, next: NextFunction) {
         
         const newsupportTicket = req.body;
+        console.log(newsupportTicket);
 
         try {
             const createdSupportTicket = await this._supportTicketService.create(newsupportTicket);
@@ -86,7 +87,7 @@ export class SupportTicketController {
         }
     };
 
-    @httpDelete('/:id', validateInputData(deleteSupportTicketValidationRules))    
+    @httpDelete('/:id', validateInputData(deleteSupportTicketValidationRules), authenticateToken)    
     public async remove(req: Request, res: Response, next: NextFunction) {
         const id = parseInt(req.params.id, 10);
 

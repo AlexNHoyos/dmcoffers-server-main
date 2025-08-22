@@ -4,6 +4,7 @@ export enum errorEnumUser {
   usersNotFounded = 'Error al obtener los usuarios',
   userNotUpdated = 'Error al actualizar el usuario',
   userNotDeleted = 'Error al borrar el usuario',
+  usuerHasNoRol = 'Error al obtener roles de usuario - usuario inexistente',
 }
 
 export enum errorEnumHosting {

@@ -45,6 +45,9 @@ export class Juego {
   @Column({ type: 'varchar', length: 255, nullable: true })
   public modificationuser: string | undefined;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  public image_path: string | undefined;
+
   @ManyToOne(() => Publisher, (publisher) => publisher.juegos, {
     nullable: false,
     eager: true,
@@ -82,6 +85,18 @@ export class Juego {
   @ManyToMany(() => User, (user) => user.wishlist)
   public deseadoPor?: Promise<User[]>;
 
+  @ManyToMany(() => User, (user) => user.cart, {
+  nullable: true,
+  lazy: true,
+  })
+  enCarritoDe?: Promise<User[]>;
+
+  @ManyToMany(() => User, (user) => user.biblioteca, {
+  nullable: true,
+  lazy: true,
+  })
+  public compradoPor?: Promise<User[]>;
+
   constructor(
     id?: number,
     gamename?: string,
@@ -90,7 +105,9 @@ export class Juego {
     creationtimestamp?: Date,
     creationuser?: string,
     modificationtimestamp?: Date,
-    modificationuser?: string
+    modificationuser?: string,
+    image_path?: string
+
   ) {
     this.id = id;
     this.gamename = gamename;
@@ -100,5 +117,6 @@ export class Juego {
     this.creationuser = creationuser;
     this.modificationtimestamp = modificationtimestamp;
     this.modificationuser = modificationuser;
+    this.image_path = image_path;
   }
 }

@@ -136,3 +136,10 @@ export const updateUserByAdminValidationRules = [
     .isString()
     .withMessage('rolDescription debe ser un string'),
 ];
+
+export const getAllUserRolsValidationRules = [
+  param('idUser')
+    .notEmpty()
+    .isInt({ min: 1 })
+    .withMessage('Formato de ID invalido'),
+];

@@ -15,8 +15,33 @@ export class SweItemMenuService implements ISweItemMenuService {
     }
 
     async findAll(): Promise<SweItemMenu[]> {
-        return this.sideMenuRepository.findAll();
+        const items = await this.sideMenuRepository.findAll();
+
+        // Mapa para almacenar los items por ID
+        const itemMap = new Map<number, SweItemMenu>();
+
+        // Convertimos los registros en instancias de SweItemMenu
+        items.forEach(item => {
+
+
+            itemMap.set(item.id, new SweItemMenu(
+                item.id,
+                item.title,
+                item.description,
+                item.id_supitemmenu,
+                item.endpoint,
+                item.roles_permitidos,
+                item.ordernumber,
+                item.creationtimestamp,
+                item.creationuser,
+                item.modificationtimestamp,
+                item.modificationuser
+            ));
+        });
+
+        return Array.from(itemMap.values());
     }
+
 
     async findOne(id: number): Promise<SweItemMenu | undefined> {
         return this.sideMenuRepository.findOne(id);

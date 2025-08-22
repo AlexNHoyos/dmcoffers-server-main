@@ -1,5 +1,12 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { SweAccModApl } from "../sweaccmodapl/sweaccmodapl.entity.js";
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
 
 @Entity('swe_itemmenu')
 export class SweItemMenu {
@@ -13,17 +20,14 @@ export class SweItemMenu {
     @Column()
     public description: string;
 
-    @ManyToOne(() => SweAccModApl, (sweAccModApl) => sweAccModApl.id, {
-        nullable: true,
-        lazy: true,
+    @ManyToOne(() => SweItemMenu, {
+        nullable: true
     })
-    public idSweAccModApl?: Promise<SweAccModApl>;
+    @JoinColumn({ name: 'id_supitemmenu' })
+    public idSupItemMenu?: SweItemMenu;
 
-    @ManyToOne(() => SweItemMenu, (sweItemMenu) => sweItemMenu.id, {
-        nullable: true,
-        lazy: true
-    })
-    public idSupItemMenu?: Promise<SweItemMenu>;
+    @Column({ type: 'varchar', name: 'roles_permitidos' })
+    public roles_permitidos: string;
 
     @Column({ type: 'varchar', length: 255 })
     public creationuser: string;
@@ -32,10 +36,10 @@ export class SweItemMenu {
     public creationtimestamp: Date;
 
     @Column({ nullable: true })
-    public modificationuser: string;
+    public modificationuser?: string;
 
     @UpdateDateColumn({ type: 'varchar', length: 255, nullable: true })
-    public modificationtimestamp: Date;
+    public modificationtimestamp?: Date;
 
     @Column()
     public endpoint: string;
@@ -47,26 +51,25 @@ export class SweItemMenu {
         id: number,
         title: string,
         description: string,
-        idSupItemMenu: Promise<SweItemMenu>,
-        idSweAccModApl: Promise<SweAccModApl>,
+        idSupItemMenu: SweItemMenu,
         endpoint: string,
+        roles_permitidos: string,
         ordernumber: number,
         creationtimestamp: Date,
         creationuser: string,
-        modificationtimestamp: Date,
-        modificationuser: string
+        modificationtimestamp?: Date,
+        modificationuser?: string
     ) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.idSupItemMenu = idSupItemMenu;
-        this.idSweAccModApl = idSweAccModApl;
         this.endpoint = endpoint;
+        this.roles_permitidos = roles_permitidos;
         this.ordernumber = ordernumber;
         this.creationtimestamp = creationtimestamp;
         this.creationuser = creationuser;
         this.modificationtimestamp = modificationtimestamp;
         this.modificationuser = modificationuser;
     }
-
 }

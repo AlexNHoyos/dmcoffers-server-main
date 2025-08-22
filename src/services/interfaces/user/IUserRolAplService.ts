@@ -8,4 +8,8 @@ export interface IUserRolAplService {
 
   //Agrgado idRolApl
   AsignRolUser(user: User, rolToAsign?: string, currentRol?: RolApl): Promise<RolApl | undefined>
+
+  getAllUserRols(idUser: number): Promise<number[] | undefined>;
+
+  updateUserRoles(userId: number, roleIds: number[], updatedByUser: string): Promise<RolApl[]>;
 }
