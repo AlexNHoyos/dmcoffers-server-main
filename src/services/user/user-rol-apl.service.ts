@@ -96,4 +96,13 @@ export class UserRolAplService implements IUserRolAplService {
             return undefined;
         }
     }
+
+    async getRoles(): Promise<RolApl[] | undefined> {
+        let roles: RolApl[] | undefined = await this._rolAplRepository.findAll();
+        if (roles != undefined) {
+            return roles;
+        } else {
+            return undefined;
+        }
+    }
 }

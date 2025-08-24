@@ -4,7 +4,7 @@ import { IUserService } from '../../services/interfaces/user/IUserService.js';
 import { inject } from 'inversify';
 import { controller, httpDelete, httpGet, httpPost, httpPut } from 'inversify-express-utils';
 import { validateInputData } from '../../middleware/validation/validation-middleware.js';
-import { createUserValidationRules, deleteUserValidationRules, getAllUserRolsValidationRules, getUserValidationRules, updateUserByAdminValidationRules, updateUserValidationRules } from '../../middleware/validation/validations-rules/user-validations.js';
+import { createUserValidationRules, deleteUserValidationRules, getAllRolsValidationRules, getAllUserRolsValidationRules, getUserValidationRules, updateUserByAdminValidationRules, updateUserValidationRules } from '../../middleware/validation/validations-rules/user-validations.js';
 import { authenticateToken, authorizeRol } from '../../middleware/auth/authToken.js';
 import { OkNegotiatedContentResult } from 'inversify-express-utils/lib/results/OkNegotiatedContentResult.js';
 import { JsonResult } from 'inversify-express-utils/lib/results/JsonResult.js';
@@ -37,6 +37,21 @@ export class UserController {
                 //new OkNegotiatedContentResult(users);
             } else {
                 return new JsonResult({ message: 'No se han encontrado usuarios' }, 404);
+            }
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    @httpGet('/getAllRoles', authenticateToken, authorizeRol('admin'))
+    public async getAllRoles(req: Request, res: Response, next: NextFunction) {
+        try {
+            const roles = await this._userRolAplService.getRoles();
+
+            if (roles) {
+                res.status(200).json(roles);
+            } else {
+                res.status(404).json({ message: 'No existen roles cargados' });
             }
         } catch (error) {
             next(error);
@@ -142,6 +157,7 @@ export class UserController {
             next(error);
         }
     };
+
     @httpPut('/:id/roles', authenticateToken, authorizeRol('admin'))
     public async updateUserRoles(req: Request, res: Response, next: NextFunction) {
         const id = parseInt(req.params.id, 10);
@@ -159,4 +175,6 @@ export class UserController {
         }
 
     }
+
+
 }
