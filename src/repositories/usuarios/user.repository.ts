@@ -4,8 +4,74 @@ import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError
 import { errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants.js';
 import { IUserRepository } from '../interfaces/user/IUserRepository.js';
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
+import nodemailer from 'nodemailer';
 
 export class UserRepository implements IUserRepository {
+
+  async findByEmail(email: string): Promise<User | undefined> {
+    try {
+      const result = await pool.query(
+        'SELECT * FROM swe_usrapl su WHERE su.email = $1',
+        [email]
+      );
+      if (result.rows.length > 0) {
+        const user = result.rows[0] as User;
+        return user;
+      } else {
+        return undefined;
+      }
+    } catch (error) {
+      console.error(errorEnumUser.userIndicatedNotFound, error);
+      throw new DatabaseErrorCustom(errorEnumUser.userIndicatedNotFound, 500);
+    }
+  }
+
+  async findOneby(token: string): Promise<User | null> {
+    try {
+      const result = await pool.query(
+        'SELECT * FROM swe_usrapl su WHERE su.reset_password_token = $1',
+        [token]
+      );
+      if (result.rows.length > 0) {
+        const user = result.rows[0] as User;
+        return user;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error(errorEnumUser.userIndicatedNotFound, error);
+      throw new DatabaseErrorCustom(errorEnumUser.userIndicatedNotFound, 500);
+    }
+  }
+
+  //Nuevo
+  async sendResetPassword(email: string, token: string): Promise<void> {
+    const resetLink = `http://localhost:4200/reset-password/${token}`;
+
+    console.log(`Entrando a sendResetPassword con ${email} y ${token}`);
+
+    const trasporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const info = await trasporter.sendMail({
+      from: `"DMCOFFERS" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Recuperar contraseña',
+      html: `<h3>Recupera tu contraseña</h3><br><p>Haz click en el siguient enlace:</p> <a href="${resetLink}">${resetLink}</a><p>Este enlace expirará en una hora</p>`,
+    });
+    try {
+      console.log('Mensaje enviado: %s', info.messageId);
+      console.log('Vista previa: %s', nodemailer.getTestMessageUrl(info));
+    } catch (error) {
+      console.error('Error al enviar el correo electrónico de recuperación:', error);
+    }
+  }
+
   async findAll() {
     try {
       const result = await pool.query(
@@ -41,6 +107,7 @@ export class UserRepository implements IUserRepository {
       realname,
       surname,
       username,
+      email, // Agregado
       birth_date,
       delete_date,
       creationuser,
@@ -48,13 +115,14 @@ export class UserRepository implements IUserRepository {
       status,
     } = user;
     const query = `INSERT INTO swe_usrapl 
-                (realname, surname, username, birth_date, delete_date, creationuser, creationtimestamp, status) 
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+                (realname, surname, username, email, birth_date, delete_date, creationuser, creationtimestamp, status) 
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
                 RETURNING *;`;
     const values = [
       realname,
       surname,
       username,
+      email, // Agregado
       birth_date,
       delete_date,
       creationuser,
@@ -185,14 +253,15 @@ export class UserRepository implements IUserRepository {
 
         // Insertar el usuario
         const userInsertQuery = `
-            INSERT INTO swe_usrapl (realname, surname, username, birth_date, delete_date, creationuser, creationtimestamp, status) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+            INSERT INTO swe_usrapl (realname, surname, username, email, birth_date, delete_date, creationuser, creationtimestamp, status) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
             RETURNING *;
         `;
         const userValues = [
             user.realname,
             user.surname,
             user.username,
+            user.email,
             user.birth_date,
             user.delete_date,
             user.creationuser,
@@ -237,12 +306,34 @@ export class UserRepository implements IUserRepository {
       client.release();
     }
   }
+//Nuevo
+  async updatePass(userid: number, newPassword: string): Promise<void> {
+    const client = await pool.connect();
+    console.log(`Entrando a updatePass con userid: ${userid} y newPassword: ${newPassword}`);
+    const user = {userid, newPassword };
+    try {
+      await client.query('BEGIN');
 
+      const query = `
+        UPDATE swe_usrauth
+        SET password = $2, 
+        WHERE id_usrapl = $1
+        RETURNING *;
+      `;
+      const values = [
+        user.userid,
+        user.newPassword,
+      ];
 
+      const result = await client.query(query, values);
+      await client.query('COMMIT');
+      return result.rows[0];
+    } catch (error) {
+      await client.query('ROLLBACK');
+      console.error(errorEnumUser.userNotUpdated, error);
+      throw new DatabaseErrorCustom(errorEnumUser.userNotUpdated, 500);
+    } finally {
+      client.release();
+    }
+  }
 }
-
-
-
-
-
-

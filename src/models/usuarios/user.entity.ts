@@ -11,12 +11,14 @@ import {
   OneToMany,
   ManyToMany,
   JoinTable,
+  Timestamp,
 } from 'typeorm';
 import { UserAuth } from './user-auth.entity.js';
 import { UserRolApl } from './user-rol-apl.entity.js';
 import { RolApl } from '../roles/rol-apl.entity.js';
 import { Juego } from '../juegos/juegos.entity.js';
 import { SupportTicket } from '../support-ticket/support-ticket.entity.js';
+import { UnknownFieldInstance } from 'express-validator/lib/base.js';
 
 @Entity('swe_usrapl') // El nombre de la tabla en la base de datos
 export class User {
@@ -32,6 +34,9 @@ export class User {
   @Column({ name: 'username', type: 'varchar' })
   public username: string | undefined;
 
+  @Column({ name: 'email', type: 'varchar', length: 255 }) //Agregado
+  public email: string | undefined;
+
   @Column({ name: 'birth_date', type: 'timestamp' })
   public birth_date: Date | undefined;
 
@@ -40,7 +45,13 @@ export class User {
 
   @Column({ name: 'creationuser', type: 'varchar' })
   public creationuser: string | undefined;
+        //Nuevo
+  @Column({ name: 'reset_password_token', type: 'varchar', length: 255 })
+  public resetPasswordToken: string | undefined;
 
+  @Column({name: 'reset_password_expires', type: 'timestamp'})
+  public resetPasswordExpires: Date | undefined; 
+        //
   @CreateDateColumn()
   public creationtimestamp: Date | undefined;
 
@@ -105,6 +116,7 @@ export class User {
     realname?: string,
     surname?: string,
     username?: string,
+    email?: string, // Agregado
     birth_date?: Date,
     delete_date?: Date,
     creationuser?: string,
@@ -117,6 +129,7 @@ export class User {
     this.realname = realname;
     this.surname = surname;
     this.username = username;
+    this.email = email; // Agregado
     this.birth_date = birth_date;
     this.delete_date = delete_date;
     this.creationuser = creationuser;

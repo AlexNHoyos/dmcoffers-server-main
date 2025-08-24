@@ -62,8 +62,10 @@ export class UserRolAplService implements IUserRolAplService {
             const rol = await this._rolAplRepository.findByRolName(rolName);
             rolToAsign = rol?.id;
         } else if (!currentRol) {
+            /*const defaultRol = await this._rolAplRepository.findByRolName('Usuario');
+            rolIdToAssign = defaultRol?.id; //Cambio*/
             rolToAsign = userRolIdCons.usuarioTienda;
-        } else {
+        } else { 
             rolToAsign = currentRol.id;
         }
 
