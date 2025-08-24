@@ -4,11 +4,7 @@ import { IUserService } from '../../services/interfaces/user/IUserService.js';
 import { inject } from 'inversify';
 import { controller, httpDelete, httpGet, httpPost, httpPut } from 'inversify-express-utils';
 import { validateInputData } from '../../middleware/validation/validation-middleware.js';
-<<<<<<< HEAD
-import { createUserValidationRules, deleteUserValidationRules, getAllRolsValidationRules, getAllUserRolsValidationRules, getUserValidationRules, updateUserByAdminValidationRules, updateUserValidationRules } from '../../middleware/validation/validations-rules/user-validations.js';
-=======
 import { createUserValidationRules, deleteUserValidationRules, forgotPasswordValidationRules, getAllUserRolsValidationRules, getUserValidationRules, resetPasswordValidationRules, updateUserByAdminValidationRules, updateUserValidationRules } from '../../middleware/validation/validations-rules/user-validations.js';
->>>>>>> develop
 import { authenticateToken, authorizeRol } from '../../middleware/auth/authToken.js';
 import { OkNegotiatedContentResult } from 'inversify-express-utils/lib/results/OkNegotiatedContentResult.js';
 import { JsonResult } from 'inversify-express-utils/lib/results/JsonResult.js';
@@ -88,7 +84,7 @@ export class UserController {
             idUser: undefined,
             idRolApl: req.body.idRolApl,
             rolDesc: undefined,
-            email : req.body.email, //Agregado
+            email: req.body.email, //Agregado
             realname: req.body.realname,
             surname: req.body.surname,
             username: req.body.username,
@@ -129,67 +125,67 @@ export class UserController {
     };
 
     //Nuevo método para restablecer la contraseña
-  @httpPost('/forgot-password', validateInputData(forgotPasswordValidationRules))
-  public async forgotPassword(req: Request, res:Response, next:NextFunction){
+    @httpPost('/forgot-password', validateInputData(forgotPasswordValidationRules))
+    public async forgotPassword(req: Request, res: Response, next: NextFunction) {
 
-    const {email} = req.body;
-    try{
-      //Busca el usuario por el email
-      const user = await this._userService.findByEmail(email);
-      console.log(`Usuario encontrado: ${user}`);
+        const { email } = req.body;
+        try {
+            //Busca el usuario por el email
+            const user = await this._userService.findByEmail(email);
+            console.log(`Usuario encontrado: ${user}`);
 
-      if(user){
-      //Genero un token aleatorio
-      const crypto = await import('crypto');
-      const token = crypto.randomBytes(32).toString('hex');
-      const expires = new Date(Date.now() + 60*60*1000);  
+            if (user) {
+                //Genero un token aleatorio
+                const crypto = await import('crypto');
+                const token = crypto.randomBytes(32).toString('hex');
+                const expires = new Date(Date.now() + 60 * 60 * 1000);
 
-      user.resetPasswordToken = token;
-      user.resetPasswordExpires = expires;
+                user.resetPasswordToken = token;
+                user.resetPasswordExpires = expires;
 
 
-      if (!user.id) {
-        throw new ValidationError('Usuario no tiene un ID válido');
-      }
+                if (!user.id) {
+                    throw new ValidationError('Usuario no tiene un ID válido');
+                }
 
-      await this._userService.update(user.id, user);
+                await this._userService.update(user.id, user);
 
-      if (!user.email) {
-        throw new ValidationError('Usuario no tiene un email válido');
-      }
+                if (!user.email) {
+                    throw new ValidationError('Usuario no tiene un email válido');
+                }
 
-      await this._userService.sendResetPass(user.email, token);
-      }
-      return res.json({ message:"Si existe, se envio un correo electrónico de recuperación" });
-    } catch(error){
-      next(error);
+                await this._userService.sendResetPass(user.email, token);
+            }
+            return res.json({ message: "Si existe, se envio un correo electrónico de recuperación" });
+        } catch (error) {
+            next(error);
+        }
     }
-  }
 
-  @httpPost('/reset-password', validateInputData(resetPasswordValidationRules))
-  public async resetPass(req:Request, res:Response, next:NextFunction){
-    const {token, newPassword} = req.body;
-    console.log(`Entrando a resetPass con ${token}`);
+    @httpPost('/reset-password', validateInputData(resetPasswordValidationRules))
+    public async resetPass(req: Request, res: Response, next: NextFunction) {
+        const { token, newPassword } = req.body;
+        console.log(`Entrando a resetPass con ${token}`);
 
-    try{
-      const user = await this._userService.findByResetToken(token);
-      console.log(`Usuario encontrado: ${user?.id} por ${token}`);
+        try {
+            const user = await this._userService.findByResetToken(token);
+            console.log(`Usuario encontrado: ${user?.id} por ${token}`);
 
-      if (!user) {
-        throw new ValidationError('Token invalido o expirado');
-      }
+            if (!user) {
+                throw new ValidationError('Token invalido o expirado');
+            }
 
-      if (user.id === undefined) {
-        throw new ValidationError('Usuario no tiene un ID válido');
-      }
-      
-      await this._userService.updatePassword(user.id, newPassword);
+            if (user.id === undefined) {
+                throw new ValidationError('Usuario no tiene un ID válido');
+            }
 
-      return res.json({ message: 'Contraseña actualizada correctamente'});
-    } catch(error) {
-      next(error);
+            await this._userService.updatePassword(user.id, newPassword);
+
+            return res.json({ message: 'Contraseña actualizada correctamente' });
+        } catch (error) {
+            next(error);
+        }
     }
-  }
 
     @httpDelete('/:id', authenticateToken, validateInputData(deleteUserValidationRules))
     public async remove(req: Request, res: Response, next: NextFunction) {
