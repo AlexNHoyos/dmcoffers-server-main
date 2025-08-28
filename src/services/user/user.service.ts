@@ -15,7 +15,8 @@ import { UserRolAplService } from './user-rol-apl.service.js';
 import { IUserRolAplService } from '../interfaces/user/IUserRolAplService.js';
 import { RolApl } from '../../models/roles/rol-apl.entity.js';
 import { IUserRepository } from '../../repositories/interfaces/user/IUserRepository.js';
-import nodemailer from 'nodemailer';
+import { CreateEmailBody } from '../../middleware/email-creator/email.js';
+
 
 @injectable()
 export class UserService implements IUserService {
@@ -35,30 +36,7 @@ export class UserService implements IUserService {
   async sendResetPass(email: string, token: string): Promise<void> {
     console.log(`Entrando a UserRepository con ${email} y ${token}`);
 
-    const resetLink = `http://localhost:4200/reset-password`;
-    
-          console.log(`Entrando a sendResetPass con ${email} y ${token}`);
-    
-          const trasporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth:{
-              user: process.env.EMAIL_USER,
-              pass: process.env.EMAIL_PASS,
-            },
-          });
-      
-          const info = await trasporter.sendMail({
-            from: `"DMCOFFERS" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: 'Recuperar contraseña',
-            html: `<h3>Recupera tu contraseña</h3><br><p>Su token es: ${token}</p><p>Haz click en el siguient enlace:</p> <a href="${resetLink}">${resetLink}</a><p>Este enlace expirará en una hora</p>`,
-          });
-          try {
-            console.log('Mensaje enviado: %s', info.messageId);
-            console.log('Vista previa: %s', nodemailer.getTestMessageUrl(info));
-          } catch (error) {
-            console.error('Error al enviar el correo electrónico de recuperación:', error);
-          }
+    await CreateEmailBody(email, token);
 
     return await this._userRepository.sendResetPassword(email, token);
   }
@@ -325,3 +303,5 @@ export class UserService implements IUserService {
     return userToUpdate;
   }
 }
+
+
