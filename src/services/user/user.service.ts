@@ -33,6 +33,8 @@ export class UserService implements IUserService {
     this._passwordService = passwordService;
     this._userRolAplService = userRolAplService;
   }
+
+  
   async sendResetPass(email: string, token: string): Promise<void> {
     console.log(`Entrando a UserRepository con ${email} y ${token}`);
 
@@ -52,6 +54,7 @@ export class UserService implements IUserService {
   }
   //Nuevo
   async updatePassword(userid: number, newPassword: string): Promise<void> {
+    
     const user = await this._userRepository.findOne(userid);
 
     if (!user) throw new Error('Usuario no encontrado');
@@ -59,8 +62,13 @@ export class UserService implements IUserService {
     if (!user.userauth) {
       throw new Error('La información de autenticación del usuario no está disponible');
     }
+
     console.log(`Actualizando contraseña para el usuario con ID: ${userid}`);
-    newPassword = await this._passwordService.hashPassword(newPassword);
+
+    newPassword = (await this._passwordService.validatePassword(newPassword))
+                       ? await this._passwordService.hashPassword(newPassword)
+                       : (() => { throw new ValidationError('La Contraseña es inválida');})();
+
     await this._userRepository.updatePass(userid, newPassword);
   }
 
