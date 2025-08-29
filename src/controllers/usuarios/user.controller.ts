@@ -149,7 +149,10 @@ export class UserController {
 
   @httpPost('/reset-password', validateInputData(resetPasswordValidationRules))
   public async resetPass(req:Request, res:Response, next:NextFunction){
-    const {token, newPassword} = req.body;
+
+    const token = req.body.token;
+    const newPassword = this.authCryptography.decrypt(req.body.newPassword)
+
     console.log(`Entrando a resetPass con ${token}`);
 
     try{
