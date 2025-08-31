@@ -27,7 +27,7 @@ export class AuthController {
     this._userService = userService;
   }
 
-  @httpPost('/login',validateInputData(loginValidationRules))
+  @httpPost('/login', validateInputData(loginValidationRules))
   public async login(req: Request, res: Response, next: NextFunction) {
     
     let { username, password } = req.body;
@@ -37,16 +37,15 @@ export class AuthController {
     try {
       const user = await this._userService.findByUserName(username);
 
-      if (!user || !user.id ) {
-         throw new ValidationError('Usuario no encontrado' );
-      }
-      else if (!user.userauth?.password) {
-        throw new ValidationError('Usuario no encontrado');
-      }
-      const accessToken = await this._authService.login(user, password);
-      res.json({ accessToken });
-    } catch (error) {
-      next(error);
+    if (!user?.id || !user.userauth?.password) {
+      throw new ValidationError('Usuario no encontrado');
     }
+      const accessToken = await this._authService.login(user, password);
+
+      return res.json({ accessToken });
+
+      } catch (error) {        
+        return next(error);
+      }
   }
 }
