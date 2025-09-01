@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { UserController } from '../../controllers/usuarios/user.controller.js';
 import { body, param } from 'express-validator';
-import { authenticateToken } from '../../middleware/auth/authToken.js';
 import { container } from '../../config/dependency-injection/inversify.config.js';
+import { validateInputData } from '../../middleware/validation/validation-middleware.js';
 
 const userRouter = Router();
 const userController = container.get<UserController>(UserController);
@@ -18,6 +18,23 @@ userRouter.get(
     .withMessage('Formato de ID invalido!!!!!!!'),
   userController.findOne.bind(userController)
 );
+
+userRouter.post('/forgot-password', validateInputData([
+  body('email')
+    .notEmpty()
+    .isEmail()
+    .withMessage('Email debe ser un email válido'),
+]), userController.forgotPassword.bind(userController));
+
+userRouter.post('/reset-password',[
+  body('token')
+    .notEmpty()
+    .withMessage('Token es requerido'),
+  body('newPassword')
+    .notEmpty()
+    .isString()
+    .withMessage('Nueva contraseña es requerida'),
+], userController.resetPass.bind(userController));
 
 userRouter.get(
   '/:idUser',

@@ -7,13 +7,52 @@ import { IUserRepository } from '../interfaces/user/IUserRepository.js';
 import { DatabaseErrorCustom } from '../../middleware/errorHandler/dataBaseError.js';
 import { errorEnumUser } from '../../middleware/errorHandler/constants/errorConstants.js';
 import { injectable } from 'inversify';
+import { IUserAuthRepository } from '../../repositories/interfaces/user/IUserAuthRepository.js';
 
 @injectable()
 export class UserRepository implements IUserRepository {
   private _userRepo: Repository<User>;
+  private _userAuthRepo: Repository<UserAuth>;
 
   constructor() {
     this._userRepo = AppDataSource.getRepository(User);
+    this._userAuthRepo = AppDataSource.getRepository(UserAuth);
+  }
+async updatePass(userid: number, newPassword: string): Promise<void> {
+    const user = await this._userRepo.findOne({
+      where: { id: userid },
+      relations: ['userauth']
+    });
+    console.log(`Actualizando contraseña para el usuario con ID: ${userid}`);
+    if (!user) {
+      throw new DatabaseErrorCustom(errorEnumUser.userIndicatedNotFound, 404);
+    }
+
+    if (user.userauth && user.userauth.id !== undefined) {
+      user.userauth.password = newPassword;
+      await this._userAuthRepo.update(user.userauth.id, user.userauth);
+    }
+  }
+
+  findByEmail(email: string): Promise<User | undefined> {
+    return this._userRepo.findOne({ where: { email } }).then(user => user ?? undefined);
+  }
+  async sendResetPassword(email: string, token: string): Promise<void> {
+    try {
+      await this._userRepo.update({ email }, { resetPasswordToken: token });
+    } catch (error) {
+      console.error(errorEnumUser.userNotUpdated, error);
+      throw new DatabaseErrorCustom(errorEnumUser.userNotUpdated, 500);
+    }
+  }
+  findOneby(token: string): Promise<User | null> {
+    console.log(`Buscando usuario por token: ${token}`);
+    return this._userRepo.findOneBy({ resetPasswordToken: token }).then(user => {
+      if (user) {
+        console.log(`Usuario encontrado por token: ${token}`);
+      }
+      return user;
+    });
   }
 
   async findAll(): Promise<User[]> {

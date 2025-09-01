@@ -14,27 +14,70 @@ import { userRolIdCons } from '../../shared/constants/general-constants.js';
 import { UserRolAplService } from './user-rol-apl.service.js';
 import { IUserRolAplService } from '../interfaces/user/IUserRolAplService.js';
 import { RolApl } from '../../models/roles/rol-apl.entity.js';
+import { IUserRepository } from '../../repositories/interfaces/user/IUserRepository.js';
+import { CreateEmailBody } from '../../middleware/email-creator/email.js';
+
 
 @injectable()
 export class UserService implements IUserService {
-  private _userRepository: UserRepository;
+  private _userRepository: IUserRepository;
   private _passwordService: IPasswordService;
   private _userRolAplService: IUserRolAplService;
 
   constructor(
-    @inject(UserRepository) userRepository: UserRepository,
+    @inject(UserRepository) userRepository: IUserRepository,
     @inject(PasswordService) passwordService: IPasswordService,
-    @inject(UserRolAplService) userRolAplService: IUserRolAplService
+    @inject(UserRolAplService) userRolAplService: IUserRolAplService,
   ) {
     this._userRepository = userRepository;
     this._passwordService = passwordService;
     this._userRolAplService = userRolAplService;
   }
 
+  
+  async sendResetPass(email: string, token: string): Promise<void> {
+    console.log(`Entrando a UserRepository con ${email} y ${token}`);
+
+    await CreateEmailBody(email, token);
+
+    return await this._userRepository.sendResetPassword(email, token);
+  }
+
+  //Nuevo
+  async findByResetToken(token: string): Promise<User | null> {
+    return await this._userRepository.findOneby(token);
+  }
+  //Nuevo
+  async findByEmail(email: string): Promise<User | undefined> {
+    const user = await this._userRepository.findByEmail(email);
+    return user === null ? undefined : user;
+  }
+  //Nuevo
+  async updatePassword(userid: number, newPassword: string): Promise<void> {
+    
+    const user = await this._userRepository.findOne(userid);
+
+    if (!user) throw new Error('Usuario no encontrado');
+
+    if (!user.userauth) {
+      throw new Error('La información de autenticación del usuario no está disponible');
+    }
+
+    console.log(`Actualizando contraseña para el usuario con ID: ${userid}`);
+
+    newPassword = (await this._passwordService.validatePassword(newPassword))
+                       ? await this._passwordService.hashPassword(newPassword)
+                       : (() => { throw new ValidationError('La Contraseña es inválida');})();
+
+    await this._userRepository.updatePass(userid, newPassword);
+  }
+
   async findAll(): Promise<UserDto[]> {
     const usersList = await this._userRepository.findAll();
 
     let userOutPutList: UserDto[] = [];
+
+    if (!usersList || usersList.length === 0) return userOutPutList;
 
     userOutPutList = await Promise.all(
       usersList.map(async (user) => {
@@ -45,6 +88,7 @@ export class UserService implements IUserService {
 
         const userOutput: UserDto = {
           idUser: user.id,
+          idRolApl: user.currentRolId, //Nuevo
           rolDesc: currentRol?.description,
           realname: user.realname,
           surname: user.surname,
@@ -55,6 +99,7 @@ export class UserService implements IUserService {
           password: user.userauth?.password,
           status: user.status,
           delete_date: user.delete_date,
+          email: undefined
         };
 
         return userOutput;
@@ -73,6 +118,7 @@ export class UserService implements IUserService {
     );
     const userOutput: UserDto = {
       idUser: user.id,
+      idRolApl: user.currentRolId, //Nuevo
       rolDesc: currentRol?.description,
       realname: user.realname,
       surname: user.surname,
@@ -83,6 +129,7 @@ export class UserService implements IUserService {
       password: user.userauth?.password,
       status: user.status,
       delete_date: user.delete_date,
+      email: undefined
     };
     return userOutput;
   }
@@ -101,20 +148,25 @@ export class UserService implements IUserService {
 
     const userCreated = await this._userRepository.registerUser(userToCreate);
 
-    const rolAsigned = await this._userRolAplService.AsignRolUser(userCreated);
+    const rolAsigned = await this._userRolAplService.AsignRolUser(
+      userCreated,
+      newUser.idRolApl !== undefined ? String(newUser.idRolApl) : undefined
+    );
 
     const userOutput: UserDto = {
-      idUser: userCreated.id,
+      idUser: userCreated?.id,
+      idRolApl: userCreated?.currentRolId, //Nuevo
+      email: userCreated?.email, // Agregado
       rolDesc: rolAsigned?.description,
-      realname: userCreated.realname,
-      surname: userCreated.surname,
-      username: userCreated.username,
-      birth_date: userCreated.birth_date,
-      creationuser: userCreated.creationuser,
-      creationtimestamp: userCreated.creationtimestamp,
-      password: userCreated.userauth?.password,
-      status: userCreated.status,
-      delete_date: userCreated.delete_date,
+      realname: userCreated?.realname,
+      surname: userCreated?.surname,
+      username: userCreated?.username,
+      birth_date: userCreated?.birth_date,
+      creationuser: userCreated?.creationuser,
+      creationtimestamp: userCreated?.creationtimestamp,
+      password: userCreated?.userauth?.password,
+      status: userCreated?.status,
+      delete_date: userCreated?.delete_date,
       modificationuser: undefined,
       modificationtimestamp: undefined,
     };
@@ -130,7 +182,9 @@ export class UserService implements IUserService {
 
     const updatedUser = await this.initializeUserToUpdate(id, user, oldUser);
 
-    return this._userRepository.update(id, updatedUser);
+    const userOutput = this._userRepository.update(id, updatedUser)
+    
+    return userOutput ;
   }
 
   async delete(id: number): Promise<User | undefined> {
@@ -181,7 +235,7 @@ export class UserService implements IUserService {
     );
 
     let userUpdated = await this._userRepository.update(id, updatedUserData);
-
+    if (!userUpdated ) return;
     if (
       rolToAsign !== currentRol?.description /*&& rolToAsign.trim() !== ''*/
     ) {
@@ -212,6 +266,9 @@ export class UserService implements IUserService {
     userToCreate.realname = newUser.realname;
     userToCreate.surname = newUser.surname;
     userToCreate.username = newUser.username;
+    userToCreate.email = newUser.email; // Agregado
+    userToCreate.resetPasswordToken = undefined;
+    userToCreate.resetPasswordExpires = undefined;
     userToCreate.birth_date = newUser.birth_date;
     userToCreate.delete_date = newUser.delete_date;
     userToCreate.status = newUser.status;
@@ -231,27 +288,28 @@ export class UserService implements IUserService {
   ) {
     const userToUpdate: User = {
       id: oldUser.id,
-      realname:
-        userWithChanges.realname && userWithChanges.realname.trim() !== ''
-          ? userWithChanges.realname
-          : oldUser.realname,
-      surname:
-        userWithChanges.surname && userWithChanges.surname.trim() !== ''
-          ? userWithChanges.surname
-          : oldUser.surname,
-      username:
-        userWithChanges.username && userWithChanges.username.trim() !== ''
-          ? userWithChanges.username
-          : oldUser.username,
+      realname: userWithChanges.realname && userWithChanges.realname.trim() !== ''
+        ? userWithChanges.realname
+        : oldUser.realname,
+      email: undefined,
+      surname: userWithChanges.surname && userWithChanges.surname.trim() !== ''
+        ? userWithChanges.surname
+        : oldUser.surname,
+      username: userWithChanges.username && userWithChanges.username.trim() !== ''
+        ? userWithChanges.username
+        : oldUser.username,
       birth_date: userWithChanges.birth_date ?? oldUser.birth_date,
       delete_date: userWithChanges.delete_date ?? oldUser.delete_date,
       status: userWithChanges.status ?? oldUser.status,
       creationuser: oldUser.creationuser, // No debe cambiar en la actualización
       creationtimestamp: oldUser.creationtimestamp, // No debe cambiar en la actualización
-      modificationuser:
-        userWithChanges.modificationuser ?? oldUser?.modificationuser,
-      modificationtimestamp: new Date(), // Fecha de modificación actual
+      modificationuser: userWithChanges.modificationuser ?? oldUser?.modificationuser,
+      modificationtimestamp: new Date(),
+      resetPasswordToken: undefined,
+      resetPasswordExpires: undefined
     };
     return userToUpdate;
   }
 }
+
+
