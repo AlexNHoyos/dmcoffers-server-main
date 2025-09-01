@@ -48,8 +48,6 @@ export class UserRepository implements IUserRepository {
   async sendResetPassword(email: string, token: string): Promise<void> {
     const resetLink = `http://localhost:4200/reset-password/${token}`;
 
-    console.log(`Entrando a sendResetPassword con ${email} y ${token}`);
-
     const trasporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -65,8 +63,6 @@ export class UserRepository implements IUserRepository {
       html: `<h3>Recupera tu contraseña</h3><br><p>Haz click en el siguient enlace:</p> <a href="${resetLink}">${resetLink}</a><p>Este enlace expirará en una hora</p>`,
     });
     try {
-      console.log('Mensaje enviado: %s', info.messageId);
-      console.log('Vista previa: %s', nodemailer.getTestMessageUrl(info));
     } catch (error) {
       console.error('Error al enviar el correo electrónico de recuperación:', error);
     }
@@ -102,7 +98,7 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async create(user: User ) {
+  async create(user: User) {
     const {
       realname,
       surname,
@@ -202,11 +198,11 @@ export class UserRepository implements IUserRepository {
 
     try {
       await client.query('BEGIN');
-      
-      await client.query('DELETE FROM swe_usrauth ua WHERE ua.id = $1 RETURNING *',[id]);
+
+      await client.query('DELETE FROM swe_usrauth ua WHERE ua.id = $1 RETURNING *', [id]);
 
       // Ejecutar la query de Delete
-      const result = await client.query('DELETE FROM swe_usrapl su WHERE su.id = $1 RETURNING *', [id] );
+      const result = await client.query('DELETE FROM swe_usrapl su WHERE su.id = $1 RETURNING *', [id]);
 
       await client.query('COMMIT');
 
@@ -249,48 +245,48 @@ export class UserRepository implements IUserRepository {
     const client = await pool.connect();
 
     try {
-        await client.query('BEGIN');
+      await client.query('BEGIN');
 
-        // Insertar el usuario
-        const userInsertQuery = `
+      // Insertar el usuario
+      const userInsertQuery = `
             INSERT INTO swe_usrapl (realname, surname, username, email, birth_date, delete_date, creationuser, creationtimestamp, status) 
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
             RETURNING *;
         `;
-        const userValues = [
-            user.realname,
-            user.surname,
-            user.username,
-            user.email,
-            user.birth_date,
-            user.delete_date,
-            user.creationuser,
-            user.creationtimestamp,
-            user.status,
-        ];
+      const userValues = [
+        user.realname,
+        user.surname,
+        user.username,
+        user.email,
+        user.birth_date,
+        user.delete_date,
+        user.creationuser,
+        user.creationtimestamp,
+        user.status,
+      ];
 
-        const userResult = await client.query(userInsertQuery, userValues);
-        const insertedUser = userResult.rows[0];
+      const userResult = await client.query(userInsertQuery, userValues);
+      const insertedUser = userResult.rows[0];
 
-        // Insertar la autenticación del usuario
-        const userAuthInsertQuery = `
+      // Insertar la autenticación del usuario
+      const userAuthInsertQuery = `
             INSERT INTO swe_usrauth (id, creationuser, creationtimestamp, password, salt) 
             VALUES ($1, $2, $3, $4, $5) 
             RETURNING *;
         `;
-        const userAuthValues = [
-            insertedUser.id, // Asumiendo que la tabla swe_usrapl tiene un campo id
-            insertedUser.creationuser,
-            insertedUser.creationtimestamp,
+      const userAuthValues = [
+        insertedUser.id, // Asumiendo que la tabla swe_usrapl tiene un campo id
+        insertedUser.creationuser,
+        insertedUser.creationtimestamp,
 
-        ];
+      ];
 
-        const userAuthResult = await client.query(userAuthInsertQuery, userAuthValues);
-        const insertedUserAuth = userAuthResult.rows[0];
+      const userAuthResult = await client.query(userAuthInsertQuery, userAuthValues);
+      const insertedUserAuth = userAuthResult.rows[0];
 
-        await client.query('COMMIT');
+      await client.query('COMMIT');
 
-        return insertedUser;
+      return insertedUser;
 
     } catch (error) {
       // Hacer rollback de la transacción en caso de error
@@ -300,17 +296,16 @@ export class UserRepository implements IUserRepository {
       console.error(errorEnumUser.userNotCreated, error);
 
       throw new DatabaseErrorCustom(errorEnumUser.userNotCreated, 500);
-      
+
     } finally {
       // Liberar el cliente de nuevo al pool
       client.release();
     }
   }
-//Nuevo
+  //Nuevo
   async updatePass(userid: number, newPassword: string): Promise<void> {
     const client = await pool.connect();
-    console.log(`Entrando a updatePass con userid: ${userid} y newPassword: ${newPassword}`);
-    const user = {userid, newPassword };
+    const user = { userid, newPassword };
     try {
       await client.query('BEGIN');
 
