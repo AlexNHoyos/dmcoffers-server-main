@@ -91,13 +91,11 @@ export class WishlistRepository {
       });
 
       if (user && user.wishlist) {
-        console.log('Wishlist fetched successfully:', user.wishlist);
         return user.wishlist;
       } else {
         throw new Error('Lista de deseos no encontrada para usuario');
       }
     } catch (error) {
-      console.error('Problema al buscar wishlist:', error);
       throw new DatabaseErrorCustom('Problema al buscar wishlist', 500);
     }
   }

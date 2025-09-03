@@ -78,7 +78,6 @@ export class UserController {
 
     @httpPost('/register', validateInputData(createUserValidationRules))
     public async create(req: Request, res: Response, next: NextFunction) {
-        console.log(req.body);
 
         const newUser = { //req.body solamente
             idUser: undefined,
@@ -132,7 +131,6 @@ export class UserController {
         try {
             //Busca el usuario por el email
             const user = await this._userService.findByEmail(email);
-            console.log(`Usuario encontrado: ${user}`);
 
             if (user) {
                 //Genero un token aleatorio
@@ -164,12 +162,12 @@ export class UserController {
 
     @httpPost('/reset-password', validateInputData(resetPasswordValidationRules))
     public async resetPass(req: Request, res: Response, next: NextFunction) {
-        const { token, newPassword } = req.body;
-        console.log(`Entrando a resetPass con ${token}`);
+
+        const token = req.body.token;
+        const newPassword = this.authCryptography.decrypt(req.body.newPassword)
 
         try {
             const user = await this._userService.findByResetToken(token);
-            console.log(`Usuario encontrado: ${user?.id} por ${token}`);
 
             if (!user) {
                 throw new ValidationError('Token invalido o expirado');
@@ -178,7 +176,6 @@ export class UserController {
             if (user.id === undefined) {
                 throw new ValidationError('Usuario no tiene un ID válido');
             }
-
             await this._userService.updatePassword(user.id, newPassword);
 
             return res.json({ message: 'Contraseña actualizada correctamente' });

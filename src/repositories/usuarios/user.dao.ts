@@ -1,5 +1,5 @@
 // src/repositories/usuarios/user.repository.ts
-import {  Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { AppDataSource } from '../../config/pg-database/db.js';
 import { User } from '../../models/usuarios/user.entity.js';
 import { UserAuth } from '../../models/usuarios/user-auth.entity.js';
@@ -18,12 +18,11 @@ export class UserRepository implements IUserRepository {
     this._userRepo = AppDataSource.getRepository(User);
     this._userAuthRepo = AppDataSource.getRepository(UserAuth);
   }
-async updatePass(userid: number, newPassword: string): Promise<void> {
+  async updatePass(userid: number, newPassword: string): Promise<void> {
     const user = await this._userRepo.findOne({
       where: { id: userid },
       relations: ['userauth']
     });
-    console.log(`Actualizando contraseña para el usuario con ID: ${userid}`);
     if (!user) {
       throw new DatabaseErrorCustom(errorEnumUser.userIndicatedNotFound, 404);
     }
@@ -46,11 +45,7 @@ async updatePass(userid: number, newPassword: string): Promise<void> {
     }
   }
   findOneby(token: string): Promise<User | null> {
-    console.log(`Buscando usuario por token: ${token}`);
     return this._userRepo.findOneBy({ resetPasswordToken: token }).then(user => {
-      if (user) {
-        console.log(`Usuario encontrado por token: ${token}`);
-      }
       return user;
     });
   }
@@ -66,8 +61,8 @@ async updatePass(userid: number, newPassword: string): Promise<void> {
 
   async findOne(id: number): Promise<User | undefined> {
     try {
-      const user = await this._userRepo.findOneBy({id});
-      return user?? undefined;
+      const user = await this._userRepo.findOneBy({ id });
+      return user ?? undefined;
     } catch (error) {
       console.error(errorEnumUser.userIndicatedNotFound, error);
       throw new DatabaseErrorCustom(errorEnumUser.userIndicatedNotFound, 500);
@@ -92,8 +87,8 @@ async updatePass(userid: number, newPassword: string): Promise<void> {
         throw new DatabaseErrorCustom(errorEnumUser.userIndicatedNotFound, 404);
       }
       await this._userRepo.update(id, user);
-      
-      return await this._userRepo.findOneByOrFail({id});
+
+      return await this._userRepo.findOneByOrFail({ id });
     } catch (error) {
       console.error(errorEnumUser.userNotUpdated, error);
       throw new DatabaseErrorCustom(errorEnumUser.userNotUpdated, 500);
@@ -117,8 +112,8 @@ async updatePass(userid: number, newPassword: string): Promise<void> {
 
   async findByUserName(userName: string): Promise<User | undefined> {
     try {
-      const user =  await this._userRepo.findOne({ where: { username: userName } });
-      return user?? undefined;
+      const user = await this._userRepo.findOne({ where: { username: userName } });
+      return user ?? undefined;
     } catch (error) {
       console.error(errorEnumUser.userIndicatedNotFound, error);
       throw new DatabaseErrorCustom(errorEnumUser.userIndicatedNotFound, 404);
@@ -128,14 +123,14 @@ async updatePass(userid: number, newPassword: string): Promise<void> {
   async registerUser(user: User): Promise<User> {
     // Asignar el objeto `UserAuth` al `User` antes de iniciar la transacción
 
-  
+
     const queryRunner = this._userRepo.manager.connection.createQueryRunner();
     await queryRunner.startTransaction();
-  
+
     try {
       // Guardar el usuario con la entidad relacionada
       const savedUser = await queryRunner.manager.save(User, user);
-  
+
       await queryRunner.commitTransaction();
       return savedUser;
     } catch (error) {
@@ -146,5 +141,5 @@ async updatePass(userid: number, newPassword: string): Promise<void> {
       await queryRunner.release();
     }
   }
-  
+
 }

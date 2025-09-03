@@ -15,7 +15,8 @@ import { UserRolAplService } from './user-rol-apl.service.js';
 import { IUserRolAplService } from '../interfaces/user/IUserRolAplService.js';
 import { RolApl } from '../../models/roles/rol-apl.entity.js';
 import { IUserRepository } from '../../repositories/interfaces/user/IUserRepository.js';
-import nodemailer from 'nodemailer';
+import { CreateEmailBody } from '../../middleware/email-creator/email.js';
+
 
 @injectable()
 export class UserService implements IUserService {
@@ -32,33 +33,11 @@ export class UserService implements IUserService {
     this._passwordService = passwordService;
     this._userRolAplService = userRolAplService;
   }
-  async sendResetPass(email: string, token: string): Promise<void> {
-    console.log(`Entrando a UserRepository con ${email} y ${token}`);
 
-    const resetLink = `http://localhost:4200/reset-password`;
-    
-          console.log(`Entrando a sendResetPass con ${email} y ${token}`);
-    
-          const trasporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth:{
-              user: process.env.EMAIL_USER,
-              pass: process.env.EMAIL_PASS,
-            },
-          });
-      
-          const info = await trasporter.sendMail({
-            from: `"DMCOFFERS" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: 'Recuperar contraseña',
-            html: `<h3>Recupera tu contraseña</h3><br><p>Su token es: ${token}</p><p>Haz click en el siguient enlace:</p> <a href="${resetLink}">${resetLink}</a><p>Este enlace expirará en una hora</p>`,
-          });
-          try {
-            console.log('Mensaje enviado: %s', info.messageId);
-            console.log('Vista previa: %s', nodemailer.getTestMessageUrl(info));
-          } catch (error) {
-            console.error('Error al enviar el correo electrónico de recuperación:', error);
-          }
+
+  async sendResetPass(email: string, token: string): Promise<void> {
+
+    await CreateEmailBody(email, token);
 
     return await this._userRepository.sendResetPassword(email, token);
   }
@@ -74,6 +53,7 @@ export class UserService implements IUserService {
   }
   //Nuevo
   async updatePassword(userid: number, newPassword: string): Promise<void> {
+
     const user = await this._userRepository.findOne(userid);
 
     if (!user) throw new Error('Usuario no encontrado');
@@ -81,8 +61,11 @@ export class UserService implements IUserService {
     if (!user.userauth) {
       throw new Error('La información de autenticación del usuario no está disponible');
     }
-    console.log(`Actualizando contraseña para el usuario con ID: ${userid}`);
-    newPassword = await this._passwordService.hashPassword(newPassword);
+
+    newPassword = (await this._passwordService.validatePassword(newPassword))
+      ? await this._passwordService.hashPassword(newPassword)
+      : (() => { throw new ValidationError('La Contraseña es inválida'); })();
+
     await this._userRepository.updatePass(userid, newPassword);
   }
 
@@ -197,8 +180,8 @@ export class UserService implements IUserService {
     const updatedUser = await this.initializeUserToUpdate(id, user, oldUser);
 
     const userOutput = this._userRepository.update(id, updatedUser)
-    
-    return userOutput ;
+
+    return userOutput;
   }
 
   async delete(id: number): Promise<User | undefined> {
@@ -249,7 +232,7 @@ export class UserService implements IUserService {
     );
 
     let userUpdated = await this._userRepository.update(id, updatedUserData);
-    if (!userUpdated ) return;
+    if (!userUpdated) return;
     if (
       rolToAsign !== currentRol?.description /*&& rolToAsign.trim() !== ''*/
     ) {
@@ -266,8 +249,8 @@ export class UserService implements IUserService {
     newUser.creationtimestamp = new Date();
 
     newUser.password = (await this._passwordService.validatePassword(newUser.password!))
-                       ? await this._passwordService.hashPassword(newUser.password!)
-                       : (() => { throw new ValidationError('La Contraseña es inválida');})();
+      ? await this._passwordService.hashPassword(newUser.password!)
+      : (() => { throw new ValidationError('La Contraseña es inválida'); })();
 
     const newUserAuth: UserAuth = new UserAuth(
       newUser.password!,
@@ -325,3 +308,5 @@ export class UserService implements IUserService {
     return userToUpdate;
   }
 }
+
+

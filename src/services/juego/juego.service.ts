@@ -116,7 +116,6 @@ export class JuegoService implements IJuegoService {
   }
 
   public async createGame(newJuego: JuegoDto, imagePath?: string): Promise<JuegoDto> {
-    console.log(newJuego);
     this.validacionField(newJuego);
 
     const [publisher, developer, categorias] = await Promise.all([

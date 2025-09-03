@@ -22,6 +22,12 @@ server.setConfig(async (app) => {
   app.use(express.json());
   app.use(cors());
 
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
+  // Si tu carpeta "uploads" está en la raíz del proyecto
+  app.use('/uploads', express.static(path.resolve('uploads')));
+
   //app.use(commonRouter);
 
   //ruta para utilizar documentacion de swagger
