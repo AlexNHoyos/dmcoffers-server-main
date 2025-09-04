@@ -9,11 +9,8 @@ import { UserDto } from '../../models-dto/usuarios/user-dto.entity.js';
 import { inject, injectable } from 'inversify';
 import { IPasswordService } from '../interfaces/auth/IPasswordService.js';
 import { PasswordService } from '../auth/password.service.js';
-import { UserRolApl } from '../../models/usuarios/user-rol-apl.entity.js';
-import { userRolIdCons } from '../../shared/constants/general-constants.js';
 import { UserRolAplService } from './user-rol-apl.service.js';
 import { IUserRolAplService } from '../interfaces/user/IUserRolAplService.js';
-import { RolApl } from '../../models/roles/rol-apl.entity.js';
 import { IUserRepository } from '../../repositories/interfaces/user/IUserRepository.js';
 import { CreateEmailBody } from '../../middleware/email-creator/email.js';
 
