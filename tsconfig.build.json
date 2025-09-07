@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],  // excluye jest para producción
+    "sourceMap": false
+  }
+}
