@@ -31,7 +31,7 @@ export class SupportTicketController {
             if (supportTicket.length > 0) {
                 res.status(200).json(supportTicket);
             } else {
-                res.status(404).json({ message: 'No se han hayado tickets' });
+                res.status(404).json({ message: 'No se han encontrado tickets' });
             }
         } catch (error) {
             next(error);

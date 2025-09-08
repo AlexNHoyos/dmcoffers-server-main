@@ -89,7 +89,7 @@ export class JuegoController {
       if (juegos.length > 0) {
         res.status(200).json(juegos);
       } else {
-        res.status(404).json({ message: 'No se han hayado juegos' });
+        res.status(404).json({ message: 'No se han encontrado juegos' });
       }
     } catch (error) {
       next(error);
