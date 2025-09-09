@@ -23,7 +23,7 @@ server.setConfig(async (app) => {
 
  if (process.env.NODE_ENV === 'production') {
   app.use(cors({
-    origin: 'https://dmcoffers.vercel.app',
+    origin: 'https://784c3a60.dmcoffers-client.pages.dev',
     credentials: true
   }));
 } else {
