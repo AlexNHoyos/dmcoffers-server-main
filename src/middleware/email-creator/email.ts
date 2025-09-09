@@ -6,7 +6,7 @@ export async function CreateEmailBody(email: string, token: string) {
 
    if (process.env.NODE_ENV === 'production') {
  
-    resetLink = 'https://784c3a60.dmcoffers-client.pages.dev/reset-password';
+    resetLink = 'https://dmcoffers-client.pages.dev/reset-password';
     
   }
  else {
