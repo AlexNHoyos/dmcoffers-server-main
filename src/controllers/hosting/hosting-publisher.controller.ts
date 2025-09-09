@@ -23,6 +23,7 @@ export class HostingPublisherController {
         try {
             const hostingspublisher = await this._hostingPublisherService.findAll();
             if (hostingspublisher.length > 0) {
+
                 res.status(200).json(hostingspublisher);
             } else {
                 res.status(404).json({ message: 'No se ha encontrado ninguna especificacion para hostings' });

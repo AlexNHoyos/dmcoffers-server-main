@@ -9,7 +9,7 @@ import { injectable } from 'inversify';
 @injectable()
 export class HostingPublisherRepository implements IBaseRepository<HostingPublisher> {
 
-    async findAll() {
+    async findAll(): Promise<HostingPublisher[]> {
         try {
             const result = await pool.query('SELECT * FROM hs_publisher_service hs ORDER BY hs.id ASC')
             return result.rows;

@@ -58,7 +58,7 @@ import { SweItemMenuService } from '../../services/sweitemmenu/sweitemmenu.servi
 import { IUserRepository } from '../../repositories/interfaces/user/IUserRepository.js';
 import { IUserAuthRepository } from '../../repositories/interfaces/user/IUserAuthRepository.js';
 import { HostingPublisherController } from '../../controllers/hosting/hosting-publisher.controller.js';
-import { HostingPublisherRepository } from '../../repositories/hosting/hosting-publisher.repository.js';
+import { HostingPublisherRepository } from '../../repositories/hosting/hosting-publisher.dao.js';
 import { HostingPublisherService } from '../../services/hosting/hosting-publisher.service.js';
 import { IHostingPublisherService } from '../../services/interfaces/hosting/IHostingPublisherService.js';
 

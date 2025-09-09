@@ -3,6 +3,8 @@ import {
     Entity,
     PrimaryGeneratedColumn,
     Column,
+    CreateDateColumn,
+    UpdateDateColumn,
     JoinColumn,
     ManyToOne,
 } from 'typeorm';
@@ -15,14 +17,14 @@ export class HostingPublisher {
 
     @ManyToOne(() => Publisher, (publisher) => publisher.hostingpublisher, {
         nullable: false,
-        eager: true,
+        eager: false,
     })
     @JoinColumn({ name: 'id_publisher' })
     public publisher: Publisher | undefined;
 
     @ManyToOne(() => Hosting, (hosting) => hosting.hostingpublisher, {
         nullable: false,
-        eager: true,
+        lazy: true,
     })
     @JoinColumn({ name: 'id_hosting_service' })
     public hosting: Hosting | undefined;
@@ -48,7 +50,9 @@ export class HostingPublisher {
         storageAmmount: number,
         ramAmmount: number,
         cpuSpecs: string,
-        uptimePercentage: number
+        uptimePercentage: number,
+        publisher: Publisher,
+        hosting: Hosting
     ) {
         this.id = id;
         this.storageType = storageType;
@@ -56,5 +60,7 @@ export class HostingPublisher {
         this.ramAmmount = ramAmmount;
         this.cpuSpecs = cpuSpecs;
         this.uptimePercentage = uptimePercentage;
+        this.publisher = publisher;
+        this.hosting = hosting;
     }
 }

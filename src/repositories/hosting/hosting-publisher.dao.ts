@@ -7,7 +7,7 @@ import { injectable } from 'inversify';
 import { HostingPublisher } from '../../models/hosting/hosting-publisher.entity.js';
 
 @injectable()
-export class HostingRepository implements IBaseRepository<HostingPublisher> {
+export class HostingPublisherRepository implements IBaseRepository<HostingPublisher> {
     private repository: Repository<HostingPublisher>;
 
     constructor() {
@@ -17,6 +17,7 @@ export class HostingRepository implements IBaseRepository<HostingPublisher> {
     async findAll(): Promise<HostingPublisher[]> {
         try {
             return await this.repository.find({
+                relations: ['publisher', 'hosting'],
                 order: {
                     id: 'ASC', // Ordena por id ascendente
                 },
