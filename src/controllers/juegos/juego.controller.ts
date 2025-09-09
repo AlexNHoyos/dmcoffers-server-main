@@ -89,7 +89,7 @@ export class JuegoController {
       if (juegos.length > 0) {
         res.status(200).json(juegos);
       } else {
-        res.status(404).json({ message: 'No se han hayado juegos' });
+        res.status(404).json({ message: 'No se han encontrado juegos' });
       }
     } catch (error) {
       next(error);
@@ -121,7 +121,6 @@ export class JuegoController {
 
     try {
       const biblioteca = await this.bibliotecaService.getBiblioteca(userId);
-      console.log(biblioteca);
       res.status(200).json(biblioteca);
 
     } catch (error) {
@@ -218,8 +217,6 @@ export class JuegoController {
       // Si hay imagen, setear la ruta
       if (req.file) {
         req.body.image_path = `/uploads/games/${req.file.filename}`;
-      } else {
-        console.log("No se cargó ninguna imagen")
       }
       const updatedJuego = await this.juegoService.update(id, req.body);
       if (updatedJuego) {

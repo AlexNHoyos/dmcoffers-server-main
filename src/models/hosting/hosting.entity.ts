@@ -4,7 +4,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { HostingPublisher } from './hosting-publisher.entity.js';
 
 @Entity('hs_hosting_service') // El nombre de la tabla en la base de datos
 export class Hosting {
@@ -28,6 +30,9 @@ export class Hosting {
 
   @Column()
   public status: boolean;
+
+  @OneToMany(() => HostingPublisher, (hostingpublisher) => hostingpublisher.hosting)
+  public hostingpublisher: HostingPublisher[] | undefined;
 
   constructor(
     id: number,

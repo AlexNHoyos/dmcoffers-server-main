@@ -45,6 +45,21 @@ export class UserController {
         }
     };
 
+    @httpGet('/getAllRoles', authenticateToken, authorizeRol('Administrador'))
+    public async getAllRoles(req: Request, res: Response, next: NextFunction) {
+        try {
+            const roles = await this._userRolAplService.getRoles();
+
+            if (roles) {
+                res.status(200).json(roles);
+            } else {
+                res.status(404).json({ message: 'No existen roles cargados' });
+            }
+        } catch (error) {
+            next(error);
+        }
+    };
+
     @httpGet('/:id', validateInputData(getUserValidationRules))
     public async findOne(req: Request, res: Response, next: NextFunction) {
         const id = parseInt(req.params.id, 10);
@@ -63,13 +78,12 @@ export class UserController {
 
     @httpPost('/register', validateInputData(createUserValidationRules))
     public async create(req: Request, res: Response, next: NextFunction) {
-        console.log(req.body);
 
         const newUser = { //req.body solamente
             idUser: undefined,
             idRolApl: req.body.idRolApl,
             rolDesc: undefined,
-            email : req.body.email, //Agregado
+            email: req.body.email, //Agregado
             realname: req.body.realname,
             surname: req.body.surname,
             username: req.body.username,
@@ -110,70 +124,65 @@ export class UserController {
     };
 
     //Nuevo método para restablecer la contraseña
-  @httpPost('/forgot-password', validateInputData(forgotPasswordValidationRules))
-  public async forgotPassword(req: Request, res:Response, next:NextFunction){
+    @httpPost('/forgot-password', validateInputData(forgotPasswordValidationRules))
+    public async forgotPassword(req: Request, res: Response, next: NextFunction) {
 
-    const {email} = req.body;
-    try{
-      //Busca el usuario por el email
-      const user = await this._userService.findByEmail(email);
-      console.log(`Usuario encontrado: ${user}`);
+        const { email } = req.body;
+        try {
+            //Busca el usuario por el email
+            const user = await this._userService.findByEmail(email);
 
-      if(user){
-      //Genero un token aleatorio
-      const crypto = await import('crypto');
-      const token = crypto.randomBytes(32).toString('hex');
-      const expires = new Date(Date.now() + 60*60*1000);  
+            if (user) {
+                //Genero un token aleatorio
+                const crypto = await import('crypto');
+                const token = crypto.randomBytes(32).toString('hex');
+                const expires = new Date(Date.now() + 60 * 60 * 1000);
 
-      user.resetPasswordToken = token;
-      user.resetPasswordExpires = expires;
+                user.resetPasswordToken = token;
+                user.resetPasswordExpires = expires;
 
 
-      if (!user.id) {
-        throw new ValidationError('Usuario no tiene un ID válido');
-      }
+                if (!user.id) {
+                    throw new ValidationError('Usuario no tiene un ID válido');
+                }
 
-      await this._userService.update(user.id, user);
+                await this._userService.update(user.id, user);
 
-      if (!user.email) {
-        throw new ValidationError('Usuario no tiene un email válido');
-      }
+                if (!user.email) {
+                    throw new ValidationError('Usuario no tiene un email válido');
+                }
 
-      await this._userService.sendResetPass(user.email, token);
-      }
-      return res.json({ message:"Si existe, se envio un correo electrónico de recuperación" });
-    } catch(error){
-      next(error);
+                await this._userService.sendResetPass(user.email, token);
+            }
+            return res.json({ message: "Si existe, se envio un correo electrónico de recuperación" });
+        } catch (error) {
+            next(error);
+        }
     }
-  }
 
-  @httpPost('/reset-password', validateInputData(resetPasswordValidationRules))
-  public async resetPass(req:Request, res:Response, next:NextFunction){
+    @httpPost('/reset-password', validateInputData(resetPasswordValidationRules))
+    public async resetPass(req: Request, res: Response, next: NextFunction) {
 
-    const token = req.body.token;
-    const newPassword = this.authCryptography.decrypt(req.body.newPassword)
+        const token = req.body.token;
+        const newPassword = this.authCryptography.decrypt(req.body.newPassword)
 
-    console.log(`Entrando a resetPass con ${token}`);
+        try {
+            const user = await this._userService.findByResetToken(token);
 
-    try{
-      const user = await this._userService.findByResetToken(token);
-      console.log(`Usuario encontrado: ${user?.id} por ${token}`);
+            if (!user) {
+                throw new ValidationError('Token invalido o expirado');
+            }
 
-      if (!user) {
-        throw new ValidationError('Token invalido o expirado');
-      }
+            if (user.id === undefined) {
+                throw new ValidationError('Usuario no tiene un ID válido');
+            }
+            await this._userService.updatePassword(user.id, newPassword);
 
-      if (user.id === undefined) {
-        throw new ValidationError('Usuario no tiene un ID válido');
-      }
-      
-      await this._userService.updatePassword(user.id, newPassword);
-
-      return res.json({ message: 'Contraseña actualizada correctamente'});
-    } catch(error) {
-      next(error);
+            return res.json({ message: 'Contraseña actualizada correctamente' });
+        } catch (error) {
+            next(error);
+        }
     }
-  }
 
     @httpDelete('/:id', authenticateToken, validateInputData(deleteUserValidationRules))
     public async remove(req: Request, res: Response, next: NextFunction) {
@@ -192,7 +201,7 @@ export class UserController {
         }
     };
 
-    @httpPut('/updateUser/:id', authenticateToken, validateInputData(updateUserByAdminValidationRules), authorizeRol('admin'))
+    @httpPut('/updateUser/:id', authenticateToken, validateInputData(updateUserByAdminValidationRules), authorizeRol('Administrador'))
     public async updateUserByAdmin(req: Request, res: Response, next: NextFunction) {
 
         const id = parseInt(req.params.id, 10);
@@ -225,7 +234,8 @@ export class UserController {
             next(error);
         }
     };
-    @httpPut('/:id/roles', authenticateToken, authorizeRol('admin'))
+
+    @httpPut('/:id/roles', authenticateToken, authorizeRol('Administrador'))
     public async updateUserRoles(req: Request, res: Response, next: NextFunction) {
         const id = parseInt(req.params.id, 10);
         const roleIds: number[] = req.body.roleIds;
@@ -234,7 +244,7 @@ export class UserController {
             const updatedRoles = await this._userRolAplService.updateUserRoles(
                 id,
                 roleIds,
-                'admin'
+                'Administrador'
             );
             res.status(200).json(updatedRoles);
         } catch (error) {
@@ -242,4 +252,6 @@ export class UserController {
         }
 
     }
+
+
 }

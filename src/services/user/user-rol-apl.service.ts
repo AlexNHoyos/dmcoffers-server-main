@@ -54,9 +54,9 @@ export class UserRolAplService implements IUserRolAplService {
             rolToAsign = rol?.id;
 
         } else if (!currentRol) {
-             rolToAsign = userRolIdCons.usuarioTienda;
-             
-        } else { 
+            rolToAsign = userRolIdCons.Usuariotienda;
+
+        } else {
             rolToAsign = currentRol.id;
         }
 
@@ -82,6 +82,14 @@ export class UserRolAplService implements IUserRolAplService {
         }
     }
 
+    async getRoles(): Promise<RolApl[] | undefined> {
+        let roles: RolApl[] | undefined = await this._rolAplRepository.findAll();
+        if (roles != undefined) {
+            return roles;
+        } else {
+            return undefined;
+        }
+    }
 
     private async createUserRolApl(userId?: number, rolId?: number, creationUser?: string): Promise<RolApl> {
 
@@ -96,5 +104,6 @@ export class UserRolAplService implements IUserRolAplService {
         const created = await this._userRolRepository.create(newUserRol);
 
         return created.rolApl!;
+
     }
 }

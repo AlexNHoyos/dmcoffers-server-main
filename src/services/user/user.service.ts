@@ -9,11 +9,8 @@ import { UserDto } from '../../models-dto/usuarios/user-dto.entity.js';
 import { inject, injectable } from 'inversify';
 import { IPasswordService } from '../interfaces/auth/IPasswordService.js';
 import { PasswordService } from '../auth/password.service.js';
-import { UserRolApl } from '../../models/usuarios/user-rol-apl.entity.js';
-import { userRolIdCons } from '../../shared/constants/general-constants.js';
 import { UserRolAplService } from './user-rol-apl.service.js';
 import { IUserRolAplService } from '../interfaces/user/IUserRolAplService.js';
-import { RolApl } from '../../models/roles/rol-apl.entity.js';
 import { IUserRepository } from '../../repositories/interfaces/user/IUserRepository.js';
 import { CreateEmailBody } from '../../middleware/email-creator/email.js';
 
@@ -34,9 +31,8 @@ export class UserService implements IUserService {
     this._userRolAplService = userRolAplService;
   }
 
-  
+
   async sendResetPass(email: string, token: string): Promise<void> {
-    console.log(`Entrando a UserRepository con ${email} y ${token}`);
 
     await CreateEmailBody(email, token);
 
@@ -54,7 +50,7 @@ export class UserService implements IUserService {
   }
   //Nuevo
   async updatePassword(userid: number, newPassword: string): Promise<void> {
-    
+
     const user = await this._userRepository.findOne(userid);
 
     if (!user) throw new Error('Usuario no encontrado');
@@ -63,11 +59,9 @@ export class UserService implements IUserService {
       throw new Error('La información de autenticación del usuario no está disponible');
     }
 
-    console.log(`Actualizando contraseña para el usuario con ID: ${userid}`);
-
     newPassword = (await this._passwordService.validatePassword(newPassword))
-                       ? await this._passwordService.hashPassword(newPassword)
-                       : (() => { throw new ValidationError('La Contraseña es inválida');})();
+      ? await this._passwordService.hashPassword(newPassword)
+      : (() => { throw new ValidationError('La Contraseña es inválida'); })();
 
     await this._userRepository.updatePass(userid, newPassword);
   }
@@ -183,8 +177,8 @@ export class UserService implements IUserService {
     const updatedUser = await this.initializeUserToUpdate(id, user, oldUser);
 
     const userOutput = this._userRepository.update(id, updatedUser)
-    
-    return userOutput ;
+
+    return userOutput;
   }
 
   async delete(id: number): Promise<User | undefined> {
@@ -235,7 +229,7 @@ export class UserService implements IUserService {
     );
 
     let userUpdated = await this._userRepository.update(id, updatedUserData);
-    if (!userUpdated ) return;
+    if (!userUpdated) return;
     if (
       rolToAsign !== currentRol?.description /*&& rolToAsign.trim() !== ''*/
     ) {
@@ -252,8 +246,8 @@ export class UserService implements IUserService {
     newUser.creationtimestamp = new Date();
 
     newUser.password = (await this._passwordService.validatePassword(newUser.password!))
-                       ? await this._passwordService.hashPassword(newUser.password!)
-                       : (() => { throw new ValidationError('La Contraseña es inválida');})();
+      ? await this._passwordService.hashPassword(newUser.password!)
+      : (() => { throw new ValidationError('La Contraseña es inválida'); })();
 
     const newUserAuth: UserAuth = new UserAuth(
       newUser.password!,

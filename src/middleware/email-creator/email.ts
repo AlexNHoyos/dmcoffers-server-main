@@ -1,7 +1,18 @@
 import nodemailer from 'nodemailer';
 
 export async function CreateEmailBody(email: string, token: string) {
-  const resetLink = `http://localhost:4200/reset-password`;
+  
+   let resetLink = undefined;
+
+   if (process.env.NODE_ENV === 'production') {
+ 
+    resetLink = 'https://dmcoffers.vercel.app/reset-password';
+    
+  }
+ else {
+    resetLink = `http://localhost:4200/reset-password`;
+  }
+  
 
   console.log(`Entrando a sendResetPass con ${email} y ${token}`);
 
