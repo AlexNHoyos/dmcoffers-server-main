@@ -18,7 +18,7 @@ export class HostingPublisherDto {
         cpu_specs: string,
         uptime_percentage: number,
         id_publisher: Publisher,
-        id_hosting: Hosting
+        id_hosting_service: Hosting
     ) {
         this.storageAmmount = storage_ammount;
         this.storageType = storage_type;
@@ -26,6 +26,6 @@ export class HostingPublisherDto {
         this.cpuSpecs = cpu_specs;
         this.uptimePercentage = uptime_percentage;
         this.publisher = id_publisher;
-        this.hosting = id_hosting;
+        this.hosting = id_hosting_service;
     }
 }
