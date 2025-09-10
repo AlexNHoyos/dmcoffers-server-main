@@ -10,6 +10,8 @@ import { PublisherService } from '../publisher/publisher.service.js';
 import { DesarrolladoresService } from '../desarrolladores/desarrolladores.service.js';
 import { PrecioService } from './precios.service.js';
 import { Precio } from '../../models/juegos/precios.entity.js';
+import fs from "fs";
+import path from 'path';
 
 @injectable()
 export class JuegoService implements IJuegoService {
@@ -18,6 +20,7 @@ export class JuegoService implements IJuegoService {
   private publisherService: PublisherService;
   private desarrolladoresService: DesarrolladoresService;
   private precioService: PrecioService;
+  
 
   constructor(
     @inject(JuegoRepository) juegoRepository: JuegoRepository,
@@ -293,6 +296,29 @@ export class JuegoService implements IJuegoService {
 
   private async convertToDto(juego: Juego, price?: number): Promise<JuegoDto> {
     const categorias = await juego.categorias;
+
+    const UPLOADS_BASE_PATH = path.resolve(process.cwd(), "uploads", "games");
+
+    let imageBase64: string | undefined = undefined;
+    let imageContentType: string | undefined = undefined;
+    if (juego.image_path) {
+    let filePath: string;
+
+    if (juego.image_path.includes("uploads")) {
+      const relativePath = juego.image_path.replace(/^.*uploads[\\/]games[\\/]/, "");
+      filePath = path.join(UPLOADS_BASE_PATH, relativePath);
+    } else {
+      filePath = path.join(UPLOADS_BASE_PATH, juego.image_path);
+    }
+
+    if (fs.existsSync(filePath)) {
+      const fileBuffer = fs.readFileSync(filePath);
+      imageBase64 = fileBuffer.toString("base64");
+      imageContentType = "image/png"; 
+    } else {
+      console.warn("⚠️ No se encontró el archivo:", filePath);
+    }
+  }
     return {
       id: juego.id,
       gamename: juego.gamename,
@@ -312,6 +338,8 @@ export class JuegoService implements IJuegoService {
       developerName: juego.developer?.developername,
       categoriasNames: categorias?.map((categoria) => categoria.description),
       image_path: juego.image_path,
+      imageBase64: imageBase64,   
+      imageContentType: imageContentType
     };
   }
 
@@ -321,5 +349,5 @@ export class JuegoService implements IJuegoService {
     return validExtensions.some((ext) => imagePath.endsWith(ext));
   }
 
-
+  
 }
