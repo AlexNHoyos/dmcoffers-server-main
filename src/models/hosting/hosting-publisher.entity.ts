@@ -17,7 +17,7 @@ export class HostingPublisher {
 
     @ManyToOne(() => Publisher, (publisher) => publisher.hostingpublisher, {
         nullable: false,
-        eager: false,
+        eager: true,
     })
     @JoinColumn({ name: 'id_publisher' })
     public publisher: Publisher | undefined;
