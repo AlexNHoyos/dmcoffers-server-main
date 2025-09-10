@@ -11,12 +11,15 @@ export class JuegoDto {
   id_developer: number | undefined;
   categorias: number[] | undefined;
   price?: number | undefined;
+  
 
   publisherName?: string; // Agregado para devolver los nombres en los gets
   developerName?: string;
   categoriasNames?: string[];
 
   image_path?: string | undefined;
+  imageBase64?: string;   // nuevo campo
+  imageContentType?: string;
   constructor(
     gamename: string,
     release_date: Date,
