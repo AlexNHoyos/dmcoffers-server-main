@@ -93,7 +93,6 @@ export class CartRepository {
       });
 
       if (user && user.cart) {
-        console.log('Cart fetched successfully:', user.cart);
         return user.cart;
       } else {
         throw new Error('Carrito no encontrado para usuario');
@@ -105,6 +104,6 @@ export class CartRepository {
   }
 
   public async clearCart(userId: number): Promise<void> {
-  await this.userRepository.query('DELETE FROM pub_cart_game WHERE id_user = $1', [userId]);
-}
+    await this.userRepository.query('DELETE FROM pub_cart_game WHERE id_user = $1', [userId]);
+  }
 }

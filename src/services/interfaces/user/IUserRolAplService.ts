@@ -11,5 +11,7 @@ export interface IUserRolAplService {
 
   getAllUserRols(idUser: number): Promise<number[] | undefined>;
 
+  getRoles(): Promise<RolApl[] | undefined>;
+
   updateUserRoles(userId: number, roleIds: number[], updatedByUser: string): Promise<RolApl[]>;
 }

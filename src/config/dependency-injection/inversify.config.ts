@@ -57,6 +57,13 @@ import { ISweItemMenuService } from '../../services/interfaces/sweitemmenu/ISweI
 import { SweItemMenuService } from '../../services/sweitemmenu/sweitemmenu.service.js';
 import { IUserRepository } from '../../repositories/interfaces/user/IUserRepository.js';
 import { IUserAuthRepository } from '../../repositories/interfaces/user/IUserAuthRepository.js';
+import { HostingPublisherController } from '../../controllers/hosting/hosting-publisher.controller.js';
+import { HostingPublisherRepository } from '../../repositories/hosting/hosting-publisher.dao.js';
+import { HostingPublisherService } from '../../services/hosting/hosting-publisher.service.js';
+import { IHostingPublisherService } from '../../services/interfaces/hosting/IHostingPublisherService.js';
+import { JuegoMapper } from '../../mappers/juegos/juego.mapper.js';
+import { HostingMapper } from '../../mappers/hosting/hosting.mapper.js';
+import { UserMapper } from '../../mappers/user/user.mapper.js';
 
 // Crear un nuevo contenedor de Inversify
 const container = new Container({ defaultScope: 'Singleton' });
@@ -72,12 +79,14 @@ container.bind<JuegoController>(JuegoController).toSelf();
 container.bind<DesarrolladoresController>(DesarrolladoresController).toSelf();
 container.bind<PrecioController>(PrecioController).toSelf();
 container.bind<SweItemMenuController>(SweItemMenuController).toSelf();
+container.bind<HostingPublisherController>(HostingPublisherController).toSelf();
 
 // Repositorios
 //container.bind<UserAuthRepository>(UserAuthRepository).toSelf();
 container.bind<PublisherRepository>(PublisherRepository).toSelf();
 container.bind<CategoriasRepository>(CategoriasRepository).toSelf();
 container.bind<HostingRepository>(HostingRepository).toSelf();
+container.bind<HostingPublisherRepository>(HostingPublisherRepository).toSelf();
 //container.bind<UserRepository>(UserRepository).toSelf();
 container.bind<SupportTicketRepository>(SupportTicketRepository).toSelf();
 container.bind<UserRolRepository>(UserRolRepository).toSelf();
@@ -95,6 +104,7 @@ container.bind<IAuthService>(AuthService).to(AuthService);
 container.bind<IUserService>(UserService).to(UserService);
 container.bind<IPasswordService>(PasswordService).to(PasswordService);
 container.bind<IHostingService>(HostingService).to(HostingService);
+container.bind<IHostingPublisherService>(HostingPublisherService).to(HostingPublisherService);
 container.bind<ISupportTicketService>(SupportTicketService).to(SupportTicketService);
 container.bind<IPublisherService>(PublisherService).to(PublisherService);
 container.bind<ICategoriasService>(CategoriasService).to(CategoriasService);
@@ -108,5 +118,11 @@ container.bind<ICartService>(CartService).to(CartService);
 container.bind<ISweItemMenuService>(SweItemMenuService).to(SweItemMenuService);
 container.bind<IUserRepository>(UserRepository).to(UserRepository);
 container.bind<IUserAuthRepository>(UserAuthRepository).toSelf();
+
+//mappers
+container.bind<JuegoMapper>(JuegoMapper).toSelf();
+container.bind<HostingMapper>(HostingMapper).toSelf();
+container.bind<UserMapper>(UserMapper).toSelf();
+
 
 export { container };

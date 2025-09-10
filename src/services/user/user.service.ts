@@ -9,13 +9,11 @@ import { UserDto } from '../../models-dto/usuarios/user-dto.entity.js';
 import { inject, injectable } from 'inversify';
 import { IPasswordService } from '../interfaces/auth/IPasswordService.js';
 import { PasswordService } from '../auth/password.service.js';
-import { UserRolApl } from '../../models/usuarios/user-rol-apl.entity.js';
-import { userRolIdCons } from '../../shared/constants/general-constants.js';
 import { UserRolAplService } from './user-rol-apl.service.js';
 import { IUserRolAplService } from '../interfaces/user/IUserRolAplService.js';
-import { RolApl } from '../../models/roles/rol-apl.entity.js';
 import { IUserRepository } from '../../repositories/interfaces/user/IUserRepository.js';
 import { CreateEmailBody } from '../../middleware/email-creator/email.js';
+import { UserMapper } from '../../mappers/user/user.mapper.js';
 
 
 @injectable()
@@ -23,20 +21,22 @@ export class UserService implements IUserService {
   private _userRepository: IUserRepository;
   private _passwordService: IPasswordService;
   private _userRolAplService: IUserRolAplService;
+  private _userMapper: UserMapper;
 
   constructor(
     @inject(UserRepository) userRepository: IUserRepository,
     @inject(PasswordService) passwordService: IPasswordService,
     @inject(UserRolAplService) userRolAplService: IUserRolAplService,
+    @inject(UserMapper) userMapper: UserMapper,
   ) {
     this._userRepository = userRepository;
     this._passwordService = passwordService;
     this._userRolAplService = userRolAplService;
+    this._userMapper = userMapper;
   }
 
-  
+
   async sendResetPass(email: string, token: string): Promise<void> {
-    console.log(`Entrando a UserRepository con ${email} y ${token}`);
 
     await CreateEmailBody(email, token);
 
@@ -54,7 +54,7 @@ export class UserService implements IUserService {
   }
   //Nuevo
   async updatePassword(userid: number, newPassword: string): Promise<void> {
-    
+
     const user = await this._userRepository.findOne(userid);
 
     if (!user) throw new Error('Usuario no encontrado');
@@ -63,11 +63,9 @@ export class UserService implements IUserService {
       throw new Error('La información de autenticación del usuario no está disponible');
     }
 
-    console.log(`Actualizando contraseña para el usuario con ID: ${userid}`);
-
     newPassword = (await this._passwordService.validatePassword(newPassword))
-                       ? await this._passwordService.hashPassword(newPassword)
-                       : (() => { throw new ValidationError('La Contraseña es inválida');})();
+      ? await this._passwordService.hashPassword(newPassword)
+      : (() => { throw new ValidationError('La Contraseña es inválida'); })();
 
     await this._userRepository.updatePass(userid, newPassword);
   }
@@ -86,7 +84,9 @@ export class UserService implements IUserService {
           userRolAplList!
         );
 
-        const userOutput: UserDto = {
+        const userOutput = await this._userMapper.convertToDto(user, currentRol!, true );
+        
+        /*const userOutput: UserDto = {
           idUser: user.id,
           idRolApl: user.currentRolId, //Nuevo
           rolDesc: currentRol?.description,
@@ -100,7 +100,7 @@ export class UserService implements IUserService {
           status: user.status,
           delete_date: user.delete_date,
           email: undefined
-        };
+        };*/
 
         return userOutput;
       })
@@ -116,7 +116,11 @@ export class UserService implements IUserService {
     const currentRol = await this._userRolAplService.SearchUserCurrentRol(
       userRolAplList!
     );
-    const userOutput: UserDto = {
+    if (!currentRol) return undefined;
+
+    const userOutput = await this._userMapper.convertToDto(user, currentRol, false );
+
+   /* const userOutput: UserDto = {
       idUser: user.id,
       idRolApl: user.currentRolId, //Nuevo
       rolDesc: currentRol?.description,
@@ -131,6 +135,7 @@ export class UserService implements IUserService {
       delete_date: user.delete_date,
       email: undefined
     };
+    */
     return userOutput;
   }
 
@@ -144,16 +149,15 @@ export class UserService implements IUserService {
       throw new AuthenticationError('El Usuario ya existe', 409);
     }
 
-    const userToCreate = await this.initializeUser(newUser);
+    const userToCreate = await this._userMapper.convertDtoToEntity(newUser, this._passwordService);
 
     const userCreated = await this._userRepository.registerUser(userToCreate);
 
-    const rolAsigned = await this._userRolAplService.AsignRolUser(
-      userCreated,
-      newUser.idRolApl !== undefined ? String(newUser.idRolApl) : undefined
-    );
+    const rolAsigned = await this._userRolAplService.AsignRolUser(userCreated, newUser.idRolApl !== undefined ? String(newUser.idRolApl) : undefined);
 
-    const userOutput: UserDto = {
+    const userOutput = await this._userMapper.convertToDto(userCreated, rolAsigned!, true );
+   
+    /*const userOutput: UserDto = {
       idUser: userCreated?.id,
       idRolApl: userCreated?.currentRolId, //Nuevo
       email: userCreated?.email, // Agregado
@@ -169,7 +173,7 @@ export class UserService implements IUserService {
       delete_date: userCreated?.delete_date,
       modificationuser: undefined,
       modificationtimestamp: undefined,
-    };
+    };*/
 
     return userOutput;
   }
@@ -180,11 +184,11 @@ export class UserService implements IUserService {
       throw new ValidationError('Usuario no encontrado', 400);
     }
 
-    const updatedUser = await this.initializeUserToUpdate(id, user, oldUser);
+    const updatedUser = await this._userMapper.convertToEntityOnUpdate(id, user, oldUser);
 
     const userOutput = this._userRepository.update(id, updatedUser)
-    
-    return userOutput ;
+
+    return userOutput;
   }
 
   async delete(id: number): Promise<User | undefined> {
@@ -228,17 +232,11 @@ export class UserService implements IUserService {
       userRolAplList!
     );
 
-    const updatedUserData = await this.initializeUserToUpdate(
-      id,
-      userInput,
-      oldUser
-    );
+    const updatedUserData = await this._userMapper.convertToEntityOnUpdate(id, userInput, oldUser);
 
     let userUpdated = await this._userRepository.update(id, updatedUserData);
-    if (!userUpdated ) return;
-    if (
-      rolToAsign !== currentRol?.description /*&& rolToAsign.trim() !== ''*/
-    ) {
+    if (!userUpdated) return;
+    if (rolToAsign !== currentRol?.description ) {
       const rolAsigned = await this._userRolAplService.AsignRolUser(userUpdated, rolToAsign, currentRol);
 
       userUpdated.currentRolId = rolAsigned?.id;
@@ -248,12 +246,12 @@ export class UserService implements IUserService {
     return userUpdated;
   }
 
-  private async initializeUser(newUser: UserDto) {
+  /*private async initializeUser(newUser: UserDto) {
     newUser.creationtimestamp = new Date();
 
     newUser.password = (await this._passwordService.validatePassword(newUser.password!))
-                       ? await this._passwordService.hashPassword(newUser.password!)
-                       : (() => { throw new ValidationError('La Contraseña es inválida');})();
+      ? await this._passwordService.hashPassword(newUser.password!)
+      : (() => { throw new ValidationError('La Contraseña es inválida'); })();
 
     const newUserAuth: UserAuth = new UserAuth(
       newUser.password!,
@@ -309,7 +307,8 @@ export class UserService implements IUserService {
       resetPasswordExpires: undefined
     };
     return userToUpdate;
-  }
+  }*/
+ 
 }
 
 

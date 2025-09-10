@@ -30,10 +30,17 @@ const mockUser = {
     AsignRolUser: jest.fn(),
   };
 
+  const mockUserMapper = {
+    convertDtoToEntity: jest.fn(),
+    convertToEntityOnUpdate: jest.fn(),
+    convertToDto: jest.fn(),
+  };
+
   const userService = new UserService (
     mockUserRepository as any,
     mockPasswordService as any,
-    mockUserRolAplService as any
+    mockUserRolAplService as any,
+    mockUserMapper as any
   );
 
 

@@ -18,7 +18,6 @@ export class BibliotecaRepository {
   }
 
   async addToBiblioteca(userId: number, juegoId: number): Promise<void> {
-    console.log('addToLibrary params:', { userId, juegoId });
     try {
       const user = await this.userRepository.findOne({
         where: { id: userId },
