@@ -1,7 +1,7 @@
 
 import { injectable } from "inversify";
-import { JuegoDto } from "../../models-dto/juegos/juego-dto.entity";
-import { Juego } from "../../models/juegos/juegos.entity";
+import { JuegoDto } from "../../models-dto/juegos/juego-dto.entity.js";
+import { Juego } from "../../models/juegos/juegos.entity.js";
 import * as fs from "fs";
 import * as path from "path";
 

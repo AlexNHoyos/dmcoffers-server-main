@@ -8,17 +8,20 @@ import { IHostingPublisherService } from '../../services/interfaces/hosting/IHos
 import { HostingPublisherRepository } from '../../repositories/hosting/hosting-publisher.dao.js';
 import { HostingPublisher } from '../../models/hosting/hosting-publisher.entity.js';
 import { HostingPublisherDto } from '../../models-dto/hosting-publisher/hosting-publisher-dto.entity.js';
-import { HostingService } from './hosting.service.js';
+import { HostingMapper } from '../../mappers/hosting/hosting.mapper.js';
 
 @injectable()
 export class HostingPublisherService implements IHostingPublisherService {
 
     private _hostingPublisherRepository: HostingPublisherRepository;
+    private _hostingMapper: HostingMapper;
+
     constructor(
         @inject(HostingPublisherRepository) hostingPublisherRepository: HostingPublisherRepository,
-
+        @inject(HostingMapper) hostingMapper: HostingMapper,
     ) {
         this._hostingPublisherRepository = hostingPublisherRepository;
+        this._hostingMapper = hostingMapper;
     }
 
     async findAll(): Promise<HostingPublisherDto[]> {
@@ -26,7 +29,7 @@ export class HostingPublisherService implements IHostingPublisherService {
         const hostingPublishersDto: HostingPublisherDto[] = await Promise.all(
             hostingPublishers.map(async (hosting) => {
 
-                return this.convertToDto(hosting);
+                return  await this._hostingMapper.convertToDto(hosting);
             })
         );
         return hostingPublishersDto;
@@ -49,20 +52,6 @@ export class HostingPublisherService implements IHostingPublisherService {
     async delete(id: number): Promise<HostingPublisher | undefined> {
         return this._hostingPublisherRepository.delete(id);
     }
-
-    private async convertToDto(hostingPublisher: HostingPublisher): Promise<HostingPublisherDto> {
-        return {
-            id: hostingPublisher.id,
-            storageAmmount: hostingPublisher.storageAmmount,
-            storageType: hostingPublisher.storageType,
-            ramAmmount: hostingPublisher.ramAmmount,
-            cpuSpecs: hostingPublisher.cpuSpecs,
-            uptimePercentage: hostingPublisher.uptimePercentage,
-            publisher: hostingPublisher.publisher,
-            hosting: hostingPublisher.hosting
-        };
-    }
-
 
 }
 

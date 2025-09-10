@@ -62,6 +62,8 @@ import { HostingPublisherRepository } from '../../repositories/hosting/hosting-p
 import { HostingPublisherService } from '../../services/hosting/hosting-publisher.service.js';
 import { IHostingPublisherService } from '../../services/interfaces/hosting/IHostingPublisherService.js';
 import { JuegoMapper } from '../../mappers/juegos/juego.mapper.js';
+import { HostingMapper } from '../../mappers/hosting/hosting.mapper.js';
+import { UserMapper } from '../../mappers/user/user.mapper.js';
 
 // Crear un nuevo contenedor de Inversify
 const container = new Container({ defaultScope: 'Singleton' });
@@ -119,5 +121,8 @@ container.bind<IUserAuthRepository>(UserAuthRepository).toSelf();
 
 //mappers
 container.bind<JuegoMapper>(JuegoMapper).toSelf();
+container.bind<HostingMapper>(HostingMapper).toSelf();
+container.bind<UserMapper>(UserMapper).toSelf();
+
 
 export { container };
