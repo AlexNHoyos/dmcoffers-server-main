@@ -61,6 +61,7 @@ import { HostingPublisherController } from '../../controllers/hosting/hosting-pu
 import { HostingPublisherRepository } from '../../repositories/hosting/hosting-publisher.dao.js';
 import { HostingPublisherService } from '../../services/hosting/hosting-publisher.service.js';
 import { IHostingPublisherService } from '../../services/interfaces/hosting/IHostingPublisherService.js';
+import { JuegoMapper } from '../../mappers/juegos/juego.mapper.js';
 
 // Crear un nuevo contenedor de Inversify
 const container = new Container({ defaultScope: 'Singleton' });
@@ -115,5 +116,8 @@ container.bind<ICartService>(CartService).to(CartService);
 container.bind<ISweItemMenuService>(SweItemMenuService).to(SweItemMenuService);
 container.bind<IUserRepository>(UserRepository).to(UserRepository);
 container.bind<IUserAuthRepository>(UserAuthRepository).toSelf();
+
+//mappers
+container.bind<JuegoMapper>(JuegoMapper).toSelf();
 
 export { container };

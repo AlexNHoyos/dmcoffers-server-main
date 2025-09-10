@@ -10,6 +10,8 @@ import { PublisherService } from '../publisher/publisher.service.js';
 import { DesarrolladoresService } from '../desarrolladores/desarrolladores.service.js';
 import { PrecioService } from './precios.service.js';
 import { Precio } from '../../models/juegos/precios.entity.js';
+import { JuegoMapper } from '../../mappers/juegos/juego.mapper.js';
+
 import fs from "fs";
 import path from 'path';
 
@@ -20,21 +22,23 @@ export class JuegoService implements IJuegoService {
   private publisherService: PublisherService;
   private desarrolladoresService: DesarrolladoresService;
   private precioService: PrecioService;
+   private _juegoMapper: JuegoMapper
   
 
   constructor(
     @inject(JuegoRepository) juegoRepository: JuegoRepository,
     @inject(CategoriasRepository) categoriaRepository: CategoriasRepository,
     @inject(PublisherService) publisherService: PublisherService,
-    @inject(DesarrolladoresService)
-    desarrolladorService: DesarrolladoresService,
-    @inject(PrecioService) precioService: PrecioService
+    @inject(DesarrolladoresService)desarrolladorService: DesarrolladoresService,
+    @inject(PrecioService) precioService: PrecioService,
+    @inject(JuegoMapper) juegoMapper: JuegoMapper,
   ) {
     this.juegoRepository = juegoRepository;
     this.categoriaRepository = categoriaRepository;
     this.publisherService = publisherService;
     this.desarrolladoresService = desarrolladorService;
     this.precioService = precioService;
+    this._juegoMapper = juegoMapper;
   }
 
   async create(entity: JuegoDto): Promise<JuegoDto> {
@@ -49,7 +53,7 @@ export class JuegoService implements IJuegoService {
           juego.id !== undefined
             ? await this.precioService.getLastPrice(juego.id)
             : null;
-        return this.convertToDto(juego, lastPrice?.price);
+        return this._juegoMapper.convertoDto(juego, lastPrice?.price);
       })
     );
     return juegosDto;
@@ -64,7 +68,7 @@ export class JuegoService implements IJuegoService {
       juego.id !== undefined
         ? await this.precioService.getLastPrice(juego.id)
         : null;
-    return this.convertToDto(juego, lastPrice?.price);
+    return this._juegoMapper.convertoDto(juego, lastPrice?.price);
   }
 
   async findByName(gamename: string): Promise<JuegoDto[]> {
@@ -74,7 +78,7 @@ export class JuegoService implements IJuegoService {
     return await Promise.all(
       juegos.map(async (juego) => {
         const lastPrice = await this.precioService.getLastPrice(juego.id!);
-        return this.convertToDto(juego, lastPrice?.price);
+        return this._juegoMapper.convertoDto(juego, lastPrice?.price);
       })
     );
   }
@@ -90,7 +94,7 @@ export class JuegoService implements IJuegoService {
       return await Promise.all(
         wishlistGames.map(async (juego) => {
           const lastPrice = await this.precioService.getLastPrice(juego.id!);
-          return this.convertToDto(juego, lastPrice?.price);
+          return this._juegoMapper.convertoDto(juego, lastPrice?.price);
         })
       );
     } catch (error) {
@@ -109,7 +113,7 @@ export class JuegoService implements IJuegoService {
       return await Promise.all(
         cartGames.map(async (juego) => {
           const lastPrice = await this.precioService.getLastPrice(juego.id!);
-          return this.convertToDto(juego, lastPrice?.price);
+          return this._juegoMapper.convertoDto(juego, lastPrice?.price);
         })
       );
     } catch (error) {
@@ -165,7 +169,7 @@ export class JuegoService implements IJuegoService {
     // Guardar el precio en la base de datos
     await this.precioService.create(precio);
 
-    return this.convertToDto(juegoCreado, newJuego.price);
+    return this._juegoMapper.convertoDto(juegoCreado, newJuego.price);
   }
 
   async update(id: number, juegoDto: Partial<JuegoDto>): Promise<JuegoDto> {
@@ -228,7 +232,7 @@ export class JuegoService implements IJuegoService {
     await this.juegoRepository.update(id, existingJuego);
 
     // Retornar el DTO actualizado
-    return this.convertToDto(existingJuego, juegoDto.price);
+    return this._juegoMapper.convertoDto(existingJuego, juegoDto.price);
   }
 
   async delete(id: number): Promise<JuegoDto | undefined> {
@@ -292,55 +296,6 @@ export class JuegoService implements IJuegoService {
         400
       );
     }
-  }
-
-  private async convertToDto(juego: Juego, price?: number): Promise<JuegoDto> {
-    const categorias = await juego.categorias;
-
-    const UPLOADS_BASE_PATH = path.resolve(process.cwd(), "uploads", "games");
-
-    let imageBase64: string | undefined = undefined;
-    let imageContentType: string | undefined = undefined;
-    if (juego.image_path) {
-    let filePath: string;
-
-    if (juego.image_path.includes("uploads")) {
-      const relativePath = juego.image_path.replace(/^.*uploads[\\/]games[\\/]/, "");
-      filePath = path.join(UPLOADS_BASE_PATH, relativePath);
-    } else {
-      filePath = path.join(UPLOADS_BASE_PATH, juego.image_path);
-    }
-
-    if (fs.existsSync(filePath)) {
-      const fileBuffer = fs.readFileSync(filePath);
-      imageBase64 = fileBuffer.toString("base64");
-      imageContentType = "image/png"; 
-    } else {
-      console.warn("⚠️ No se encontró el archivo:", filePath);
-    }
-  }
-    return {
-      id: juego.id,
-      gamename: juego.gamename,
-      release_date: juego.release_date,
-      publishment_date: juego.publishment_date,
-      creationuser: juego.creationuser,
-      creationtimestamp: juego.creationtimestamp,
-      modificationuser: juego.modificationuser,
-      modificationtimestamp: juego.modificationtimestamp,
-      id_publisher: juego.publisher?.id,
-      id_developer: juego.developer?.id,
-      categorias: juego.categorias
-        ? (await juego.categorias).map((c) => c.id)
-        : [],
-      price,
-      publisherName: juego.publisher?.publishername,
-      developerName: juego.developer?.developername,
-      categoriasNames: categorias?.map((categoria) => categoria.description),
-      image_path: juego.image_path,
-      imageBase64: imageBase64,   
-      imageContentType: imageContentType
-    };
   }
 
   // Método para validar la ruta de la imagen
