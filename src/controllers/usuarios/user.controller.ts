@@ -45,6 +45,21 @@ export class UserController {
         }
     };
 
+    @httpGet('/getAllRoles', authenticateToken, authorizeRol('Administrador'))
+    public async getAllRoles(req: Request, res: Response, next: NextFunction) {
+        try {
+            const roles = await this._userRolAplService.getRoles();
+
+            if (roles) {
+                res.status(200).json(roles);
+            } else {
+                res.status(404).json({ message: 'No existen roles cargados' });
+            }
+        } catch (error) {
+            next(error);
+        }
+    };
+
     @httpGet('/:id', validateInputData(getUserValidationRules))
     public async findOne(req: Request, res: Response, next: NextFunction) {
         const id = parseInt(req.params.id, 10);
@@ -161,7 +176,6 @@ export class UserController {
             if (user.id === undefined) {
                 throw new ValidationError('Usuario no tiene un ID válido');
             }
-
             await this._userService.updatePassword(user.id, newPassword);
 
             return res.json({ message: 'Contraseña actualizada correctamente' });
@@ -187,7 +201,7 @@ export class UserController {
         }
     };
 
-    @httpPut('/updateUser/:id', authenticateToken, validateInputData(updateUserByAdminValidationRules), authorizeRol('admin'))
+    @httpPut('/updateUser/:id', authenticateToken, validateInputData(updateUserByAdminValidationRules), authorizeRol('Administrador'))
     public async updateUserByAdmin(req: Request, res: Response, next: NextFunction) {
 
         const id = parseInt(req.params.id, 10);
@@ -220,7 +234,8 @@ export class UserController {
             next(error);
         }
     };
-    @httpPut('/:id/roles', authenticateToken, authorizeRol('admin'))
+
+    @httpPut('/:id/roles', authenticateToken, authorizeRol('Administrador'))
     public async updateUserRoles(req: Request, res: Response, next: NextFunction) {
         const id = parseInt(req.params.id, 10);
         const roleIds: number[] = req.body.roleIds;
@@ -229,7 +244,7 @@ export class UserController {
             const updatedRoles = await this._userRolAplService.updateUserRoles(
                 id,
                 roleIds,
-                'admin'
+                'Administrador'
             );
             res.status(200).json(updatedRoles);
         } catch (error) {
@@ -237,4 +252,6 @@ export class UserController {
         }
 
     }
+
+
 }

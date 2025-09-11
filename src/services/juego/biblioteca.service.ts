@@ -1,18 +1,24 @@
 import { inject, injectable } from 'inversify';
 import { BibliotecaRepository } from '../../repositories/juego/biblioteca.dao.js';
 import { JuegoRepository } from '../../repositories/juego/juego.dao.js';
+import { JuegoDto } from '../../models-dto/juegos/juego-dto.entity.js';
+import { JuegoMapper } from '../../mappers/juegos/juego.mapper.js';
+
 
 @injectable()
 export class BibliotecaService {
   private _bibliotecaRepository: BibliotecaRepository;
-  private juegoRepository: JuegoRepository;
+  private _juegoRepository: JuegoRepository;
+  private _juegoMapper: JuegoMapper
 
   constructor(
     @inject(BibliotecaRepository) BibliotecaRepository: BibliotecaRepository,
-    @inject(JuegoRepository) juegoRepository: JuegoRepository
+    @inject(JuegoRepository) juegoRepository: JuegoRepository,
+    @inject(JuegoMapper) juegoMapper: JuegoMapper,
   ) {
     this._bibliotecaRepository = BibliotecaRepository;
-    this.juegoRepository = juegoRepository;
+    this._juegoRepository = juegoRepository;
+    this._juegoMapper = juegoMapper;
   }
 
   async addToBiblioteca(userId: number, gameId: number): Promise<void> {
@@ -28,7 +34,18 @@ export class BibliotecaService {
     return await this._bibliotecaRepository.isInBiblioteca(userId, juegoId);
   }
 
-  public async getBiblioteca(userId: number) {
-    return this.juegoRepository.findPurchasedGames(userId);
+  public async getBiblioteca(userId: number): Promise<JuegoDto[]> {
+
+    let gamesObtained =  await this._juegoRepository.findPurchasedGames(userId);
+
+    const juegosDto: JuegoDto[] = [];
+
+    for (const game of gamesObtained) {
+      const dto = await this._juegoMapper.convertoDto(game);
+      juegosDto.push(dto);
+    }
+
+    return juegosDto;
   }
+  
 }

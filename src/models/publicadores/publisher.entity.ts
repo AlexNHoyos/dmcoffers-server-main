@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 
 import { Juego } from '../juegos/juegos.entity.js';
+import { HostingPublisher } from '../../models/hosting/hosting-publisher.entity.js';
 
 @Entity('pub_game_publisher') // El nombre de la tabla en la base de datos
 // Definimos la clase Publisher para representar la entidad de un publicador
@@ -42,6 +43,9 @@ export class Publisher {
 
   @OneToMany(() => Juego, (juegos) => juegos.publisher)
   public juegos: Juego[] | undefined;
+
+  @OneToMany(() => HostingPublisher, (hostingpublisher) => hostingpublisher.publisher)
+  public hostingpublisher: HostingPublisher[] | undefined; 
 
   // Constructor de la clase Publisher
   constructor(
