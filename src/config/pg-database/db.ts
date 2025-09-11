@@ -15,6 +15,7 @@ import { RolApl } from '../../models/roles/rol-apl.entity.js';
 import { Juego } from '../../models/juegos/juegos.entity.js';
 import { Oferta } from '../../models/ofertas/ofertas.entity.js';
 import { Precio } from '../../models/juegos/precios.entity.js';
+import { HostingPublisher } from '../../models/hosting/hosting-publisher.entity.js';
 
 // Cargar las variables de entorno desde el archivo .env
 if (process.env.NODE_ENV != 'production') {
@@ -43,6 +44,7 @@ export const AppDataSource = new DataSource({
   entities:
     process.env.NODE_ENV === 'test'?[
       Hosting,
+      HostingPublisher,
       User,
       UserAuth,
       Categorias,

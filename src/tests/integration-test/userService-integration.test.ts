@@ -12,19 +12,18 @@ import { RolApl } from '../../models/roles/rol-apl.entity.js';
 import { id } from 'inversify';
 import { response } from 'express';
 
-
-
 //Simulo AuthCryptography como un mock
 const cryptoService = new AuthCryptography();
 const encryptedPassword = cryptoService.encrypt('TestPasswrd123');
 
 
 describe('User Service - Integration Tests', () => {
-  let rol: RolApl; // Declare rol in the outer scope
+  let rol: RolApl; 
   beforeAll(async () => {
     if (!AppDataSource.isInitialized) {
       await AppDataSource.initialize();
     }
+
     await AppDataSource.getRepository(UserRolApl).delete({}); // Limpiar la tabla de usuarios antes de las pruebas
     await AppDataSource.getRepository(UserAuth).delete({}); // Limpiar la tabla de usuarios antes de las pruebas
     await AppDataSource.getRepository(User).delete({});
@@ -32,15 +31,15 @@ describe('User Service - Integration Tests', () => {
 
     await AppDataSource.getRepository(User).delete({ username: 'testUser' }); // Limpiar la tabla de usuarios antes de las pruebas
 
+    //Agrego seed de prueba
     rol = await AppDataSource.getRepository(RolApl).save({
+      id: 21,
       description: 'Usuario',
       creationuser: 'admin',
       creationtimestamp: new Date(),
       status: true,
       delete_date: undefined,
     })
-
-    const roles = await AppDataSource.getRepository(RolApl).find();
   });
 
   afterAll(async () => {
@@ -55,11 +54,14 @@ describe('User Service - Integration Tests', () => {
         username: 'testUser',
         realname: 'Test',
         surname: 'User',
+        email: 'testuser@example.com',
         birth_date: '1990-01-01',
         creationuser: 'admin',
         creationtimestamp: new Date(),
         password: encryptedPassword,
         status: true,
+        delete_date: undefined,
+        idRolApl: 3 // Usar el ID del rol creado
       });
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('idUser');
