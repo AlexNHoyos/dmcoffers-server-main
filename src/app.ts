@@ -29,8 +29,8 @@ server.setConfig(async (app) => {
 } else {
     app.use(cors());
 }
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
+  //const __filename = fileURLToPath(import.meta.url);
+  //const __dirname = path.dirname(__filename);
 
   // Si tu carpeta "uploads" está en la raíz del proyecto
   app.use('/uploads', express.static(path.resolve('uploads')));
