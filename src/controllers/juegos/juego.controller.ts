@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import { JuegoService } from '../../services/juego/juego.service.js';
+import { v2 as cloudinary } from "cloudinary";
+import { Readable } from "stream";
 
 import {
   controller,
@@ -28,9 +30,10 @@ import multer from 'multer';
 import path from 'path';
 import { validateImageUpload } from '../../middleware/validation/validateImageUpload.js';
 import { parseJuegoField } from '../../middleware/validation/parseJuegoField.js';
+import { upload } from '../../config/cloudinary/multer.config.js';
 
 
-const storage = multer.diskStorage({
+/*const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/games'); // Carpeta donde se guardan las imagenes de los juegos
   },
@@ -42,7 +45,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+const upload = multer({ storage });*/
 
 @controller('/api/juegos')
 export class JuegoController {
@@ -198,36 +201,46 @@ export class JuegoController {
 
   @httpPost('/', authenticateToken, upload.single('image'), parseJuegoField, validateImageUpload)
   public async create(req: Request, res: Response, next: NextFunction) {
+  try {
+    
 
-    try {
-      const imagePath = req.file ? `/uploads/games/${req.file.filename}` : undefined;
-      const newJuego = await this.juegoService.createGame(req.body, imagePath);
+      const imageUrl = req.file?.path;
 
-      return res.status(201).json(newJuego);
-    } catch (error) {
-      return next(error);
-    }
+    // Guardás el juego en la DB con la URL de Cloudinary en lugar de la ruta local
+    const newJuego = await this.juegoService.createGame(req.body, imageUrl);
+
+    return res.status(201).json(newJuego);
+  } catch (error) {
+    return next(error);
   }
+}
 
-  @httpPatch('/:id', authenticateToken, upload.single('image'), parseJuegoField, validateImageUpload)
-  public async update(req: Request, res: Response, next: NextFunction) {
-    const id = parseInt(req.params.id, 10);
 
-    try {
-      // Si hay imagen, setear la ruta
-      if (req.file) {
-        req.body.image_path = `/uploads/games/${req.file.filename}`;
-      }
-      const updatedJuego = await this.juegoService.update(id, req.body);
-      if (updatedJuego) {
-        res.status(200).json(updatedJuego);
-      } else {
-        res.status(404).json({ message: 'Juego no encontrado' });
-      }
-    } catch (error) {
-      next(error);
+@httpPatch('/:id', authenticateToken, upload.single('image'), parseJuegoField, validateImageUpload)
+public async update(req: Request, res: Response, next: NextFunction) {
+  const id = parseInt(req.params.id, 10);
+
+  try {
+    // Si hay imagen, subir a Cloudinary
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "games", // la carpeta se crea automáticamente si no existe
+      });
+
+      // Guardamos la URL segura de Cloudinary en lugar de la ruta local
+      req.body.image_path = result.secure_url;
     }
+
+    const updatedJuego = await this.juegoService.update(id, req.body);
+    if (updatedJuego) {
+      res.status(200).json(updatedJuego);
+    } else {
+      res.status(404).json({ message: 'Juego no encontrado' });
+    }
+  } catch (error) {
+    next(error);
   }
+}
 
   @httpDelete('/:id', authenticateToken, validateInputData(deleteJuegoValidationRules))
   public async remove(req: Request, res: Response, next: NextFunction) {
