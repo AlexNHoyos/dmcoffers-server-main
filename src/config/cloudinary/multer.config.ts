@@ -18,3 +18,20 @@ const storage = new CloudinaryStorage({
 });
 
 export const upload = multer({ storage });
+
+
+//si quiere usar el disco duro local para subir imagenes utilice este metodo y configure todo como estaba antes de cloudinary.
+
+/*const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/games'); // Carpeta donde se guardan las imagenes de los juegos
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const baseName = path.basename(file.originalname, ext).replace(/\s+/g, '_');
+    const uniqueSuffix = Date.now();
+    cb(null, `${baseName}-${uniqueSuffix}${ext}`);
+  },
+});
+
+const upload = multer({ storage });*/
