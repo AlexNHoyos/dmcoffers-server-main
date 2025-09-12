@@ -201,14 +201,14 @@ export class UserController {
         }
     };
 
-    @httpPut('/updateUser/:id', authenticateToken, validateInputData(updateUserByAdminValidationRules), authorizeRol('Administrador'))
+    @httpPut('/updateUser/:id', authenticateToken, validateInputData(updateUserByAdminValidationRules))
     public async updateUserByAdmin(req: Request, res: Response, next: NextFunction) {
 
         const id = parseInt(req.params.id, 10);
         const userUpdates = req.body;
 
         try {
-            const updatedUser = await this._userService.updateUserByAdmin(id, userUpdates, userUpdates.rolDescription);
+            const updatedUser = await this._userService.updateUserByAdmin(id, userUpdates);
             if (updatedUser) {
                 res.status(200).json(updatedUser);
             } else {
