@@ -27,7 +27,6 @@ export class JuegoMapper {
       publisherName: juego.publisher?.publishername,
       developerName: juego.developer?.developername,
       categoriasNames: categorias?.map((categoria) => categoria.description),
-      // 👇 Ahora solo devolvés la URL de Cloudinary
       image_path: juego.image_path,
     };
   }
