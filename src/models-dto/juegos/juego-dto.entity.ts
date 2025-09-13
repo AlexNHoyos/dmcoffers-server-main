@@ -18,8 +18,7 @@ export class JuegoDto {
   categoriasNames?: string[];
 
   image_path?: string | undefined;
-  imageBase64?: string;   // nuevo campo
-  imageContentType?: string;
+
   constructor(
     gamename: string,
     release_date: Date,
