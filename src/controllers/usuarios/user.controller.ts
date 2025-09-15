@@ -132,7 +132,11 @@ export class UserController {
             //Busca el usuario por el email
             const user = await this._userService.findByEmail(email);
 
-            if (user) {
+            if(!user){
+                throw new ValidationError('No se encontró ningún usuario con ese email');
+            }
+
+            else{
                 //Genero un token aleatorio
                 const crypto = await import('crypto');
                 const token = crypto.randomBytes(32).toString('hex');
