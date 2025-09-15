@@ -133,7 +133,7 @@ export class UserController {
             const user = await this._userService.findByEmail(email);
 
             if(!user){
-                throw new ValidationError('No se encontró ningún usuario con ese email');
+                return res.status(404).json({ message: "El correo ingresado no está registrado" });
             }
 
             else{
