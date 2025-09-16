@@ -217,12 +217,15 @@ export class JuegoService implements IJuegoService {
       existingJuego.categorias = Promise.resolve(nuevasCategorias);
     }
 
-    if (juegoDto.price) {
+    const price = Number(juegoDto.price);
+    if (!isNaN(price)) {
       await this.precioService
-        .createPriceIfChanged(id, juegoDto.price, juegoDto.modificationuser!)
+        .createPriceIfChanged(id, price, juegoDto.modificationuser!)
         .catch((error) => {
-          console.error('Error al registrar nuevo precio:', error);
+          console.error("Error al registrar nuevo precio:", error);
         });
+    } else {
+      console.warn("Precio no válido:", juegoDto.price);
     }
 
     if (juegoDto.image_path !== undefined) {
