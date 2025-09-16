@@ -132,7 +132,7 @@ export class UserController {
             //Busca el usuario por el email
             const user = await this._userService.findByEmail(email);
 
-            if(!user){
+            if(user === undefined){
                 return res.status(404).json({ message: "El correo ingresado no está registrado" });
             }
 
@@ -157,8 +157,8 @@ export class UserController {
                 }
 
                 await this._userService.sendResetPass(user.email, token);
-            }
             return res.json({ message: "Si existe, se envio un correo electrónico de recuperación" });
+            }
         } catch (error) {
             next(error);
         }
